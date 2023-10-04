@@ -1,3 +1,10 @@
+<script setup lang="ts">
+definePageMeta({
+  layout: "admin-layout",
+
+})
+</script>
+
 <template>
   <section class="hero is-warning">
     <div class="hero-body">

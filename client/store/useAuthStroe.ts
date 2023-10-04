@@ -33,6 +33,7 @@ const useAuthStore = defineStore("Auth", () => {
 
       setUser(res.user);
       setToken(res.token.token);
+      navigateTo("/admin");
     } catch (error: any) {
       $toast.show({ message: error.data.message, type: "denied", timeout: 3 });
     }

@@ -3,13 +3,11 @@
     <label tabindex="0" class="btn m-1 btn-circle">
       <div class="avatar">
         <div class="w-10 rounded-full">
-          <img src="/images/sample-dp.jpg" />
+          <img src="~/assets/images/sample-dp.png" />
         </div>
       </div>
     </label>
-    <ul
-      class="p-2 shadow menu dropdown-content z-[1] bg-base-100 rounded-box w-52 border-t-4 border-black"
-    >
+    <ul class="p-2 shadow menu dropdown-content z-[1] bg-base-100 rounded-box w-52 border-t-4 border-black">
       <li><a>Logout</a></li>
     </ul>
   </div>
