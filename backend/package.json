@@ -80,8 +80,6 @@
     "@adonisjs/session": "^6.4.0",
     "@adonisjs/shield": "^7.1.1",
     "@adonisjs/view": "^6.2.0",
-    "@prisma/client": "^5.3.1",
-    "@wahyubucil/adonis-prisma": "^1.0.0",
     "bcrypt": "^5.1.1",
     "luxon": "^3.4.3",
     "mysql2": "^3.6.1",

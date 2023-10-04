@@ -1,4 +1,13 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import useAuthStore from "~/store/useAuthStroe";
+
+const formData = useState("formData", () => ({
+  email: "",
+  password: "",
+}));
+
+const auth = useAuthStore();
+</script>
 <template>
   <div
     class="relative flex flex-col justify-center h-screen overflow-hidden bg-base-200"
@@ -19,7 +28,7 @@
 
       <p class="my-2 text-red-500">eerror</p>
 
-      <form class="space-y-4" action="" method="post">
+      <form class="space-y-4" action="" method="post" @submit.prevent="">
         <div>
           <label class="label">
             <span class="text-base label-text">Email</span>
@@ -29,6 +38,7 @@
             placeholder="Email Address"
             class="w-full input input-bordered"
             name="email"
+            v-model="formData.email"
           />
         </div>
         <div>
@@ -40,6 +50,7 @@
             placeholder="Enter Password"
             class="w-full input input-bordered"
             name="password"
+            v-model="formData.password"
           />
         </div>
         <div class="flex justify-between">
@@ -60,7 +71,12 @@
           >
         </div>
         <div>
-          <button class="btn btn-primary w-full">Login</button>
+          <button
+            class="btn btn-primary w-full"
+            @click="auth.adminLogin(formData.email, formData.password)"
+          >
+            Login
+          </button>
         </div>
       </form>
     </div>

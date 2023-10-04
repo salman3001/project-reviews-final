@@ -22,8 +22,8 @@ import { prisma } from '@ioc:Adonis/Addons/Prisma'
 import Route from '@ioc:Adonis/Core/Route'
 import '../routes/adminRoutes'
 
-Route.get('/', async ({ view }) => {
-  return view.render('front/home')
+Route.get('api', async ({ response }) => {
+  return response.json('welcome to backend api')
 }).as('home')
 
 Route.get('partials/:name', 'PartialsController.getPartial')

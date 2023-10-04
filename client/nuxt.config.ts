@@ -2,10 +2,10 @@
 
 export default defineNuxtConfig({
   devtools: { enabled: true },
-  modules: ["nuxt-icon", "@pinia/nuxt"],
+  modules: ["nuxt-icon", "@pinia/nuxt", "@tailvue/nuxt"],
   runtimeConfig: {
     public: {
-      BASE_API: "http://127.0.0.1:3333",
+      api: "http://127.0.0.1:3333/api",
     },
   },
   css: ["~/assets/css/main.css"],

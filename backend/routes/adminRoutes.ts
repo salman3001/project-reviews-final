@@ -24,4 +24,4 @@ Route.group(() => {
 
     Route.post('login', 'AuthController.adminLogin').as('admin.login.post')
   }).middleware('guest:webAdmin')
-}).prefix('admin')
+}).prefix('api/admin')

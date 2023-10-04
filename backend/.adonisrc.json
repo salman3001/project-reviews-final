@@ -4,7 +4,6 @@
     "./commands",
     "@adonisjs/core/build/commands/index.js",
     "@adonisjs/repl/build/commands",
-    "@wahyubucil/adonis-prisma/build/commands",
     "@adonisjs/lucid/build/commands"
   ],
   "exceptionHandlerNamespace": "App/Exceptions/Handler",
@@ -24,7 +23,6 @@
     "@adonisjs/session",
     "@adonisjs/view",
     "@adonisjs/shield",
-    "@wahyubucil/adonis-prisma",
     "@adonisjs/auth",
     "@adonisjs/lucid"
   ],
