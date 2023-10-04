@@ -14,6 +14,7 @@ export default class extends BaseSchema {
         .onDelete('SET NULL')
       table.string('name').unique().notNullable()
       table.string('slug').unique().notNullable()
+      table.integer('order').unsigned().unique()
       table.string('meta_title')
       table.string('meta_desc')
       table.string('meta_keywords')
