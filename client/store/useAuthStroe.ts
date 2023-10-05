@@ -23,7 +23,7 @@ const useAuthStore = defineStore("Auth", () => {
 
   const adminLogin = async (email: string, password: string) => {
     try {
-      const res = (await $fetch($api + "/admin/login", {
+      const res = (await $fetch($api + "/auth/admin-login", {
         method: "post",
         body: {
           email: email,
@@ -34,6 +34,22 @@ const useAuthStore = defineStore("Auth", () => {
       setUser(res.user);
       setToken(res.token.token);
       navigateTo("/admin");
+    } catch (error: any) {
+      $toast.show({ message: error.data.message, type: "denied", timeout: 3 });
+    }
+  };
+
+  const adminLogout = async () => {
+    console.log("ran");
+
+    try {
+      const res = (await $fetch($api + "/auth/admin-logout", {
+        headers: { Authorization: "Bearer" + " " + token.value },
+      })) as any;
+
+      setUser(null);
+      setToken(null);
+      navigateTo("/auth/admin-login");
     } catch (error: any) {
       $toast.show({ message: error.data.message, type: "denied", timeout: 3 });
     }
@@ -57,6 +73,7 @@ const useAuthStore = defineStore("Auth", () => {
     adminLogin,
     hasRole,
     hasPermission,
+    adminLogout,
   };
 });
 

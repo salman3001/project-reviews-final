@@ -25,7 +25,7 @@ export default class AuthController {
   }
 
   public async adminLogout({ auth, response }: HttpContextContract) {
-    await auth.use('adminUserApi').logout(true)
+    await auth.use('adminUserApi').revoke()
 
     return response.json({ message: 'Logout Success!' })
   }

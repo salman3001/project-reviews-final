@@ -20,10 +20,11 @@
 
 import Route from '@ioc:Adonis/Core/Route'
 import '../routes/adminRoutes'
+import '../routes/authRoutes'
 
 Route.get('api', async ({ response }) => {
   return response.json('welcome to backend api')
-}).as('home')
+})
 
 Route.get('partials/:name', 'PartialsController.getPartial')
 Route.get('location/states', 'AddressesController.getStates')

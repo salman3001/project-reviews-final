@@ -21,16 +21,15 @@ export default class extends BaseSeeder {
     await new Seeder.default(this.client).run()
   }
   public async run() {
-    await AdminUserFactory.merge([{ email: 'admin@gmail.com', isActive: true, roleId: 1 }])
-      .with('role', 3, (role) => {
-        role.merge([{ name: 'Super Admin' }]).with('permissions', 3, (perm) => {
-          perm.merge([{ name: 'Create User' }, { name: 'Delete User' }, { name: 'Edit User' }])
-        })
-      })
-      .with('social')
-      .createMany(20)
+    await RoleFactory.merge([
+      { name: 'Super Admin' },
+      { name: 'Moderator' },
+      { name: 'Vender' },
+    ]).createMany(3)
 
-    await RoleFactory.merge([{ name: 'Moderator' }, { name: 'Vender' }]).createMany(2)
+    await AdminUserFactory.merge([{ email: 'admin@gmail.com', isActive: true, roleId: 1 }])
+      .with('social')
+      .createMany(14)
 
     await ContinentFactory.with('country', 3, (country) => {
       country.with('state', 3, (state) => {

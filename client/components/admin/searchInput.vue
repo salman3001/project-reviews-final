@@ -1,6 +1,17 @@
+<script setup lang="ts">
+const search = ref("");
+</script>
+
 <template>
-  <form id="search-from" class="relative" @submit.prevent="">
-    <span class="absolute top-1/2 right-2 -translate-y-1/2">
+  <form
+    id="search-from"
+    class="relative"
+    @submit.prevent="$emit('search', search)"
+  >
+    <span
+      class="absolute top-1/2 right-2 -translate-y-1/2 cursor-pointer"
+      @click="$emit('search', search)"
+    >
       <svg
         xmlns="http://www.w3.org/2000/svg"
         fill="none"
@@ -21,7 +32,7 @@
       type="text"
       name="search"
       id="search"
-      value=""
+      v-model="search"
     />
   </form>
 </template>

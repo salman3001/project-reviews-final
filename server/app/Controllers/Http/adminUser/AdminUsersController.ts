@@ -164,7 +164,7 @@ export default class AdminUsersController {
     if (user) {
       user.isActive = false
       await user.save()
-      return response.json({ message: 'User Deleted Successfully' })
+      return response.json({ message: 'User Baned Successfully' })
     } else {
       return response.badRequest({ message: 'User not Fund' })
     }
