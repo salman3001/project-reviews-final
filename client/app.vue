@@ -1,3 +1,15 @@
+<script setup lang="ts">
+
+onMounted(() => {
+  useToastListner()
+})
+
+onUnmounted(() => {
+  useToastUnListner()
+})
+
+</script>
+
 <template>
   <div>
     <NuxtLayout>

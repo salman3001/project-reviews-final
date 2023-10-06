@@ -1,7 +1,7 @@
 import { defineStore } from "pinia";
 
 const useAuthStore = defineStore("Auth", () => {
-  const { $api, $toast } = useNuxtApp();
+  const { $api, $event } = useNuxtApp();
 
   const user = useCookie("user", {
     maxAge: 60 * 60 * 24 * 7,
@@ -34,8 +34,9 @@ const useAuthStore = defineStore("Auth", () => {
       setUser(res.user);
       setToken(res.token.token);
       navigateTo("/admin");
+      $event("user:logedin");
     } catch (error: any) {
-      $toast.show({ message: error.data.message, type: "denied", timeout: 3 });
+      $event("user:loginFailed");
     }
   };
 
@@ -51,7 +52,7 @@ const useAuthStore = defineStore("Auth", () => {
       setToken(null);
       navigateTo("/auth/admin-login");
     } catch (error: any) {
-      $toast.show({ message: error.data.message, type: "denied", timeout: 3 });
+      console.log(error.data);
     }
   };
 

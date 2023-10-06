@@ -1,7 +1,7 @@
 <template>
   <body>
     Welcome to project reviews. Public views are under maintenace. Please
-    checkout the admin area.
-    <a class="btn btn-ghost text-blue-700" href="/admin/login">Login a admin</a>
+    checkout the admin dashboard.
+    <NuxtLink class="btn btn-ghost text-blue-700" href="/auth/admin-login">Login a admin</NuxtLink>
   </body>
 </template>

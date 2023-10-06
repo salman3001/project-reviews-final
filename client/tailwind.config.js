@@ -1,4 +1,6 @@
 /** @type {import('tailwindcss').Config} */
+const FormKitVariants = require("@formkit/themes/tailwindcss");
+
 module.exports = {
   content: [
     "./components/**/*.{js,vue,ts}",
@@ -6,7 +8,7 @@ module.exports = {
     "./pages/**/*.vue",
     "./plugins/**/*.{js,ts}",
     "./app.vue",
-    "node_modules/tailvue/dist/tailvue.es.js",
+    ".lib//tailwind-theme.js",
   ],
   theme: {
     extend: {
@@ -19,6 +21,7 @@ module.exports = {
     require("daisyui"),
     require("tailwind-scrollbar-hide"),
     require("tailwindcss-animated"),
+    FormKitVariants,
   ],
   daisyui: {
     themes: [

@@ -156,7 +156,7 @@ export default class AdminUsersController {
 
     await user?.delete()
 
-    return response.json({ user })
+    return response.json({ message: 'User Deleted' })
   }
 
   public async banUser({ params, response }: HttpContextContract) {
