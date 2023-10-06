@@ -7,7 +7,7 @@ definePageMeta({
 
 const modal = useModalStore();
 
-const { $api, $listen, $unlisten } = useNuxtApp();
+const { $api, $listen, $unlisten, $uploads } = useNuxtApp();
 const token = useCookie("token");
 
 const page = ref(1);
@@ -106,7 +106,7 @@ onUnmounted(() => {
             <td class="flex items-center gap-2">
               <div class="avatar">
                 <div class="w-6 rounded-full ring-2">
-                  <img src="" />
+                  <img :src="user?.avatar?.url ? $uploads + user?.avatar?.url : '/sample-dp.png'" />
                 </div>
               </div>
               {{ user.first_name + " " + user.last_name }}
@@ -139,7 +139,9 @@ onUnmounted(() => {
                       Ban User
                     </button>
                   </li>
-                  <li><a href="" class="text-sm p-1">Edit User</a></li>
+                  <li>
+                    <NuxtLink :href="'/admin/admin-users/edit/' + user.id" class="text-sm p-1">Edit User</NuxtLink>
+                  </li>
                   <li>
                     <button class="text-sm text-start p-1" @click="modal.togel('deleteAdminUser', user.id)">
                       Delete User

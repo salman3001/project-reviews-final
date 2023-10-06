@@ -32,4 +32,18 @@ export const useToastListner = () => {
       props: { message: "User Role Changed" },
     });
   });
+
+  $listen("user:updated", () => {
+    $toast({
+      component: SucessToast,
+      props: { message: "User Updated Successfully" },
+    });
+  });
+
+  $listen("user:created", () => {
+    $toast({
+      component: SucessToast,
+      props: { message: "User Created Successfull" },
+    });
+  });
 };

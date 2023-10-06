@@ -7,6 +7,8 @@ type ApplicationEvents = {
   "user:deleted"?: null;
   "user:Banned"?: null;
   "user:RoleChanged"?: null;
+  "user:created"?: null;
+  "user:updated"?: null;
   "user:logedin"?: null;
   "user:loginFailed"?: null;
 };

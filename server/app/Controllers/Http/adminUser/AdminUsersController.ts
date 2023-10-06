@@ -30,6 +30,7 @@ export default class AdminUsersController {
     }
 
     await query.preload('avatar').preload('role')
+
     const users = await query.orderBy(orderBy || 'first_name').paginate(page || 1, 10)
     users.baseUrl('/admin/admin-users')
     const roles = await Role.all()
@@ -51,7 +52,13 @@ export default class AdminUsersController {
 
     if (payload.address) {
       user.related('address').create({
-        ...payload.address,
+        address: payload.address.address,
+        continentId: Number(payload?.address?.continentId),
+        countryId: Number(payload?.address?.continentId),
+        stateId: Number(payload?.address?.stateId),
+        cityId: Number(payload?.address?.cityId),
+        streetId: Number(payload?.address?.streetId),
+        zip: payload.address.zip,
       })
     }
 
@@ -61,8 +68,8 @@ export default class AdminUsersController {
       })
     }
 
-    if (payload.role) {
-      const role = await Role.find(payload.role.id)
+    if (payload.roleId) {
+      const role = await Role.find(payload.roleId)
       if (role) await user.related('role').associate(role)
     }
 
@@ -78,7 +85,24 @@ export default class AdminUsersController {
     return response.json({ user })
   }
 
-  public async show({}: HttpContextContract) {}
+  public async show({ response, params }: HttpContextContract) {
+    const user = await AdminUser.find(+params.id)
+    await user?.load((loader) => {
+      loader
+        .load('address', (loader) => {
+          loader
+            .preload('continent')
+            .preload('country')
+            .preload('state')
+            .preload('city')
+            .preload('street')
+        })
+        .load('avatar')
+        .load('social')
+    })
+
+    return response.json({ user })
+  }
 
   public async edit({ response, params }: HttpContextContract) {
     const user = await AdminUser.find(+params.id)
@@ -100,9 +124,25 @@ export default class AdminUsersController {
       user.merge({ ...payload.user })
       if (payload.address) {
         if (user.address) {
-          user.address.merge(payload.address)
+          user.address.merge({
+            address: payload.address.address,
+            continentId: Number(payload?.address?.continentId),
+            countryId: Number(payload?.address?.continentId),
+            stateId: Number(payload?.address?.stateId),
+            cityId: Number(payload?.address?.cityId),
+            streetId: Number(payload?.address?.streetId),
+            zip: payload.address.zip,
+          })
         } else {
-          const address = await Address.create(payload.address)
+          const address = await Address.create({
+            address: payload.address.address,
+            continentId: Number(payload?.address?.continentId),
+            countryId: Number(payload?.address?.continentId),
+            stateId: Number(payload?.address?.stateId),
+            cityId: Number(payload?.address?.cityId),
+            streetId: Number(payload?.address?.streetId),
+            zip: payload.address.zip,
+          })
           user.related('address').save(address)
         }
       }
@@ -115,8 +155,8 @@ export default class AdminUsersController {
           user.related('social').save(social)
         }
       }
-      if (payload.role?.id) {
-        user.roleId = +payload.role.id
+      if (payload.roleId) {
+        user.roleId = +payload.roleId
       }
 
       if (payload.image) {
@@ -177,5 +217,16 @@ export default class AdminUsersController {
     await user?.related('role').dissociate()
     if (role) await user?.related('role').associate(role)
     return response.json({ message: 'Role Updates' })
+  }
+
+  public async uniqueEmail({ request, response }: HttpContextContract) {
+    const q = request.qs()
+    const user = await AdminUser.findBy('email', q.email)
+
+    if (user) {
+      return response.badRequest({ message: 'Email Already Taken' })
+    } else {
+      return response.ok({ message: 'Email Available' })
+    }
   }
 }

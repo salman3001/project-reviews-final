@@ -1,9 +1,10 @@
 import Route from '@ioc:Adonis/Core/Route'
 
 Route.group(() => {
-  Route.resource('admin-users', 'AdminUsersController')
-  Route.get('admin-users/ban/:id', 'AdminUsersController.banUser')
   Route.get('admin-users/change-role/:id', 'AdminUsersController.changeRole')
+  Route.get('admin-users/ban/:id', 'AdminUsersController.banUser')
+  Route.resource('admin-users', 'AdminUsersController')
+  Route.get('unique-email', 'AdminUsersController.uniqueEmail')
   Route.resource('roles', 'RolesController')
   Route.get('permissions', 'PermissiosnController.index')
 })

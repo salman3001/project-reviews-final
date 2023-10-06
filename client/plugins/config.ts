@@ -1,9 +1,10 @@
 export default defineNuxtPlugin(() => {
-  const api = useRuntimeConfig().public.api as string;
+  const { api, uploads } = useRuntimeConfig().public;
 
   return {
     provide: {
       api,
+      uploads,
     },
   };
 });

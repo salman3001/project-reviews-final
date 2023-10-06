@@ -39,4 +39,18 @@ export const useToastUnListner = () => {
       props: { message: "User Role Changed" },
     });
   });
+
+  $unlisten("user:updated", () => {
+    $toast({
+      component: SucessToast,
+      props: { message: "User Updated Successfully" },
+    });
+  });
+
+  $unlisten("user:created", () => {
+    $toast({
+      component: SucessToast,
+      props: { message: "User Created Successfull" },
+    });
+  });
 };

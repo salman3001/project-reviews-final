@@ -6,6 +6,7 @@ export default defineNuxtConfig({
   runtimeConfig: {
     public: {
       api: "http://127.0.0.1:3333/api",
+      uploads: "http://127.0.0.1:3333/uploads",
     },
   },
   css: ["~/assets/css/main.css"],
