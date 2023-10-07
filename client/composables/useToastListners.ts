@@ -46,4 +46,11 @@ export const useToastListner = () => {
       props: { message: "User Created Successfull" },
     });
   });
+
+  $listen("Fetch:error", (data) => {
+    $toast({
+      component: ErrorToast,
+      props: { message: data?.message },
+    });
+  });
 };

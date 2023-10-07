@@ -17,11 +17,8 @@ export default class RolesController {
 
   public async edit({ response, params }: HttpContextContract) {
     const role = await Role.query().where('id', +params.id).preload('permissions').first()
-
     const permissions = await Permission.all()
-
     const rolePermissions = role ? role.permissions.map((p) => p.id) : []
-
     return response.json({ role, permissions, rolePermissions })
   }
 

@@ -8,6 +8,7 @@ import KnowledgebaseCategoryFactory from 'Database/factories/helpcenter/Knowledg
 import RoleFactory from 'Database/factories/adminUser/RoleFactory'
 import UserFactory from 'Database/factories/user/UserFactory'
 import SupportTicketFactory from 'Database/factories/helpcenter/SupportTicketFactory'
+import PermissionFactory from 'Database/factories/adminUser/PermissionFactory'
 
 export default class extends BaseSeeder {
   private async runSeeder(Seeder: { default: typeof BaseSeeder }) {
@@ -21,11 +22,17 @@ export default class extends BaseSeeder {
     await new Seeder.default(this.client).run()
   }
   public async run() {
-    await RoleFactory.merge([
-      { name: 'Super Admin' },
-      { name: 'Moderator' },
-      { name: 'Vender' },
+    await PermissionFactory.merge([
+      { name: 'Create User' },
+      { name: 'Edit User' },
+      { name: 'Dreate User' },
     ]).createMany(3)
+
+    await RoleFactory.merge([{ name: 'Super Admin' }, { name: 'Moderator' }, { name: 'Vender' }])
+      .with('permissions', 1, (perm) => {
+        perm.merge([{ name: 'Sample Permision' }])
+      })
+      .createMany(3)
 
     await AdminUserFactory.merge([{ email: 'admin@gmail.com', isActive: true, roleId: 1 }])
       .with('social')

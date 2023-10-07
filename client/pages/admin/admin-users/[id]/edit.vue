@@ -1,19 +1,32 @@
 <script setup lang="ts">
 import useAddressStore from "~/store/useAddressStore";
 import castNumber from "~/lib/formkit/plugins/castToNumber";
-import ErrorToast from "~/components/Toast/Error.vue";
 
 definePageMeta({
   layout: "admin-layout",
 });
 
-const { $event, $toast } = useNuxtApp();
+const route = useRoute();
+
+const { $api, $event, $uploads } = useNuxtApp();
+const token = useCookie("token");
 
 const address = useAddressStore();
 
-const { result: data } = await useGet("/admin/roles");
+const { data: roles } = await useFetch($api + "/admin/roles", {
+  headers: { Authorization: `Bearer ${token.value}` },
+  transform: (v: any) => v.roles,
+});
 
-const createUser = async (values: any) => {
+const { data: user } = await useFetch(
+  $api + "/admin/admin-users/" + route.params.id,
+  {
+    headers: { Authorization: `Bearer ${token.value}` },
+    transform: (v: any) => v.user,
+  }
+);
+
+const updateUser = async (values: any) => {
   const formData = new FormData();
 
   formData.append("image", values?.image);
@@ -24,34 +37,28 @@ const createUser = async (values: any) => {
       formData.append(`user[${val[0]}]`, values?.user[val[0]]);
     });
 
-  values.address &&
+  values?.address &&
     Object.entries(values.address).map((val) => {
       formData.append(`address[${val[0]}]`, values?.address[val[0]]);
     });
 
-  values.social &&
+  values?.social &&
     Object.entries(values.social).map((val) => {
       formData.append(`social[${val[0]}]`, values?.social[val[0]]);
     });
 
-  const { result, error } = await usePost("/admin/admin-users", formData);
-
-  if (result) {
-    $event("user:created");
+  try {
+    const res = (await $fetch($api + "/admin/admin-users/" + user.value.id, {
+      body: formData,
+      headers: { Authorization: `Bearer ${token.value}` },
+      method: "put",
+    })) as any;
+    $event("user:updated");
     navigateTo("/admin/admin-users");
-  }
-
-  if (error) {
-    $toast({
-      component: ErrorToast,
-      props: { message: error.message || "something went wrong" },
-    });
+  } catch (error: any) {
+    console.log(error.message);
   }
 };
-
-onMounted(() => {
-  address.getCountinents();
-});
 </script>
 
 <template>
@@ -78,36 +85,54 @@ onMounted(() => {
         <p class="text-base-400 text-sm" id="click">Add user details</p>
       </div>
     </div>
-    <FormKit type="form" #default="{ value }" @submit="createUser">
+    <FormKit
+      type="form"
+      #default="{ value }"
+      @submit="updateUser"
+      :value="{
+        roleId: user?.role_id || '',
+        user: {
+          email: user?.email,
+          firstName: user?.first_name,
+          lastName: user?.last_name,
+          phone: user?.phone,
+          isActive: user?.is_active === 1,
+        },
+        social: {
+          website: user?.social?.website,
+          facebook: user?.social?.facebook,
+          twitter: user?.social?.twitter,
+          instagram: user?.social?.instagram,
+          pintrest: user?.social?.pintrest,
+          vk: user?.social?.vk,
+          whatsapp: user?.social?.whatsapp,
+          telegram: user?.social?.telegram,
+        },
+      }"
+    >
       <div class="space-y-4">
         <p class="text-xl font-semibold">General Information</p>
         <div class="flex flex-col sm:flex-row flex-wrap gap-4">
-          <FormKit type="image" name="image" url="/upload-preview.png" />
+          <FormKit
+            type="image"
+            name="image"
+            :url="
+              user?.avatar
+                ? $uploads + user?.avatar?.url
+                : '/upload-preview.png'
+            "
+          />
           <FormKit type="group" name="user">
-            <FormKit
-              type="text"
-              label="Email"
-              name="email"
-              placeholder="Type here..."
-              validation="required|email|uniqueEmial:admin"
-              :validation-messages="{
-                uniqueEmial: 'Email already taken',
-              }"
-            />
-            <FormKit
-              type="password"
-              label="Password"
-              name="password"
-              placeholder="Type here..."
-              validation="required|length:8,20|alphanumeric"
-            />
-            <FormKit
-              type="password"
-              label="Confirm Password"
-              name="password_confirm"
-              placeholder="Type here..."
-              validation="confirm"
-            />
+            <div class="">
+              <p
+                class="input input-bordered mt-6 justify-center flex items-center"
+              >
+                {{ user.email }}
+              </p>
+              <span class="btn btn-link text-base-400 normal-case"
+                >Change Email</span
+              >
+            </div>
             <FormKit
               type="text"
               label="First Name"
@@ -128,7 +153,7 @@ onMounted(() => {
               name="phone"
               placeholder="Type here..."
             />
-            <div class="flex gap-4 mt-4 pr-16">
+            <div class="flex gap-4 mt-4 flex-1">
               <label for="isActive" class="cursor-pointer label-text"
                 >Activate</label
               >
@@ -144,101 +169,40 @@ onMounted(() => {
             type="select"
             label="Role"
             name="roleId"
-            :options="data.roles ? [{ label: 'Select Role', value: '', attrs: { disabled: true,selected:true } }, ...data.roles.map((role: any) => ({ label: role.name, value: role.id }))] : []"
+            :options="roles ? [{ label: 'Select Role', value: '', attrs: { disabled: true,selected:true } }, ...roles.map((role: any) => ({ label: role.name, value: role.id }))] : []"
             :plugins="[castNumber]"
           />
         </div>
       </div>
       <div class="space-y-4 mt-8">
         <p class="text-xl font-semibold">Location Information</p>
-        <div class="flex flex-col sm:flex-row flex-wrap gap-4">
-          <FormKit
-            type="group"
-            name="address"
-            #default="{ value }"
-            :value="{
-              address: '',
-              continentId: '',
-              countryId: '',
-              stateId: '',
-              cityId: '',
-              streetId: '',
-              zip: '',
-            }"
+        <div class="flex flex-col gap-4" v-if="user?.address">
+          <p class="font-bold pl-4">
+            {{
+              `${user?.address?.address || ""}
+                                            ${
+                                              user?.address?.continent?.name ||
+                                              ""
+                                            } ${
+                user?.address?.country?.name || ""
+              }
+                                            ${user?.address?.state?.name || ""}
+                                            ${
+                                              user?.address?.city?.name || ""
+                                            } ${
+                user?.address?.street?.name || ""
+              }`
+            }}
+          </p>
+          <span
+            class="btn btn-lg btn-link text-base-400 normal-case justify-start"
+            >Change Address</span
           >
-            <FormKit
-              type="text"
-              label="Address"
-              name="address"
-              placeholder="Type here..."
-            />
-            <FormKit
-              type="select"
-              label="Continent"
-              name="continentId"
-              placeholder="Type here..."
-              :options="address.selectContinents"
-              @change="
-                () => {
-                  address.getCountries(value['continentId']);
-                }
-              "
-              :plugins="[castNumber]"
-            />
-            <FormKit
-              type="select"
-              label="Country"
-              name="countryId"
-              placeholder="Type here..."
-              :options="address.selectContries"
-              @change="
-                () => {
-                  address.getstates(value['countryId']);
-                }
-              "
-              :plugins="[castNumber]"
-            />
-            <FormKit
-              type="select"
-              label="State"
-              name="stateId"
-              placeholder="Type here..."
-              :options="address.selectStates"
-              @change="
-                () => {
-                  address.getCities(value['stateId']);
-                }
-              "
-              :plugins="[castNumber]"
-            />
-            <FormKit
-              type="select"
-              label="City"
-              name="cityId"
-              placeholder="Type here..."
-              :options="address.selectCities"
-              @change="
-                () => {
-                  address.getStreets(value['cityId']);
-                }
-              "
-              :plugins="[castNumber]"
-            />
-            <FormKit
-              type="select"
-              label="street"
-              name="streetId"
-              placeholder="Type here..."
-              :options="address.selectStreets"
-              :plugins="[castNumber]"
-            />
-            <FormKit
-              type="text"
-              label="zip"
-              name="zip"
-              placeholder="Type here..."
-            />
-          </FormKit>
+        </div>
+        <div v-else>
+          <span class="btn btn-lg btn-link text-base-400 normal-case"
+            >+ Add Address</span
+          >
         </div>
       </div>
       <div class="space-y-4 mt-8">

@@ -22,7 +22,7 @@ definePageMeta({
           name: 'Admin User',
           link: '/admin/admin-users',
         },
-        { name: 'Roles', link: 'admin/roles' },
+        { name: 'Roles', link: '/admin/roles' },
       ]"
     />
     <AdminNavDropdown
@@ -32,8 +32,11 @@ definePageMeta({
           name: 'Knowledge Base',
           link: '',
         },
-        { name: ' Content', link: '' },
-        { name: 'Categories', link: '' },
+        { name: ' Content', link: '/admin/help-center/content' },
+        {
+          name: 'Categories',
+          link: '/admin/help-center/categories',
+        },
       ]"
     />
     <AdminNavDropdown

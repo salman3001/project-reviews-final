@@ -1,12 +1,9 @@
-import { DateTime } from 'luxon'
 import { BaseModel, BelongsTo, belongsTo, column } from '@ioc:Adonis/Lucid/Orm'
 import Country from './Country'
-import AdminUser from '../adminUser/AdminUser'
 import State from './State'
 import City from './City'
 import Street from './Street'
 import Continent from './Continent'
-import User from '../user/User'
 
 export default class Address extends BaseModel {
   @column({ isPrimary: true })
@@ -22,13 +19,13 @@ export default class Address extends BaseModel {
   public userId: number
 
   @column()
-  public continentId: number | null
+  public continentId: number
 
   @belongsTo(() => Continent)
   public continent: BelongsTo<typeof Continent>
 
   @column()
-  public countryId: number | null
+  public countryId: number
 
   @belongsTo(() => Country)
   public country: BelongsTo<typeof Country>

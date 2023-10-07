@@ -11,6 +11,7 @@ type ApplicationEvents = {
   "user:updated"?: null;
   "user:logedin"?: null;
   "user:loginFailed"?: null;
+  "Fetch:error": { message: string };
 };
 
 export default defineNuxtPlugin(() => {

@@ -12,7 +12,7 @@ export default {
     label: "block mb-1 text-sm",
     legend: "font-bold text-sm",
     loaderIcon: "inline-flex items-center w-4 text-gray-600 animate-spin",
-    message: "text-red-500 mb-1 text-xs",
+    message: "text-red-500 border-red-500 mb-1 text-xs",
     messages: "list-none p-0 mt-1 mb-0",
     outer: "mb-4 formkit-disabled:opacity-50",
     prefixIcon:
@@ -108,6 +108,7 @@ export default {
   },
   checkbox: {
     input: "toggle",
+    label: "label",
   },
   range: {
     inner: "$reset flex items-center max-w-md",

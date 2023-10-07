@@ -22,6 +22,7 @@ import Route from '@ioc:Adonis/Core/Route'
 import '../routes/adminRoutes'
 import '../routes/authRoutes'
 import '../routes/addressRoutes'
+import '../routes/helpcenterRoutes'
 
 Route.get('api', async ({ response }) => {
   return response.json('welcome to backend api')

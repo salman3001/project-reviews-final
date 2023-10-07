@@ -52,13 +52,15 @@ export default class AdminUsersController {
 
     if (payload.address) {
       user.related('address').create({
-        address: payload.address.address,
-        continentId: Number(payload?.address?.continentId),
-        countryId: Number(payload?.address?.continentId),
-        stateId: Number(payload?.address?.stateId),
-        cityId: Number(payload?.address?.cityId),
-        streetId: Number(payload?.address?.streetId),
-        zip: payload.address.zip,
+        address: payload?.address?.address || '',
+        continentId: payload?.address?.continentId
+          ? Number(payload?.address?.continentId)
+          : undefined,
+        countryId: payload?.address?.countryId ? Number(payload?.address?.countryId) : undefined,
+        stateId: payload?.address?.stateId ? Number(payload?.address?.stateId) : undefined,
+        cityId: payload?.address?.cityId ? Number(payload?.address?.cityId) : undefined,
+        streetId: payload?.address?.streetId ? Number(payload?.address?.streetId) : undefined,
+        zip: payload?.address?.zip,
       })
     }
 
@@ -126,21 +128,21 @@ export default class AdminUsersController {
         if (user.address) {
           user.address.merge({
             address: payload.address.address,
-            continentId: Number(payload?.address?.continentId),
-            countryId: Number(payload?.address?.continentId),
-            stateId: Number(payload?.address?.stateId),
-            cityId: Number(payload?.address?.cityId),
-            streetId: Number(payload?.address?.streetId),
+            continentId: payload?.address?.continentId,
+            countryId: payload?.address?.continentId,
+            stateId: payload?.address?.stateId,
+            cityId: payload?.address?.cityId,
+            streetId: payload?.address?.streetId,
             zip: payload.address.zip,
           })
         } else {
           const address = await Address.create({
             address: payload.address.address,
-            continentId: Number(payload?.address?.continentId),
-            countryId: Number(payload?.address?.continentId),
-            stateId: Number(payload?.address?.stateId),
-            cityId: Number(payload?.address?.cityId),
-            streetId: Number(payload?.address?.streetId),
+            continentId: payload?.address?.continentId,
+            countryId: payload?.address?.continentId,
+            stateId: payload?.address?.stateId,
+            cityId: payload?.address?.cityId,
+            streetId: payload?.address?.streetId,
             zip: payload.address.zip,
           })
           user.related('address').save(address)
