@@ -13,13 +13,13 @@ const token = useCookie("token");
 
 const address = useAddressStore();
 
-const { data: roles } = await useFetch($api + "/admin/roles", {
+const { data: roles } = await useFetch($api + "/roles", {
   headers: { Authorization: `Bearer ${token.value}` },
   transform: (v: any) => v.roles,
 });
 
 const { data: user } = await useFetch(
-  $api + "/admin/admin-users/" + route.params.id,
+  $api + "/admin-users/" + route.params.id,
   {
     headers: { Authorization: `Bearer ${token.value}` },
     transform: (v: any) => v.user,
@@ -48,7 +48,7 @@ const updateUser = async (values: any) => {
     });
 
   try {
-    const res = (await $fetch($api + "/admin/admin-users/" + user.value.id, {
+    const res = (await $fetch($api + "/admin-users/" + user.value.id, {
       body: formData,
       headers: { Authorization: `Bearer ${token.value}` },
       method: "put",

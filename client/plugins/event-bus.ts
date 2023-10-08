@@ -4,14 +4,14 @@ type ApplicationEvents = {
   // translates to:
   // user:registered -> event name
   // User -> type as payload
-  "user:deleted"?: null;
   "user:Banned"?: null;
   "user:RoleChanged"?: null;
-  "user:created"?: null;
-  "user:updated"?: null;
   "user:logedin"?: null;
   "user:loginFailed"?: null;
   "Fetch:error": { message: string };
+  "record:created"?: { message: string };
+  "record:updated"?: { message: string };
+  "record:deleted"?: { message: string };
 };
 
 export default defineNuxtPlugin(() => {

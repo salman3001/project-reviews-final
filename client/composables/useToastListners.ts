@@ -5,10 +5,24 @@ import WarningToast from "~/components/Toast/Warning.vue";
 export const useToastListner = () => {
   const { $toast, $listen } = useNuxtApp();
 
-  $listen("user:deleted", () => {
+  $listen("record:created", (payload) => {
     $toast({
       component: SucessToast,
-      props: { message: "User Deleted" },
+      props: { message: payload?.message || "Record Cretaed Successfully" },
+    });
+  });
+
+  $listen("record:updated", (payload) => {
+    $toast({
+      component: SucessToast,
+      props: { message: payload?.message || "Record Updated Successfully" },
+    });
+  });
+
+  $listen("record:deleted", (payload) => {
+    $toast({
+      component: SucessToast,
+      props: { message: payload?.message || "Record Deleted Successfully" },
     });
   });
 
@@ -30,20 +44,6 @@ export const useToastListner = () => {
     $toast({
       component: SucessToast,
       props: { message: "User Role Changed" },
-    });
-  });
-
-  $listen("user:updated", () => {
-    $toast({
-      component: SucessToast,
-      props: { message: "User Updated Successfully" },
-    });
-  });
-
-  $listen("user:created", () => {
-    $toast({
-      component: SucessToast,
-      props: { message: "User Created Successfull" },
     });
   });
 

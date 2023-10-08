@@ -3,7 +3,7 @@ definePageMeta({
   layout: "admin-layout",
 });
 
-const { result } = await useGet("/admin/roles");
+const { result } = await useGet("/roles");
 </script>
 
 <template>

@@ -13,7 +13,10 @@ export default class KnowledgeBaseContent extends BaseModel {
   public slug: string
 
   @column()
-  public isActive: number
+  public isActive: boolean
+
+  @column()
+  public order: number
 
   @column()
   public knowledgeBaseCategoryId: number

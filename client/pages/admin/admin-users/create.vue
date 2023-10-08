@@ -11,7 +11,7 @@ const { $event, $toast } = useNuxtApp();
 
 const address = useAddressStore();
 
-const { result: data } = await useGet("/admin/roles");
+const { result: data } = await useGet("/roles");
 
 const createUser = async (values: any) => {
   const formData = new FormData();
@@ -34,7 +34,7 @@ const createUser = async (values: any) => {
       formData.append(`social[${val[0]}]`, values?.social[val[0]]);
     });
 
-  const { result, error } = await usePost("/admin/admin-users", formData);
+  const { result, error } = await usePost("/admin-users", formData);
 
   if (result) {
     $event("user:created");
@@ -89,9 +89,9 @@ onMounted(() => {
               label="Email"
               name="email"
               placeholder="Type here..."
-              validation="required|email|uniqueEmial:admin"
+              validation="required|email|unique:/admin-users/unique-email"
               :validation-messages="{
-                uniqueEmial: 'Email already taken',
+                unique: 'Email already taken',
               }"
             />
             <FormKit
@@ -106,7 +106,7 @@ onMounted(() => {
               label="Confirm Password"
               name="password_confirm"
               placeholder="Type here..."
-              validation="confirm"
+              validation="required|confirm"
             />
             <FormKit
               type="text"

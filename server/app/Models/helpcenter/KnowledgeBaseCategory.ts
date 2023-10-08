@@ -19,7 +19,10 @@ export default class KnowledgeBaseCategory extends BaseModel {
   public slug: string
 
   @column()
-  public isActive: number
+  public order: number
+
+  @column()
+  public isActive: boolean
 
   @column()
   public metaTitle: string

@@ -223,7 +223,7 @@ export default class AdminUsersController {
 
   public async uniqueEmail({ request, response }: HttpContextContract) {
     const q = request.qs()
-    const user = await AdminUser.findBy('email', q.email)
+    const user = await AdminUser.findBy('email', q.field)
 
     if (user) {
       return response.badRequest({ message: 'Email Already Taken' })

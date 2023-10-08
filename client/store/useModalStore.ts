@@ -4,7 +4,8 @@ type IModalContent =
   | null
   | "deleteAdminUser"
   | "changeRole"
-  | "changeAdminStatus";
+  | "changeAdminStatus"
+  | "delete";
 
 const useModalStore = defineStore("modal", () => {
   const show = ref(false);

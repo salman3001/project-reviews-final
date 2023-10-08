@@ -11,6 +11,7 @@ const modal = useModalStore();
       <ModalBanAdminUser v-if="modal.content === 'changeAdminStatus'" />
       <ModalChangeRole v-if="modal.content === 'changeRole'" />
       <ModalDeleteAdminUser v-if="modal.content === 'deleteAdminUser'" />
+      <ModalDelete v-if="modal.content === 'delete'" />
     </div>
     <label class="modal-backdrop backdrop-blur-sm"></label>
   </div>

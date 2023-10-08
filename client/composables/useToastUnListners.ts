@@ -5,7 +5,7 @@ import WarningToast from "~/components/Toast/Warning.vue";
 export const useToastUnListner = () => {
   const { $toast, $unlisten } = useNuxtApp();
 
-  $unlisten("user:deleted", () => {
+  $unlisten("record:deleted", () => {
     $toast({
       component: SucessToast,
       props: { message: "User Deleted" },
@@ -26,7 +26,7 @@ export const useToastUnListner = () => {
     });
   });
 
-  $unlisten("user:deleted", () => {
+  $unlisten("record:deleted", () => {
     $toast({
       component: SucessToast,
       props: { message: "User Delted Successfull" },
@@ -40,14 +40,14 @@ export const useToastUnListner = () => {
     });
   });
 
-  $unlisten("user:updated", () => {
+  $unlisten("record:updated", () => {
     $toast({
       component: SucessToast,
       props: { message: "User Updated Successfully" },
     });
   });
 
-  $unlisten("user:created", () => {
+  $unlisten("record:created", () => {
     $toast({
       component: SucessToast,
       props: { message: "User Created Successfull" },

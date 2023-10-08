@@ -6,15 +6,14 @@ definePageMeta({
 const route = useRoute();
 const { $event } = useNuxtApp();
 
-const { result } = await useGet(`/admin/roles/${route.params.id}/edit`);
+const { result } = await useGet(`/roles/${route.params.id}/edit`);
 
 const selected = ref([...result?.value?.rolePermissions]);
 
 const upDate = async () => {
-  const { error, result: res } = await usePut(
-    "/admin/roles/" + route.params.id,
-    { permissionId: selected.value }
-  );
+  const { error, result: res } = await usePut("/roles/" + route.params.id, {
+    permissionId: selected.value,
+  });
 
   if (res) {
     navigateTo("/admin/roles");

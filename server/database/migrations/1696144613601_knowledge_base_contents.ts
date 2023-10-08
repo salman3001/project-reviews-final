@@ -9,7 +9,7 @@ export default class extends BaseSchema {
       table.string('title').unique().notNullable()
       table.string('slug').unique().notNullable()
       table.integer('order').unsigned().unique()
-      table.boolean('isActive').defaultTo(false)
+      table.boolean('is_active').defaultTo(false)
       table
         .integer('knowledge_base_category_id')
         .unsigned()

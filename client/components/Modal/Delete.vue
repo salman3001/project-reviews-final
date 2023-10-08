@@ -5,13 +5,15 @@ const modal = useModalStore();
 const { $api, $event } = useNuxtApp();
 const token = useCookie("token");
 
-const deleteUser = async () => {
+const deleteHandeler = async () => {
   try {
-    const res = await $fetch($api + `	/admin-users/${modal.meta}`, {
+    const res = await $fetch($api + modal.meta.apiUrl, {
       headers: { Authorization: "Bearer" + " " + token.value },
       method: "DELETE",
     });
-    $event("record:deleted");
+    $event("record:deleted", {
+      message: modal.meta.tostMessage,
+    });
     modal.show = false;
   } catch (error) {
     modal.show = false;
@@ -22,7 +24,9 @@ const deleteUser = async () => {
 <template>
   <div class="bg-base-200 px-4 py-2 flex justify-between items-center">
     <div>
-      <h3 id="modal-title" class="text-lg font-bold">Delete User</h3>
+      <h3 id="modal-title" class="text-lg font-bold">
+        {{ modal.meta.modalTitle }}
+      </h3>
       <p id="modal-desc" class="text-xs">This action cant not be undone</p>
     </div>
     <div>
@@ -37,7 +41,7 @@ const deleteUser = async () => {
     <form
       id="deleteAdminUserForm"
       class="space-y-8 py-3 flex flex-col justify-center items-center"
-      @click.prevent="deleteUser"
+      @click.prevent="deleteHandeler"
     >
       <svg
         xmlns="http://www.w3.org/2000/svg"

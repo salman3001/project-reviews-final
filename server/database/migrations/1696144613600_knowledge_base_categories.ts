@@ -15,7 +15,7 @@ export default class extends BaseSchema {
       table.string('name').unique().notNullable()
       table.string('slug').unique().notNullable()
       table.integer('order').unsigned().unique()
-      table.boolean('isActive').defaultTo(false)
+      table.boolean('is_active').defaultTo(false)
       table.string('meta_title')
       table.string('meta_desc')
       table.string('meta_keywords')
