@@ -5,15 +5,15 @@
   min-width: 250px !important;
 }
 
-select {
-  min-width: 15rem;
-}
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer components {
+  select {
+    min-width: 15rem;
+  }
+
   .btn {
     @apply text-white;
   }

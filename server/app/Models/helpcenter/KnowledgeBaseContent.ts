@@ -13,6 +13,9 @@ export default class KnowledgeBaseContent extends BaseModel {
   public slug: string
 
   @column()
+  public isActive: number
+
+  @column()
   public knowledgeBaseCategoryId: number
 
   @belongsTo(() => KnowledgeBaseCategory)

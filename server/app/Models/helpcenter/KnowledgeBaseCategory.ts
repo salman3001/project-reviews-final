@@ -7,7 +7,7 @@ export default class KnowledgeBaseCategory extends BaseModel {
   public id: number
 
   @column()
-  public language_id: number
+  public languageId: number
 
   @belongsTo(() => Language)
   public language: BelongsTo<typeof Language>
@@ -17,6 +17,9 @@ export default class KnowledgeBaseCategory extends BaseModel {
 
   @column()
   public slug: string
+
+  @column()
+  public isActive: number
 
   @column()
   public metaTitle: string

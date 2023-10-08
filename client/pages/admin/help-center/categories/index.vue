@@ -11,21 +11,16 @@ const { $listen, $unlisten, $uploads } = useNuxtApp();
 
 const page = ref(1);
 const search = ref("");
-const categoryId = ref<null | number>(null);
 
 const {
-  result: contentData,
+  result: categorydata,
   pending,
   refresh,
-} = await useGet("/admin/help-center/content", {
+} = await useGet("/admin/help-center/categories", {
   page,
   search,
-  categoryId,
 });
 
-watchEffect(() => {
-  console.log(page.value);
-});
 
 const reload = () => {
   refresh();
@@ -42,31 +37,15 @@ const reload = () => {
         }
           " />
       </div>
-      <div class="flex gap-4 flex-wrap">
-        <select class="select select-bordered select-sm" onchange="" name="categoryId" v-model="categoryId"
-          @change="page = 1">
-          <option :value="null">All Cateories</option>
-          <option v-if="contentData" v-for="category in contentData.categories" :key="category.id" :value="category.id">
-            {{ category.name }}
-          </option>
-        </select>
-
-        <!-- <select class="select select-bordered select-sm" onchange="" name="isActive" v-model="isActive"
-          @change="page = 1">
-          <option :value="null">Status</option>
-          <option value="1">Active</option>
-          <option value="0">Inactive</option>
-        </select> -->
-        <NuxtLink href="/admin/help-center/content/create">
-          <button class="btn btn-primary btn-sm">+ Add Content</button>
-        </NuxtLink>
-      </div>
+      <NuxtLink href="/admin/help-center/categories/create">
+        <button class="btn btn-primary btn-sm">+ Add Category</button>
+      </NuxtLink>
     </div>
     <div class=" pb-16 mt-8">
       <div class="tabs w-full pr-2 translate-y-0.5 bg-base-100 ">
-        <NuxtLink href="/admin/help-center/content" class="tab tab-lifted sm:w-24 tab-active"
-          style="border-top: 3px black solid;">Content</NuxtLink>
-        <NuxtLink href="/admin/help-center/categories" class="tab tab-lifted sm:w-24">Categories</NuxtLink>
+        <NuxtLink href="/admin/help-center/content" class="tab tab-lifted sm:w-24 ">Content</NuxtLink>
+        <NuxtLink href="/admin/help-center/categories" class="tab tab-lifted sm:w-24 tab-active"
+          style="border-top: 3px black solid;">Categories</NuxtLink>
         <div class="tab tab-lifted sm:w-24 flex-1"></div>
       </div>
       <div class="rounded-xl overflow-hidden border border-t-0 overflow-x-scroll scrollbar-hide">
@@ -76,24 +55,22 @@ const reload = () => {
               <th>SNo.</th>
               <th>Title</th>
               <th>Language</th>
-              <th>Category</th>
               <th class="w-16">Options</th>
             </tr>
           </thead>
           <tbody>
-            <tr v-if="contentData" v-for="(content, i) in contentData.content.data" :key="content.id">
+            <tr v-if="categorydata" v-for="(category, i) in categorydata.categories.data" :key="category.id">
               <td>
                 {{
-                  (contentData.content.meta.current_page - 1) *
-                  contentData.content.meta.per_page +
+                  (categorydata.categories.meta.current_page - 1) *
+                  categorydata.categories.meta.per_page +
                   (i + 1)
                 }}
               </td>
               <td class="flex items-center gap-2">
-                {{ content?.title }}
+                {{ category?.name }}
               </td>
-              <td>{{ content?.language?.name || "" }}</td>
-              <td>{{ content?.category?.name || "" }}</td>
+              <td>{{ category?.language?.name || "" }}</td>
 
               <td>
                 <div class="dropdown dropdown-bottom">
@@ -102,10 +79,10 @@ const reload = () => {
                   </label>
                   <ul class="p-1 shadow menu dropdown-content z-[1] bg-base-100 rounded-box w-32 border-t-4 border-black">
                     <li>
-                      <NuxtLink :href="`/admin/help-center/content/${content.id}`" class="text-sm p-1">View</NuxtLink>
+                      <NuxtLink :href="`/admin/help-center/categories/${category.id}`" class="text-sm p-1">View</NuxtLink>
                     </li>
                     <li>
-                      <NuxtLink :href="`/admin/help-center/content/${content.id}/edit/`" class="text-sm p-1">Edit
+                      <NuxtLink :href="`/admin/help-center/categories/${category.id}/edit/`" class="text-sm p-1">Edit
                       </NuxtLink>
                     </li>
                     <li>
@@ -124,7 +101,7 @@ const reload = () => {
     </div>
     <div class="mt-4 flex justify-end">
       <ClientOnly>
-        <Pagination v-if="!pending" :meta="contentData.content.meta" @pageChange="(p) => {
+        <Pagination v-if="!pending" :meta="categorydata.categories.meta" @pageChange="(p) => {
           page = p;
         }
           " />

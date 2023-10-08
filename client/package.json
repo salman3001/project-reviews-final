@@ -22,6 +22,7 @@
     "@formkit/nuxt": "^1.2.2",
     "@formkit/themes": "^1.2.2",
     "@pinia/nuxt": "^0.4.11",
+    "@vueup/vue-quill": "^1.2.0",
     "@vueuse/nuxt": "^10.4.1",
     "mitt": "^3.0.1",
     "pinia": "^2.1.6",
