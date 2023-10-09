@@ -65,7 +65,7 @@ export default class extends BaseSeeder {
 
     await BlogCategoryFactory.with('blogs', 5).createMany(4)
     await KnowledgebaseCategoryFactory.with('contents', 5).createMany(3)
-    await ContactMessageFactory.createMany(5)
+    await ContactMessageFactory.createMany(15)
     await SupportTicketFactory.createMany(3)
   }
 }

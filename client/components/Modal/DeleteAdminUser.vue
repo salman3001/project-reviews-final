@@ -34,10 +34,9 @@ const deleteUser = async () => {
     </div>
   </div>
   <div id="modal-content" class="p-4">
-    <form
+    <div
       id="deleteAdminUserForm"
       class="space-y-8 py-3 flex flex-col justify-center items-center"
-      @click.prevent="deleteUser"
     >
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -62,10 +61,14 @@ const deleteUser = async () => {
           for="modal"
           >No</label
         >
-        <button type="submit" class="btn btn-sm btn-primary min-w-[6rem]">
+        <button
+          type="submit"
+          class="btn btn-sm btn-primary min-w-[6rem]"
+          @click="deleteHandeler"
+        >
           Yes
         </button>
       </div>
-    </form>
+    </div>
   </div>
 </template>

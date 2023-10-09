@@ -7,25 +7,31 @@ definePageMeta({
 
 const modal = useModalStore();
 
-const { $listen, $unlisten, $uploads } = useNuxtApp();
+const { $listen, $unlisten } = useNuxtApp();
 
 const page = ref(1);
 const search = ref("");
-const categoryId = ref<null | number>(null);
 
 const {
-  result: contentData,
+  result: messages,
   pending,
   refresh,
-} = await useGet("/help-center/content", {
+} = await useGet("/help-center/contact-message", {
   page,
   search,
-  categoryId,
 });
 
 const reload = () => {
   refresh();
 };
+
+onMounted(() => {
+  $listen("record:deleted", reload);
+});
+
+onUnmounted(() => {
+  $unlisten("record:deleted", reload);
+});
 </script>
 <template>
   <section class="my-8 lg:my-14">
@@ -45,7 +51,7 @@ const reload = () => {
     </div>
     <div class="pb-16 mt-8">
       <div
-        class="rounded-xl overflow-hidden border overflow-x-scroll scrollbar-hide"
+        class="rounded-xl overflow-hidden border overflow-x-scroll scrollbar-hide pb-16"
       >
         <table class="table table-zebra rounded-xl mt-4 min-w-7xl">
           <thead>
@@ -60,23 +66,22 @@ const reload = () => {
           </thead>
           <tbody>
             <tr
-              v-if="contentData"
-              v-for="(content, i) in contentData.content.data"
-              :key="content.id"
+              v-if="messages"
+              v-for="(message, i) in messages.data"
+              :key="message.id"
             >
               <td>
                 {{
-                  (contentData.content.meta.current_page - 1) *
-                    contentData.content.meta.per_page +
+                  (messages.meta.current_page - 1) * messages.meta.per_page +
                   (i + 1)
                 }}
               </td>
               <td class="flex items-center gap-2">
-                {{ content?.title }}
+                {{ message?.name }}
               </td>
-              <td>{{ content?.language?.name || "" }}</td>
-              <td>{{ content?.category?.name || "" }}</td>
-              <td>{{ Date.now() }}</td>
+              <td>{{ message?.email || "" }}</td>
+              <td>{{ message?.message || "" }}</td>
+              <td>{{ message?.created_at }}</td>
 
               <td>
                 <div class="dropdown dropdown-bottom">
@@ -90,8 +95,30 @@ const reload = () => {
                     class="p-1 shadow menu dropdown-content z-[1] bg-base-100 rounded-box w-32 border-t-4 border-black"
                   >
                     <li>
-                      <button class="text-sm text-start p-1">
-                        <!-- @click="modal.togel('deleteAdminUser', content.id)" -->
+                      <button
+                        class="text-sm text-start p-1"
+                        @click="
+                          modal.togel('contactMessage', {
+                            message: message?.message,
+                            userName: message?.name,
+                          })
+                        "
+                      >
+                        View
+                      </button>
+                    </li>
+                    <li>
+                      <button
+                        class="text-sm text-start p-1"
+                        @click="
+                          modal.togel('delete', {
+                            apiUrl:
+                              '/help-center/contact-message/' + message.id,
+                            tostMessage: 'Message deleted',
+                            modalTitle: 'Delete Message',
+                          })
+                        "
+                      >
                         Delete
                       </button>
                     </li>
@@ -107,7 +134,7 @@ const reload = () => {
       <ClientOnly>
         <Pagination
           v-if="!pending"
-          :meta="contentData.content.meta"
+          :meta="messages.meta"
           @pageChange="
             (p) => {
               page = p;

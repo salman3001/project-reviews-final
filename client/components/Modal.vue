@@ -12,6 +12,7 @@ const modal = useModalStore();
       <ModalChangeRole v-if="modal.content === 'changeRole'" />
       <ModalDeleteAdminUser v-if="modal.content === 'deleteAdminUser'" />
       <ModalDelete v-if="modal.content === 'delete'" />
+      <ModalContactMessage v-if="modal.content === 'contactMessage'" />
     </div>
     <label class="modal-backdrop backdrop-blur-sm"></label>
   </div>

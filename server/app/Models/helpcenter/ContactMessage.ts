@@ -6,6 +6,9 @@ export default class ContactMessage extends BaseModel {
   public id: number
 
   @column()
+  public name: string
+
+  @column()
   public title: string
 
   @column()
