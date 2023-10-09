@@ -9,6 +9,7 @@ import RoleFactory from 'Database/factories/adminUser/RoleFactory'
 import UserFactory from 'Database/factories/user/UserFactory'
 import SupportTicketFactory from 'Database/factories/helpcenter/SupportTicketFactory'
 import PermissionFactory from 'Database/factories/adminUser/PermissionFactory'
+import { TicketStatus } from 'App/Helpers/enums'
 
 export default class extends BaseSeeder {
   private async runSeeder(Seeder: { default: typeof BaseSeeder }) {
@@ -66,6 +67,13 @@ export default class extends BaseSeeder {
     await BlogCategoryFactory.with('blogs', 5).createMany(4)
     await KnowledgebaseCategoryFactory.with('contents', 5).createMany(3)
     await ContactMessageFactory.createMany(15)
-    await SupportTicketFactory.createMany(3)
+    await SupportTicketFactory.merge([
+      { status: TicketStatus.CLOSED },
+      { status: TicketStatus.CLOSED },
+      { status: TicketStatus.CLOSED },
+      { status: TicketStatus.RESPONDED },
+      { status: TicketStatus.RESPONDED },
+      { status: TicketStatus.RESPONDED },
+    ]).createMany(9)
   }
 }

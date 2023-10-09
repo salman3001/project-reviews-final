@@ -5,7 +5,7 @@ export default class extends BaseSchema {
 
   public async up() {
     this.schema.createTable(this.tableName, (table) => {
-      table.increments('id')
+      table.increments('id').primary()
       table.string('title').unique().notNullable()
       table.string('slug').unique().notNullable()
       table.boolean('is_published').defaultTo(0)
@@ -15,7 +15,7 @@ export default class extends BaseSchema {
         .references('id')
         .inTable('languages')
         .onDelete('SET NULL')
-
+      table.integer('image_id').unsigned().references('id').inTable('images').onDelete('SET NULL')
       table.string('short_desc')
       table.text('long_desc')
       table.string('meta_title')

@@ -23,6 +23,7 @@ import '../routes/adminRoutes'
 import '../routes/authRoutes'
 import '../routes/addressRoutes'
 import '../routes/helpcenterRoutes'
+import '../routes/blogRoutes'
 
 Route.get('api', async ({ response }) => {
   return response.json('welcome to backend api')

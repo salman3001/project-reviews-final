@@ -1,10 +1,12 @@
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
+import Language from 'App/Models/Language'
 
 import Blog from 'App/Models/blogs/Blog'
+import BlogCategory from 'App/Models/blogs/BlogCategory'
 
 export default class BlogsController {
   public async index({ request, response }: HttpContextContract) {
-    const { page, catgeoryId, languageId, isPublished, search } = request.qs()
+    const { page, categoryId, languageId, isPublished, search } = request.qs()
 
     const query = Blog.query()
 
@@ -12,9 +14,9 @@ export default class BlogsController {
       query.where('is_published', isPublished)
     }
 
-    if (catgeoryId) {
-      query.whereHas('category', (q) => {
-        q.where('id', catgeoryId)
+    if (categoryId) {
+      query.whereHas('category', (c) => {
+        c.where('blog_category_id', +categoryId)
       })
     }
 
@@ -23,16 +25,22 @@ export default class BlogsController {
     }
 
     if (search) {
-      query.whereILike('title', '%' + search + '%')
+      query.whereLike('title', '%' + search + '%')
     }
 
     await query.preload('category', (q) => {
       q.select(['name'])
     })
 
-    const blog = await query.paginate(page || 1, 10)
+    await query.preload('language', (q) => {
+      q.select(['name'])
+    })
 
-    return response.json(blog)
+    const blogs = await query.paginate(page || 1, 10)
+    const blogCategories = await BlogCategory.query().select(['name', 'id'])
+    const languages = await Language.query().select(['name', 'id'])
+
+    return response.json({ blogs, blogCategories, languages })
   }
 
   public async create({}: HttpContextContract) {}

@@ -36,6 +36,10 @@ definePageMeta({
         name: 'Contact Message',
         link: '/admin/help-center/contact-message',
       },
+      {
+        name: 'Support Tickets',
+        link: '/admin/help-center/support-ticket',
+      },
     ]" />
     <AdminNavDropdown title="Blogs" :list="[
       {

@@ -5,7 +5,7 @@ export default class extends BaseSchema {
 
   public async up() {
     this.schema.createTable(this.tableName, (table) => {
-      table.increments('id')
+      table.increments('id').primary()
       table.boolean('on_message_recieve').defaultTo(true)
       table.boolean('on_comment_reply').defaultTo(true)
       table.boolean('on_product_update').defaultTo(true)
