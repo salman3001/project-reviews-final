@@ -23,14 +23,8 @@ export default class Blog extends BaseModel {
   @column()
   public slug: string
 
-  @column()
-  public imageId: number
-
   @hasOne(() => Image)
   public image: HasOne<typeof Image>
-
-  @column()
-  public categoryId: string
 
   @manyToMany(() => BlogCategory, {
     pivotTable: 'blog_categories_pivot',
@@ -38,7 +32,7 @@ export default class Blog extends BaseModel {
   public category: ManyToMany<typeof BlogCategory>
 
   @column()
-  public languageId: string
+  public languageId: number
 
   @belongsTo(() => Language)
   public language: BelongsTo<typeof Language>
@@ -50,7 +44,7 @@ export default class Blog extends BaseModel {
   public longDesc: string
 
   @column()
-  public isPublished: number
+  public isPublished: boolean
 
   @column()
   public metaTitle: string

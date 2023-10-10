@@ -1,12 +1,5 @@
 import { DateTime } from 'luxon'
-import {
-  BaseModel,
-  ModelQueryBuilderContract,
-  afterFetch,
-  afterFind,
-  column,
-} from '@ioc:Adonis/Lucid/Orm'
-import Drive from '@ioc:Adonis/Core/Drive'
+import { BaseModel, column } from '@ioc:Adonis/Lucid/Orm'
 
 export default class Image extends BaseModel {
   @column({ isPrimary: true })
@@ -20,6 +13,9 @@ export default class Image extends BaseModel {
 
   @column()
   public adminUserId: number
+
+  @column()
+  public blogId: number
 
   @column.dateTime({ autoCreate: true })
   public createdAt: DateTime

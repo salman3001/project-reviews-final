@@ -14,6 +14,8 @@ export default class extends BaseSchema {
         .references('id')
         .inTable('admin_users')
         .onDelete('SET NULL')
+
+      table.integer('blog_id').unsigned().references('id').inTable('blogs').onDelete('SET NULL')
       /**
        * Uses timestamptz for PostgreSQL and DATETIME2 for MSSQL
        */
