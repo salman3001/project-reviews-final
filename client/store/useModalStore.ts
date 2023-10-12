@@ -6,7 +6,9 @@ type IModalContent =
   | "changeRole"
   | "changeAdminStatus"
   | "delete"
-  | "contactMessage";
+  | "contactMessage"
+  | "addContinent"
+  | "editContinent";
 
 const useModalStore = defineStore("modal", () => {
   const show = ref(false);
@@ -14,8 +16,8 @@ const useModalStore = defineStore("modal", () => {
   const content = ref<IModalContent>(null);
 
   const togel = (type: IModalContent, metaData: any) => {
-    content.value = type;
     meta.value = metaData;
+    content.value = type;
     show.value = true;
   };
 

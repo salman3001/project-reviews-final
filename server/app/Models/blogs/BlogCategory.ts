@@ -20,6 +20,9 @@ export default class BlogCategory extends BaseModel {
   public slug: string
 
   @column()
+  public order: number
+
+  @column()
   public status: boolean
 
   @column()

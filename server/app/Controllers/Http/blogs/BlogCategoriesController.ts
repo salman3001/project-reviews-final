@@ -63,14 +63,14 @@ export default class BlogCategoriesController {
   }
 
   public async edit({ response, params }: HttpContextContract) {
-    const blog = await BlogCategory.findOrFail(+params.id)
-    await blog.load('language', (q) => {
+    const category = await BlogCategory.findOrFail(+params.id)
+    await category.load('language', (q) => {
       q.select(['name', 'id']).first()
     })
 
     const languages = await Language.query().select(['name', 'id'])
 
-    response.ok({ languages, blog })
+    response.ok({ languages, category })
   }
 
   public async update({ response, params, request }: HttpContextContract) {

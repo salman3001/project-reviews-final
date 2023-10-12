@@ -5,9 +5,7 @@ definePageMeta({
 
 const { $event } = useNuxtApp();
 
-const longDesc = ref("");
-
-const { result: blogData } = await useGet("/blogs/create");
+const { result: blogData } = await useGet("/blog-categories/create");
 
 const create = async (values: any) => {
   const formData = new FormData();
@@ -15,16 +13,15 @@ const create = async (values: any) => {
     formData.append(`${val[0]}`, values[val[0]]);
   });
 
-  formData.append("longDesc", longDesc.value);
-  const { result, error } = await usePost("/blogs", formData);
+  const { result, error } = await usePost("/blog-categories", formData);
   if (result) {
-    $event("record:created", { message: "Blog Added" });
-    navigateTo("/admin/blogs/blog-posts");
+    $event("record:created", { message: "Blog Category Added" });
+    navigateTo("/admin/blogs/categories");
   }
 
   if (error) {
     $event("Fetch:error", {
-      message: "Something Went wrong while creating blog",
+      message: "Something Went wrong while creating blog category",
     });
   }
 };
@@ -33,7 +30,7 @@ const create = async (values: any) => {
 <template>
   <section class="mt-8 mb-16">
     <div class="flex items-center gap-4">
-      <NuxtLink href="/admin/blogs/blog-posts">
+      <NuxtLink href="/admin/blogs/categories">
         <svg
           xmlns="http://www.w3.org/2000/svg"
           fill="none"
@@ -50,19 +47,21 @@ const create = async (values: any) => {
         </svg>
       </NuxtLink>
       <div class="flex flex-col">
-        <h1 class="text-2xl font-bold">Add Blog</h1>
-        <p class="text-base-400 text-sm" id="click">Add Blog details</p>
+        <h1 class="text-2xl font-bold">Add Blog Category</h1>
+        <p class="text-base-400 text-sm" id="click">
+          Add Blog Category details
+        </p>
       </div>
     </div>
     <FormKit type="form" #default="{ value }" @submit="create">
       <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-4 mt-6">
         <FormKit
           type="text"
-          name="title"
-          label="Title"
-          validation="required|unique:/blogs/unique-title"
+          name="name"
+          label="Name"
+          validation="required|unique:/blog-categories/unique-name"
           :validation-messages="{
-            unique: 'Title already Taken, Please change',
+            unique: 'Name already Taken, Please change',
           }"
         />
         <FormKit
@@ -70,20 +69,22 @@ const create = async (values: any) => {
           name="slug"
           label="Slug"
           help="It will be autocreated if you dont add it"
-          validation="|slug|unique:/blogs/unique-slug"
+          validation="slug|unique:/blog-categories/unique-slug"
           :validation-messages="{
             unique: 'Slug already Taken, Please change',
             slug: 'Slug is Not Valid, Please remove white spaces',
           }"
         />
-        <div class="md:col-span-2 lg:col-span-3">
-          <FormKit
-            type="textarea"
-            name="shortDesc"
-            label="Short Description"
-            style="height: 7rem"
-          />
-        </div>
+
+        <FormKit
+          type="number"
+          name="order"
+          label="Order"
+          validation="unique:/blog-categories/unique-order"
+          :validation-messages="{
+            unique: 'This Order number is already taken',
+          }"
+        />
         <FormKit type="text" name="metaTitle" label="Meta Title" />
         <FormKit type="text" name="metaKeywords" label="Meta Keywords" />
         <div class="md:col-span-2 lg:col-span-3">
@@ -95,21 +96,6 @@ const create = async (values: any) => {
           />
         </div>
 
-        <FormKit
-          type="select"
-          name="blogCategoryId"
-          label="Category"
-          :options="[
-            {
-              value: null,
-              label: 'Select Category',
-            },
-            ...blogData?.categories?.map((c) => ({
-              value: c.id,
-              label: c.name,
-            })),
-          ]"
-        />
         <FormKit
           type="select"
           name="languageId"
@@ -125,24 +111,10 @@ const create = async (values: any) => {
             })),
           ]"
         />
-        <div class="md:col-span-2 lg:col-span-3 py-4">
-          <FormKit type="image" name="image" url="/dummy-thumb.jpg" />
-        </div>
-        <ClientOnly>
-          <div class="md:col-span-2 lg:col-span-3 mb-40 sm:mb-20 h-72">
-            <label for="">Long Description</label>
-            <QuillEditor
-              v-model:content="longDesc"
-              contentType="html"
-              theme="snow"
-              toolbar="full"
-            />
-          </div>
-        </ClientOnly>
       </div>
       <div class="flex gap-2 mt-6">
-        <label for="add">Publish</label>
-        <FormKit id="add" type="checkbox" name="isPublished" />
+        <label for="add">Status</label>
+        <FormKit type="checkbox" name="status" />
       </div>
       <div class="py-4">
         <FormKitSummary />
@@ -151,7 +123,7 @@ const create = async (values: any) => {
       <div class="flex flex-wrap justify-end mt-8 gap-8">
         <NuxtLink
           class="btn w-36 btn-sm text-base-400 bg-base-300"
-          href="/admin/blogs/blog-posts"
+          href="/admin/blogs/categories"
         >
           Cancle
         </NuxtLink>

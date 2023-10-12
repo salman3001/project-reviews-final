@@ -5,13 +5,15 @@ definePageMeta({
 const route = useRoute();
 const { $uploads } = useNuxtApp();
 
-const { result: blog } = await useGet(`/blogs/${route.params.id}`);
+const { result: Category } = await useGet(
+  `/blog-categories/${route.params.id}`
+);
 </script>
 
 <template>
   <section class="mt-8 mb-16">
     <div class="flex items-center gap-4">
-      <NuxtLink href="/admin/blogs/blog-posts">
+      <NuxtLink href="/admin/blogs/categories">
         <svg
           xmlns="http://www.w3.org/2000/svg"
           fill="none"
@@ -28,8 +30,10 @@ const { result: blog } = await useGet(`/blogs/${route.params.id}`);
         </svg>
       </NuxtLink>
       <div class="flex flex-col">
-        <h1 class="text-2xl font-bold">View Blogs</h1>
-        <p class="text-base-400 text-sm text-start" id="click">Blog deatails</p>
+        <h1 class="text-2xl font-bold">View Blogs Category</h1>
+        <p class="text-base-400 text-sm text-start" id="click">
+          Blog Category deatails
+        </p>
       </div>
     </div>
     <div class="py-8">
@@ -38,19 +42,18 @@ const { result: blog } = await useGet(`/blogs/${route.params.id}`);
         <table class="table my-4 min-w-[40rem]">
           <thead>
             <tr class="font-semibold text-base-400">
-              <th>Title</th>
+              <th>Name</th>
               <th>Slug</th>
               <th>Language</th>
-              <th>Category</th>
+              <th>Order</th>
             </tr>
           </thead>
           <tbody>
             <tr class="">
-              <td>{{ blog?.title }}</td>
-              <td>{{ blog?.slug }}</td>
-              <td>{{ blog?.language?.name }}</td>
-              <td>{{ blog?.category?.name }}</td>
-              <td>{{ blog?.order }}</td>
+              <td>{{ Category?.name }}</td>
+              <td>{{ Category?.slug }}</td>
+              <td>{{ Category?.language?.name }}</td>
+              <td>{{ Category?.order }}</td>
             </tr>
           </tbody>
         </table>
@@ -60,33 +63,21 @@ const { result: blog } = await useGet(`/blogs/${route.params.id}`);
         <div class="flex gap-4 flex-wrap">
           <div class="max-w-[15rem]">
             <h2 class="text-sm text-base-400 font-semibold">Meta Title</h2>
-            <p>{{ blog?.meta_title }}</p>
+            <p>{{ Category?.meta_title }}</p>
           </div>
           <div class="max-w-[15rem]">
             <h2 class="text-sm text-base-400 font-semibold">Meta Keywords</h2>
-            <p>{{ blog?.meta_keywords }}</p>
+            <p>{{ Category?.meta_keywords }}</p>
           </div>
         </div>
         <div class="">
           <h2 class="text-sm text-base-400 font-semibold">Meta Description</h2>
-          <p>{{ blog?.meta_desc }}</p>
+          <p>{{ Category?.meta_desc }}</p>
         </div>
         <div class="">
           <h2 class="text-sm text-base-400 font-semibold">Status</h2>
-          <p>{{ blog?.is_published === 1 ? "Published" : "Draft" }}</p>
+          <p>{{ Category?.status === 1 ? "Active" : "Inactive" }}</p>
         </div>
-      </div>
-      <div class="my-6 space-y-2">
-        <h2 class="text-sm text-base-400 font-semibold">Image</h2>
-        <img
-          :src="
-            blog?.image?.url ? $uploads + blog?.image?.url : '/dummy-thumb.jpg'
-          "
-        />
-      </div>
-      <div class="my-6 space-y-2">
-        <h2 class="text-sm text-base-400 font-semibold">Content</h2>
-        <p v-html="blog?.long_desc"></p>
       </div>
     </div>
   </section>

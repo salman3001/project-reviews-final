@@ -1,4 +1,10 @@
-export const useGet = async (url: string, params: any = {}) => {
+import { UseFetchOptions } from "nuxt/app";
+
+export const useGet = async (
+  url: string,
+  params: any = {},
+  opt: UseFetchOptions<unknown, unknown>
+) => {
   const { $api } = useNuxtApp();
   const token = useCookie("token");
 
@@ -11,6 +17,7 @@ export const useGet = async (url: string, params: any = {}) => {
   } = await useFetch($api + url, {
     headers: { Authorization: `Bearer ${token.value}` },
     params: { ...params },
+    ...opt,
   });
 
   return {

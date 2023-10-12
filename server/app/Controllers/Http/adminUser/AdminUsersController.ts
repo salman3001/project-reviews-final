@@ -11,7 +11,9 @@ import Country from 'App/Models/address/Country'
 
 export default class AdminUsersController {
   public async index({ response, request }: HttpContextContract) {
-    const { orderBy, roleId, search, isActive, page } = request.qs()
+    const { roleId, search, isActive, page } = request.qs()
+
+    let users: null | AdminUser[] = null
 
     const query = AdminUser.query()
 
@@ -31,8 +33,12 @@ export default class AdminUsersController {
 
     await query.preload('avatar').preload('role')
 
-    const users = await query.orderBy(orderBy || 'first_name').paginate(page || 1, 10)
-    users.baseUrl('/admin/admin-users')
+    if (page) {
+      users = await query.paginate(page, 10)
+    } else {
+      users = await query.exec()
+    }
+
     const roles = await Role.all()
 
     return response.json({ users, roles })

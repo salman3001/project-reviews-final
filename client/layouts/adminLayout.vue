@@ -57,6 +57,31 @@ definePageMeta({
         { name: 'Blog Categories', link: '/admin/blogs/categories' },
       ]"
     />
+    <AdminNavDropdown
+      title="Location"
+      :list="[
+        {
+          name: 'Continents',
+          link: '/admin/location/continents',
+        },
+        {
+          name: 'Countries',
+          link: '/admin/location/countries',
+        },
+        {
+          name: 'States',
+          link: '/admin/location/States',
+        },
+        {
+          name: 'Cities',
+          link: '/admin/location/Cities',
+        },
+        {
+          name: 'Streets',
+          link: '/admin/location/Streets',
+        },
+      ]"
+    />
   </nav>
   <div class="px-6 sm:px-10">
     <slot />

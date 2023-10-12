@@ -13,6 +13,8 @@ const modal = useModalStore();
       <ModalDeleteAdminUser v-if="modal.content === 'deleteAdminUser'" />
       <ModalDelete v-if="modal.content === 'delete'" />
       <ModalContactMessage v-if="modal.content === 'contactMessage'" />
+      <ModalAddressAddContinent v-if="modal.content === 'addContinent'" />
+      <ModalAddressEditContinent v-if="modal.content === 'editContinent'" />
     </div>
     <label class="modal-backdrop backdrop-blur-sm"></label>
   </div>
