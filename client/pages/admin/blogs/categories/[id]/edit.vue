@@ -3,28 +3,29 @@ definePageMeta({
   layout: "admin-layout",
 });
 
-const { $event } = useNuxtApp();
+const { $uploads, $event } = useNuxtApp();
+const route = useRoute();
 
-const longDesc = ref("");
+const { result: blogData } = await useGet(`/blogs/${route.params.id}/edit`);
 
-const { result: blogData } = await useGet("/blogs/create");
+const longDesc = ref(blogData?.value.blog?.long_desc || "");
 
-const create = async (values: any) => {
+const update = async (values: any) => {
   const formData = new FormData();
   Object.entries(values).map((val) => {
     formData.append(`${val[0]}`, values[val[0]]);
   });
 
   formData.append("longDesc", longDesc.value);
-  const { result, error } = await usePost("/blogs", formData);
+  const { result, error } = await usePut("/blogs/" + route.params.id, formData);
   if (result) {
-    $event("record:created", { message: "Blog Added" });
+    $event("record:created", { message: "Blog Updated" });
     navigateTo("/admin/blogs/blog-posts");
   }
 
   if (error) {
     $event("Fetch:error", {
-      message: "Something Went wrong while creating blog",
+      message: "Something Went wrong while updating blog",
     });
   }
 };
@@ -49,18 +50,36 @@ const create = async (values: any) => {
           />
         </svg>
       </NuxtLink>
-      <div class="flex flex-col">
-        <h1 class="text-2xl font-bold">Add Blog</h1>
+      <div class="flex flex-col items-center">
+        <h1 class="text-2xl font-bold">Update Blog</h1>
         <p class="text-base-400 text-sm" id="click">Add Blog details</p>
       </div>
     </div>
-    <FormKit type="form" #default="{ value }" @submit="create">
+    <FormKit
+      type="form"
+      #default="{ value }"
+      @submit="update"
+      :value="{
+        title: blogData?.blog?.title,
+        slug: blogData?.blog?.slug,
+        shortDesc: blogData?.blog?.short_desc,
+        metaTitle: blogData?.blog?.meta_title,
+        metaKeywords: blogData?.blog?.meta_keywords,
+        metaDesc: blogData?.blog?.meta_desc,
+        languageId: blogData?.blog?.language_id,
+        blogCategoryId: blogData?.blog?.category[0]?.id,
+        isPublished: blogData?.blog?.is_published === 1,
+      }"
+    >
       <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-4 mt-6">
         <FormKit
           type="text"
           name="title"
           label="Title"
-          validation="required|unique:/blogs/unique-title"
+          :validation="[
+            ['required'],
+            ['unique', '/blogs/unique-title', blogData?.blog?.title],
+          ]"
           :validation-messages="{
             unique: 'Title already Taken, Please change',
           }"
@@ -70,7 +89,10 @@ const create = async (values: any) => {
           name="slug"
           label="Slug"
           help="It will be autocreated if you dont add it"
-          validation="|slug|unique:/blogs/unique-slug"
+          :validation="[
+            ['slug'],
+            ['unique', '/blogs/unique-slug', blogData?.blog?.slug],
+          ]"
           :validation-messages="{
             unique: 'Slug already Taken, Please change',
             slug: 'Slug is Not Valid, Please remove white spaces',
@@ -126,7 +148,15 @@ const create = async (values: any) => {
           ]"
         />
         <div class="md:col-span-2 lg:col-span-3 py-4">
-          <FormKit type="image" name="image" url="/dummy-thumb.jpg" />
+          <FormKit
+            type="image"
+            name="image"
+            :url="
+              blogData?.blog?.image?.url
+                ? $uploads + blogData?.blog?.image?.url
+                : '/dummy-thumb.jpg'
+            "
+          />
         </div>
         <ClientOnly>
           <div class="md:col-span-2 lg:col-span-3 mb-40 sm:mb-20 h-72">

@@ -11,19 +11,13 @@ const { $listen, $unlisten, $uploads } = useNuxtApp();
 
 const page = ref(1);
 const search = ref("");
-const categoryId = ref<null | number>(null);
-const isPublished = ref<null | number>(null);
+const status = ref<null | boolean>(null);
 const languageId = ref<null | number>(null);
 
-const {
-  result: blogData,
-  pending,
-  refresh,
-} = await useGet("/blogs", {
+const { result, pending, refresh } = await useGet("/blog-categories", {
   page,
   search,
-  categoryId,
-  isPublished,
+  status,
   languageId,
 });
 
@@ -41,7 +35,7 @@ onUnmounted(() => {
 </script>
 <template>
   <section class="my-8">
-    <h1 class="text-3xl font-bold">Blog Posts</h1>
+    <h1 class="text-3xl font-bold">Blog Categories</h1>
     <div class="flex flex-wrap gap-4 justify-between mt-8">
       <div>
         <AdminSearchInput
@@ -57,34 +51,16 @@ onUnmounted(() => {
         <select
           class="select select-bordered select-sm"
           onchange=""
-          name="roleId"
-          v-model="categoryId"
-          @change="page = 1"
-        >
-          <option :value="null">All Categories</option>
-          <option
-            v-if="blogData"
-            v-for="category in blogData.blogCategories"
-            :key="category?.id"
-            :value="category?.id"
-          >
-            {{ category?.name }}
-          </option>
-        </select>
-
-        <select
-          class="select select-bordered select-sm"
-          onchange=""
-          name="isPublished"
-          v-model="isPublished"
+          name="status"
+          v-model="status"
           @change="page = 1"
         >
           <option :value="null">Status</option>
-          <option value="1">Published</option>
-          <option value="0">Draft</option>
+          <option :value="true">Active</option>
+          <option :value="false">Inactive</option>
         </select>
-        <NuxtLink href="/admin/blogs/blog-posts/create">
-          <button class="btn btn-primary btn-sm">+ Add Blog</button>
+        <NuxtLink href="/admin/blogs/categories/create">
+          <button class="btn btn-primary btn-sm">+ Add Category</button>
         </NuxtLink>
       </div>
     </div>
@@ -93,63 +69,43 @@ onUnmounted(() => {
         <thead>
           <tr>
             <th>SNo.</th>
-            <th>Title</th>
+            <th>Name</th>
             <th>Language</th>
-            <th>Category</th>
-            <th>Date</th>
             <th>Status</th>
             <th class="w-16">Actions</th>
           </tr>
         </thead>
         <tbody>
           <tr
-            v-if="blogData"
-            v-for="(blog, i) in blogData.blogs.data"
-            :key="blog.id"
+            v-if="result"
+            v-for="(category, i) in result.blogCategories.data"
+            :key="category.id"
           >
             <td>
               {{
-                (blogData.blogs.meta.current_page - 1) *
-                  blogData.blogs.meta.per_page +
+                (result.blogCategories.meta.current_page - 1) *
+                  result.blogCategories.meta.per_page +
                 (i + 1)
               }}
             </td>
             <td class="flex items-center gap-2">
-              <div class="w-32">
-                <img
-                  :src="
-                    blog?.image?.url
-                      ? $uploads + blog?.image?.url
-                      : '/dummy-thumb.jpg'
-                  "
-                  class="w-full"
-                />
-              </div>
               <div class="flex-1 min-w-[20rem]">
-                {{ blog?.title }}
-              </div>
-            </td>
-            <td>{{ blog?.language?.name }}</td>
-            <td class="">
-              <div v-for="category in blog?.category" class="" :key="blog.id">
                 {{ category?.name }}
               </div>
             </td>
-            <td class="">
-              {{ blog?.created_at }}
-            </td>
+            <td>{{ category?.language?.name }}</td>
             <td>
               <div
-                v-if="blog.is_published == 1"
+                v-if="category.status == 1"
                 class="badge badge-success badge-outline bg-base-200"
               >
-                Published
+                Active
               </div>
               <div
                 v-else
                 class="badge badge-secondary badge-outline bg-base-200"
               >
-                Draft
+                Inactive
               </div>
             </td>
             <td>
@@ -165,14 +121,14 @@ onUnmounted(() => {
                 >
                   <li>
                     <NuxtLink
-                      :href="`/admin/blogs/blog-posts/${blog.id}`"
+                      :href="`/admin/blogs/categories/${category.id}`"
                       class="text-sm p-1"
                       >view</NuxtLink
                     >
                   </li>
                   <li>
                     <NuxtLink
-                      :href="`/admin/blogs/blog-posts/${blog.id}/edit/`"
+                      :href="`/admin/blogs/categories/${category.id}/edit/`"
                       class="text-sm p-1"
                       >Edit</NuxtLink
                     >
@@ -182,9 +138,9 @@ onUnmounted(() => {
                       class="text-sm text-start p-1"
                       @click="
                         modal.togel('delete', {
-                          apiUrl: '/blogs/' + blog.id,
-                          tostMessage: 'Blog deleted',
-                          modalTitle: 'Delete Blog',
+                          apiUrl: '/blog-categories/' + category.id,
+                          tostMessage: 'Category deleted',
+                          modalTitle: 'Delete Blog Category',
                         })
                       "
                     >
@@ -202,7 +158,7 @@ onUnmounted(() => {
       <ClientOnly>
         <Pagination
           v-if="!pending"
-          :meta="blogData.blogs.meta"
+          :meta="result.blogCategories.meta"
           @pageChange="
             (p) => {
               page = p;

@@ -1,7 +1,7 @@
 import { schema, CustomMessages } from '@ioc:Adonis/Core/Validator'
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 
-export default class BlogValidator {
+export default class BlogCategoryValidator {
   constructor(protected ctx: HttpContextContract) {}
 
   /*
@@ -24,17 +24,11 @@ export default class BlogValidator {
    *    ```
    */
   public schema = schema.create({
-    title: schema.string(),
-    slug: schema.string.optional(),
-    isPublished: schema.boolean.optional(),
-    blogCategoryId: schema.number.optional(),
+    name: schema.string({ trim: true }),
+    slug: schema.string.optional({ trim: true }),
+    order: schema.number.optional(),
+    status: schema.boolean.optional(),
     languageId: schema.number.optional(),
-    image: schema.file.optional({
-      extnames: ['JPG', 'jpg', 'jpeg', 'png', 'gif', 'webp'],
-      size: '3mb',
-    }),
-    shortDesc: schema.string.optional(),
-    longDesc: schema.string.optional(),
     metaTitle: schema.string.optional(),
     metaKeywords: schema.string.optional(),
     metaDesc: schema.string.optional(),

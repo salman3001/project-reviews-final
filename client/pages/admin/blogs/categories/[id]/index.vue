@@ -3,16 +3,15 @@ definePageMeta({
   layout: "admin-layout",
 });
 const route = useRoute();
+const { $uploads } = useNuxtApp();
 
-const { result: content } = await useGet(
-  `/help-center/content/${route.params.id}`
-);
+const { result: blog } = await useGet(`/blogs/${route.params.id}`);
 </script>
 
 <template>
   <section class="mt-8 mb-16">
     <div class="flex items-center gap-4">
-      <NuxtLink href="/admin/help-center/content">
+      <NuxtLink href="/admin/blogs/blog-posts">
         <svg
           xmlns="http://www.w3.org/2000/svg"
           fill="none"
@@ -29,10 +28,8 @@ const { result: content } = await useGet(
         </svg>
       </NuxtLink>
       <div class="flex flex-col">
-        <h1 class="text-2xl font-bold">View Conetnt</h1>
-        <p class="text-base-400 text-sm text-start" id="click">
-          Content deatails
-        </p>
+        <h1 class="text-2xl font-bold">View Blogs</h1>
+        <p class="text-base-400 text-sm text-start" id="click">Blog deatails</p>
       </div>
     </div>
     <div class="py-8">
@@ -45,44 +42,51 @@ const { result: content } = await useGet(
               <th>Slug</th>
               <th>Language</th>
               <th>Category</th>
-              <th>Order</th>
             </tr>
           </thead>
           <tbody>
             <tr class="">
-              <td>{{ content?.title }}</td>
-              <td>{{ content?.slug }}</td>
-              <td>{{ content?.language?.name }}</td>
-              <td>{{ content?.category?.name }}</td>
-              <td>{{ content?.order }}</td>
+              <td>{{ blog?.title }}</td>
+              <td>{{ blog?.slug }}</td>
+              <td>{{ blog?.language?.name }}</td>
+              <td>{{ blog?.category?.name }}</td>
+              <td>{{ blog?.order }}</td>
             </tr>
           </tbody>
         </table>
-      </div>
-      <div class="my-6 space-y-2">
-        <h2 class="text-sm text-base-400 font-semibold">Content</h2>
-        <p v-html="content?.content"></p>
       </div>
       <div class="my-6 space-y-4">
         <h2 class="text-base-400 font-semibold">SEO Detail</h2>
         <div class="flex gap-4 flex-wrap">
           <div class="max-w-[15rem]">
             <h2 class="text-sm text-base-400 font-semibold">Meta Title</h2>
-            <p>{{ content?.meta_title }}</p>
+            <p>{{ blog?.meta_title }}</p>
           </div>
           <div class="max-w-[15rem]">
             <h2 class="text-sm text-base-400 font-semibold">Meta Keywords</h2>
-            <p>{{ content?.meta_keywords }}</p>
+            <p>{{ blog?.meta_keywords }}</p>
           </div>
         </div>
         <div class="">
           <h2 class="text-sm text-base-400 font-semibold">Meta Description</h2>
-          <p>{{ content?.meta_desc }}</p>
+          <p>{{ blog?.meta_desc }}</p>
         </div>
         <div class="">
           <h2 class="text-sm text-base-400 font-semibold">Status</h2>
-          <p>{{ content?.is_active === 1 ? "Active" : "Inactive" }}</p>
+          <p>{{ blog?.is_published === 1 ? "Published" : "Draft" }}</p>
         </div>
+      </div>
+      <div class="my-6 space-y-2">
+        <h2 class="text-sm text-base-400 font-semibold">Image</h2>
+        <img
+          :src="
+            blog?.image?.url ? $uploads + blog?.image?.url : '/dummy-thumb.jpg'
+          "
+        />
+      </div>
+      <div class="my-6 space-y-2">
+        <h2 class="text-sm text-base-400 font-semibold">Content</h2>
+        <p v-html="blog?.long_desc"></p>
       </div>
     </div>
   </section>

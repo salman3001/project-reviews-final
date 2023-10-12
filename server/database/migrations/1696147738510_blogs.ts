@@ -15,7 +15,6 @@ export default class extends BaseSchema {
         .references('id')
         .inTable('languages')
         .onDelete('SET NULL')
-      table.integer('image_id').unsigned().references('id').inTable('images').onDelete('SET NULL')
       table.string('short_desc')
       table.text('long_desc')
       table.string('meta_title')

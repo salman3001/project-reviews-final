@@ -1,6 +1,13 @@
-import { DateTime } from 'luxon'
-import { BaseModel, ManyToMany, column, manyToMany } from '@ioc:Adonis/Lucid/Orm'
+import {
+  BaseModel,
+  BelongsTo,
+  ManyToMany,
+  belongsTo,
+  column,
+  manyToMany,
+} from '@ioc:Adonis/Lucid/Orm'
 import Blog from './Blog'
+import Language from '../Language'
 
 export default class BlogCategory extends BaseModel {
   @column({ isPrimary: true })
@@ -13,7 +20,13 @@ export default class BlogCategory extends BaseModel {
   public slug: string
 
   @column()
-  public languageId: string
+  public status: boolean
+
+  @column()
+  public languageId: number
+
+  @belongsTo(() => Language)
+  public language: BelongsTo<typeof Language>
 
   @column()
   public metaTitle: string
