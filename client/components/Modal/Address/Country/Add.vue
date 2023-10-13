@@ -1,34 +1,30 @@
 <script setup lang="ts">
 import useModalStore from "~/store/useModalStore";
-import { storeToRefs } from "pinia";
+import { reset } from "@formkit/core";
+
 const modal = useModalStore();
 const { $api, $event } = useNuxtApp();
 const token = useCookie("token");
 
-const {
-  data: continent,
-  refresh,
-  pending,
-} = await useFetch(() => `${$api}/address/continents/${modal.meta.id}`);
-
-watchEffect(() => {
-  console.log(continent.value);
-});
+const { data: continents, pending } = await useFetch(
+  () => `${$api}/address/countries/create`,
+  {
+    headers: { Authorization: "Bearer" + " " + token.value },
+  }
+);
 
 const add = async (values) => {
   try {
-    const res = await $fetch($api + `/address/continents/` + modal?.meta?.id, {
-      method: "put",
+    const res = await $fetch($api + `/address/countries`, {
+      method: "post",
       headers: { Authorization: "Bearer" + " " + token.value },
-      body: {
-        name: values.name,
-      },
+      body: values,
     });
-    reset("addContinentForm");
-    $event("record:created", { message: "Continent Added" });
+    reset("addCountryForm");
+    $event("record:created", { message: "Country Added" });
     modal.show = false;
   } catch (error) {
-    reset("addContinentForm");
+    reset("addCountryForm");
     modal.show = false;
   }
 };
@@ -37,8 +33,8 @@ const add = async (values) => {
 <template>
   <div class="bg-base-200 px-4 py-2 flex justify-between items-center">
     <div>
-      <h3 id="modal-title" class="text-lg font-bold">Edit Continent</h3>
-      <p id="modal-desc" class="text-xs">Edit continent detail</p>
+      <h3 id="modal-title" class="text-lg font-bold">Add Country</h3>
+      <p id="modal-desc" class="text-xs">Add Country detail</p>
     </div>
     <div>
       <label
@@ -49,17 +45,12 @@ const add = async (values) => {
     </div>
   </div>
   <div id="modal-content" class="p-4">
-    <FormKit
-      id="addContinentForm"
-      type="form"
-      class="py-3"
-      v-if="!pending"
-      :value="{
-        name: continent?.name,
-      }"
-      @submit="add"
-    >
+    <FormKit id="addCountryForm" type="form" class="py-3" @submit="add">
       <div class="py-8">
+        <FormKit v-if="!pending" type="select" name="continentId"
+        label="Continent" :options="[ {value:null,lebel:"Select Continent"}
+        ...continents?.map((c) => ({ value: c.id, label: c.name, })), ]"
+        validation="required" />
         <FormKit type="text" name="name" label="Name" validation="required" />
       </div>
       <div class="flex justify-end gap-4 w-full">
