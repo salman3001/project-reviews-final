@@ -11,6 +11,7 @@ const { $listen, $unlisten } = useNuxtApp();
 
 const page = ref(1);
 const search = ref("");
+const continentId = ref(null);
 
 const {
   result: records,
@@ -19,6 +20,7 @@ const {
 } = await useGet("/address/countries", {
   page,
   search,
+  continentId
 });
 
 const reload = () => {
@@ -42,21 +44,23 @@ onUnmounted(() => {
     <h1 class="text-3xl font-bold">Countries</h1>
     <div class="flex flex-wrap gap-4 justify-between mt-8">
       <div>
-        <AdminSearchInput
-          @search="
-            (v) => {
-              page = 1;
-              search = v;
-            }
-          "
-        />
+        <AdminSearchInput @search="(v) => {
+          page = 1;
+          search = v;
+        }
+          " />
       </div>
-      <button
-        class="btn btn-primary btn-sm"
-        @click="modal.togel('addContinent')"
-      >
-        + Add Country
-      </button>
+      <div class="flex flex-wrap-reverse gap-4">
+        <select class="select select-bordered select-sm" onchange="" name="isActive" v-model="continentId"
+          @change="page = 1">
+          <option :value="null">Continent</option>
+          <option v-for="c in records?.continents" :key="c.id" :value="c.id">{{ c.name }}</option>
+          <option value="0">Inactive</option>
+        </select>
+        <button class="btn btn-primary btn-sm" @click="modal.togel('addCountry')">
+          + Add Country
+        </button>
+      </div>
     </div>
     <div class="overflow-x-scroll scrollbar-hide pb-16 mt-8 border rounded-xl">
       <table class="table table-zebra mt-6 p x-4">
@@ -69,14 +73,10 @@ onUnmounted(() => {
           </tr>
         </thead>
         <tbody>
-          <tr
-            v-if="records"
-            v-for="(record, i) in records.data"
-            :key="record?.id"
-          >
+          <tr v-if="records" v-for="(record, i) in records.countries.data" :key="record?.id">
             <td>
               {{
-                (records.meta.current_page - 1) * records.meta.per_page +
+                (records.countries.meta.current_page - 1) * records.countries.meta.per_page +
                 (i + 1)
               }}
             </td>
@@ -92,38 +92,27 @@ onUnmounted(() => {
             </td>
             <td>
               <div class="dropdown dropdown-bottom">
-                <label
-                  tabindex="0"
-                  class="btn btn-primary font-normal text-white btn-sm normal-case w-max gap-1"
-                >
+                <label tabindex="0" class="btn btn-primary font-normal text-white btn-sm normal-case w-max gap-1">
                   Options
                 </label>
-                <ul
-                  class="p-1 shadow menu dropdown-content z-[1] bg-base-100 rounded-box w-32 border-t-4 border-black"
-                >
+                <ul class="p-1 shadow menu dropdown-content z-[1] bg-base-100 rounded-box w-32 border-t-4 border-black">
                   <li>
-                    <button
-                      class="text-sm p-1"
-                      @click="
-                        modal.togel('editContinent', {
-                          id: record?.id,
-                        })
-                      "
-                    >
+                    <button class="text-sm p-1" @click="
+                      modal.togel('editCountry', {
+                        id: record?.id,
+                      })
+                      ">
                       Edit
                     </button>
                   </li>
                   <li>
-                    <button
-                      class="text-sm text-start p-1"
-                      @click="
-                        modal.togel('delete', {
-                          apiUrl: '/address/continents/' + record?.id,
-                          tostMessage: 'Continent deleted',
-                          modalTitle: 'Delete Continent',
-                        })
-                      "
-                    >
+                    <button class="text-sm text-start p-1" @click="
+                      modal.togel('delete', {
+                        apiUrl: '/address/countries/' + record?.id,
+                        tostMessage: 'Country deleted',
+                        modalTitle: 'Delete Country',
+                      })
+                      ">
                       Delete
                     </button>
                   </li>
@@ -136,15 +125,10 @@ onUnmounted(() => {
     </div>
     <div class="mt-4 flex justify-end">
       <ClientOnly>
-        <Pagination
-          v-if="!pending"
-          :meta="records.meta"
-          @pageChange="
-            (p) => {
-              page = p;
-            }
-          "
-        />
+        <Pagination v-if="!pending" :meta="records.countries.meta" @pageChange="(p) => {
+          page = p;
+        }
+          " />
       </ClientOnly>
     </div>
   </section>

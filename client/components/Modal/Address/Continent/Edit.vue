@@ -13,7 +13,7 @@ const {
   headers: { Authorization: "Bearer" + " " + token.value },
 });
 
-const add = async (values) => {
+const add = async (values: any) => {
   try {
     const res = await $fetch($api + `/address/continents/` + modal?.meta?.id, {
       method: "put",
@@ -37,32 +37,18 @@ const add = async (values) => {
       <p id="modal-desc" class="text-xs">Edit continent detail</p>
     </div>
     <div>
-      <label
-        class="cursor-pointer btn btn-sm btn-square text-black bg-base-300"
-        for="modal"
-        >X</label
-      >
+      <label class="cursor-pointer btn btn-sm btn-square text-black bg-base-300" for="modal">X</label>
     </div>
   </div>
   <div id="modal-content" class="p-4">
-    <FormKit
-      type="form"
-      class="py-3"
-      v-if="!pending"
-      :value="{
-        name: continent?.name,
-      }"
-      @submit="add"
-    >
+    <FormKit type="form" class="py-3" v-if="!pending" :value="{
+      name: continent?.name,
+    }" @submit="add">
       <div class="py-8">
         <FormKit type="text" name="name" label="Name" validation="required" />
       </div>
       <div class="flex justify-end gap-4 w-full">
-        <label
-          class="cursor-pointer btn btn-sm min-w-[6rem] text-base-400 bg-base-200"
-          for="modal"
-          >Cancle</label
-        >
+        <label class="cursor-pointer btn btn-sm min-w-[6rem] text-base-400 bg-base-200" for="modal">Cancle</label>
         <button type="submit" class="btn btn-sm btn-primary min-w-[6rem]">
           Save
         </button>

@@ -16,7 +16,7 @@ const useAddressStore = defineStore("addressStore", () => {
         headers: { Authorization: `Bearer ${token.value}` },
       })) as any;
 
-      continents.value = res.continents;
+      continents.value = res;
       countries.value = [];
       states.value = [];
       cities.value = [];
@@ -33,9 +33,7 @@ const useAddressStore = defineStore("addressStore", () => {
         headers: { Authorization: `Bearer ${token.value}` },
       })) as any;
 
-      console.log(res);
-
-      countries.value = res.countries;
+      countries.value = res;
       states.value = [];
       cities.value = [];
       streets.value = [];
@@ -51,7 +49,7 @@ const useAddressStore = defineStore("addressStore", () => {
         headers: { Authorization: `Bearer ${token.value}` },
       })) as any;
 
-      states.value = res.states;
+      states.value = res;
       cities.value = [];
       streets.value = [];
     } catch (error: any) {
@@ -66,7 +64,7 @@ const useAddressStore = defineStore("addressStore", () => {
         headers: { Authorization: `Bearer ${token.value}` },
       })) as any;
 
-      cities.value = res.cities;
+      cities.value = res;
       streets.value = [];
     } catch (error: any) {
       console.log(error.message);
@@ -80,7 +78,7 @@ const useAddressStore = defineStore("addressStore", () => {
         headers: { Authorization: `Bearer ${token.value}` },
       })) as any;
 
-      streets.value = res.streets;
+      streets.value = res;
     } catch (error: any) {
       console.log(error.message);
     }

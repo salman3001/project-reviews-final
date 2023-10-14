@@ -8,6 +8,7 @@ import Address from 'App/Models/address/Address'
 import Social from 'App/Models/Social'
 import Role from 'App/Models/adminUser/Role'
 import Country from 'App/Models/address/Country'
+import Continent from 'App/Models/address/Continent'
 
 export default class AdminUsersController {
   public async index({ response, request }: HttpContextContract) {
@@ -41,7 +42,9 @@ export default class AdminUsersController {
 
     const roles = await Role.all()
 
-    return response.json({ users, roles })
+    const continents = await Continent.query().select(['name', 'id'])
+
+    return response.json({ users, roles, continents })
   }
 
   public async create({ response }: HttpContextContract) {

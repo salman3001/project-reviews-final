@@ -15,6 +15,8 @@ const modal = useModalStore();
       <ModalContactMessage v-if="modal.content === 'contactMessage'" />
       <ModalAddressContinentAdd v-if="modal.content === 'addContinent'" />
       <ModalAddressContinentEdit v-if="modal.content === 'editContinent'" />
+      <ModalAddressCountryAdd v-if="modal.content === 'addCountry'" />
+      <ModalAddressCountryEdit v-if="modal.content === 'editCountry'" />
     </div>
     <label class="modal-backdrop backdrop-blur-sm"></label>
   </div>

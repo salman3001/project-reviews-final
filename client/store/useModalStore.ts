@@ -8,14 +8,16 @@ type IModalContent =
   | "delete"
   | "contactMessage"
   | "addContinent"
-  | "editContinent";
+  | "editContinent"
+  | "addCountry"
+  | "editCountry";
 
 const useModalStore = defineStore("modal", () => {
   const show = ref(false);
   const meta = ref<any>(null);
   const content = ref<IModalContent>(null);
 
-  const togel = (type: IModalContent, metaData: any) => {
+  const togel = (type: IModalContent, metaData?: any) => {
     meta.value = metaData;
     content.value = type;
     show.value = true;

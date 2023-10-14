@@ -6,14 +6,14 @@ const modal = useModalStore();
 const { $api, $event } = useNuxtApp();
 const token = useCookie("token");
 
-const { data: continents, pending } = await useFetch(
+const { data: record, pending } = await useFetch(
   () => `${$api}/address/countries/create`,
   {
     headers: { Authorization: "Bearer" + " " + token.value },
   }
 );
 
-const add = async (values) => {
+const add = async (values: any) => {
   try {
     const res = await $fetch($api + `/address/countries`, {
       method: "post",
@@ -37,28 +37,18 @@ const add = async (values) => {
       <p id="modal-desc" class="text-xs">Add Country detail</p>
     </div>
     <div>
-      <label
-        class="cursor-pointer btn btn-sm btn-square text-black bg-base-300"
-        for="modal"
-        >X</label
-      >
+      <label class="cursor-pointer btn btn-sm btn-square text-black bg-base-300" for="modal">X</label>
     </div>
   </div>
   <div id="modal-content" class="p-4">
     <FormKit id="addCountryForm" type="form" class="py-3" @submit="add">
       <div class="py-8">
-        <FormKit v-if="!pending" type="select" name="continentId"
-        label="Continent" :options="[ {value:null,lebel:"Select Continent"}
-        ...continents?.map((c) => ({ value: c.id, label: c.name, })), ]"
-        validation="required" />
+        <FormKit v-if="!pending" type="select" name="continentId" label="Continent" :options="[{ value: null, label: 'Select Contry' },
+        ...(record as any)?.map((c: any) => ({ value: c.id, label: c.name, })),]" validation="required" />
         <FormKit type="text" name="name" label="Name" validation="required" />
       </div>
       <div class="flex justify-end gap-4 w-full">
-        <label
-          class="cursor-pointer btn btn-sm min-w-[6rem] text-base-400 bg-base-200"
-          for="modal"
-          >Cancle</label
-        >
+        <label class="cursor-pointer btn btn-sm min-w-[6rem] text-base-400 bg-base-200" for="modal">Cancle</label>
         <button type="submit" class="btn btn-sm btn-primary min-w-[6rem]">
           Save
         </button>

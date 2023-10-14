@@ -3,7 +3,7 @@ import { UseFetchOptions } from "nuxt/app";
 export const useGet = async (
   url: string,
   params: any = {},
-  opt: UseFetchOptions<unknown, unknown>
+  opt?: UseFetchOptions<unknown, unknown>
 ) => {
   const { $api } = useNuxtApp();
   const token = useCookie("token");

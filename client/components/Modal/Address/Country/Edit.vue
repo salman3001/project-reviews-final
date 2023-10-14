@@ -1,18 +1,17 @@
 <script setup lang="ts">
 import useModalStore from "~/store/useModalStore";
-import { storeToRefs } from "pinia";
 const modal = useModalStore();
 const { $api, $event } = useNuxtApp();
 const token = useCookie("token");
 
-const { data, pending: pending } = await useFetch(
-  () => `${$api}/address/countries/create`,
+const { data: record, pending: pending } = await useFetch(
+  () => `${$api}/address/countries/${modal?.meta?.id}/edit`,
   {
     headers: { Authorization: "Bearer" + " " + token.value },
   }
 );
 
-const add = async (values) => {
+const add = async (values: any) => {
   try {
     const res = await $fetch($api + `/address/countries/` + modal?.meta?.id, {
       method: "put",
@@ -34,37 +33,21 @@ const add = async (values) => {
       <p id="modal-desc" class="text-xs">Edit Country detail</p>
     </div>
     <div>
-      <label
-        class="cursor-pointer btn btn-sm btn-square text-black bg-base-300"
-        for="modal"
-        >X</label
-      >
+      <label class="cursor-pointer btn btn-sm btn-square text-black bg-base-300" for="modal">X</label>
     </div>
   </div>
   <div id="modal-content" class="p-4">
-    <FormKit
-      type="form"
-      class="py-3"
-      v-if="!pending"
-      :value="{
-        name: data?.country?.name,
-        continentId: data?.country?.continentId,
-      }"
-      @submit="add"
-    >
+    <FormKit type="form" class="py-3" v-if="!pending" :value="{
+      name: (record as any)?.country?.name,
+      continentId: (record as any)?.country?.continent_id,
+    }" @submit="add">
       <div class="py-8">
-        <FormKit v-if="!pending" type="select" name="continentId"
-        label="Continent" :options="[ {value:null,lebel:"Select Continent"}
-        ...data?.continents?.map((c) => ({ value: c.id, label: c.name, })), ]"
-        validation="required" />
+        <FormKit v-if="!pending" type="select" name="continentId" label="Continent" :options="[{ value: null, lebel: 'Select Continent' },
+        ...(record as any)?.continents?.map((c: any) => ({ value: c.id, label: c.name, })),]" validation="required" />
         <FormKit type="text" name="name" label="Name" validation="required" />
       </div>
       <div class="flex justify-end gap-4 w-full">
-        <label
-          class="cursor-pointer btn btn-sm min-w-[6rem] text-base-400 bg-base-200"
-          for="modal"
-          >Cancle</label
-        >
+        <label class="cursor-pointer btn btn-sm min-w-[6rem] text-base-400 bg-base-200" for="modal">Cancle</label>
         <button type="submit" class="btn btn-sm btn-primary min-w-[6rem]">
           Save
         </button>

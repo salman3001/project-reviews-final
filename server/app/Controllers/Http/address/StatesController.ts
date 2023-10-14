@@ -1,15 +1,33 @@
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import { schema } from '@ioc:Adonis/Core/Validator'
+import Continent from 'App/Models/address/Continent'
+import Country from 'App/Models/address/Country'
 import State from 'App/Models/address/State'
 
 export default class StatesController {
   public async index({ response, request }: HttpContextContract) {
-    const { page, search } = request.qs()
+    const { page, search, countryId, continentId } = request.qs()
     let states: null | State[] = []
-    const query = State.query()
+    const query = State.query().preload('country', (q) => {
+      q.preload('continent')
+    })
 
     if (search) {
       query.whereLike('name', '%' + search + '%')
+    }
+
+    if (continentId) {
+      query.whereHas('country', (q) => {
+        q.whereHas('continent', (q) => {
+          q.where('id', continentId)
+        })
+      })
+    }
+
+    if (countryId) {
+      query.whereHas('country', (q) => {
+        q.where('id', countryId)
+      })
     }
 
     if (page) {
@@ -18,7 +36,10 @@ export default class StatesController {
       states = await query.exec()
     }
 
-    return response.ok(states)
+    const countries = await Country.query().select(['name', 'id'])
+    const continents = await Continent.query().select(['name', 'id'])
+
+    return response.ok({ states, countries, continents })
   }
 
   public async store({ response, request }: HttpContextContract) {

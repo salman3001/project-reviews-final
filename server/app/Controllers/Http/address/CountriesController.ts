@@ -5,8 +5,8 @@ import Continent from 'App/Models/address/Continent'
 
 export default class CountriesController {
   public async index({ response, request }: HttpContextContract) {
-    const { page, search } = request.qs()
-    let Countries: null | Country[] = []
+    const { page, search, continentId } = request.qs()
+    let countries: null | Country[] = []
     const query = Country.query().preload('continent', (q) => {
       q.select(['name'])
     })
@@ -15,13 +15,21 @@ export default class CountriesController {
       query.whereLike('name', '%' + search + '%')
     }
 
-    if (page) {
-      Countries = await query.paginate(page || 1, 10)
-    } else {
-      Countries = await query.exec()
+    if (continentId) {
+      query.whereHas('continent', (q) => {
+        q.where('id', continentId)
+      })
     }
 
-    return response.ok(Countries)
+    if (page) {
+      countries = await query.paginate(page || 1, 10)
+    } else {
+      countries = await query.exec()
+    }
+
+    const continents = await Continent.query().select(['name', 'id'])
+
+    return response.ok({ countries, continents })
   }
 
   public async create({ response }: HttpContextContract) {
@@ -32,7 +40,7 @@ export default class CountriesController {
   public async store({ response, request }: HttpContextContract) {
     const countrySchema = schema.create({
       name: schema.string({ trim: true }),
-      continetId: schema.number.optional(),
+      continentId: schema.number.optional(),
     })
     const payload = await request.validate({ schema: countrySchema })
     await Country.create(payload)
@@ -42,15 +50,15 @@ export default class CountriesController {
   public async show({}: HttpContextContract) {}
 
   public async edit({ response, params }: HttpContextContract) {
-    const contry = await Country.findOrFail(+params.id)
-    const continent = await Continent.query().select(['name', 'id'])
-    return response.ok({ contry, continent })
+    const country = await Country.findOrFail(+params.id)
+    const continents = await Continent.query().select(['name', 'id'])
+    return response.ok({ country, continents })
   }
 
   public async update({ response, request, params }: HttpContextContract) {
     const countrySchema = schema.create({
       name: schema.string({ trim: true }),
-      continetId: schema.number.optional(),
+      continentId: schema.number.optional(),
     })
     const payload = await request.validate({ schema: countrySchema })
     const country = await Country.findOrFail(+params.id)

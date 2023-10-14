@@ -6,7 +6,7 @@ const modal = useModalStore();
 const { $api, $event } = useNuxtApp();
 const token = useCookie("token");
 
-const add = async (values) => {
+const add = async (values: any) => {
   try {
     const res = await $fetch($api + `/address/continents`, {
       method: "post",
@@ -32,11 +32,7 @@ const add = async (values) => {
       <p id="modal-desc" class="text-xs">Add continent detail</p>
     </div>
     <div>
-      <label
-        class="cursor-pointer btn btn-sm btn-square text-black bg-base-300"
-        for="modal"
-        >X</label
-      >
+      <label class="cursor-pointer btn btn-sm btn-square text-black bg-base-300" for="modal">X</label>
     </div>
   </div>
   <div id="modal-content" class="p-4">
@@ -45,11 +41,7 @@ const add = async (values) => {
         <FormKit type="text" name="name" label="Name" validation="required" />
       </div>
       <div class="flex justify-end gap-4 w-full">
-        <label
-          class="cursor-pointer btn btn-sm min-w-[6rem] text-base-400 bg-base-200"
-          for="modal"
-          >Cancle</label
-        >
+        <label class="cursor-pointer btn btn-sm min-w-[6rem] text-base-400 bg-base-200" for="modal">Cancle</label>
         <button type="submit" class="btn btn-sm btn-primary min-w-[6rem]">
           Save
         </button>
