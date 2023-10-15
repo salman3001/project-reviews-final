@@ -1,10 +1,11 @@
 {
   "kind": "collectionType",
-  "collectionName": "continents",
+  "collectionName": "streets",
   "info": {
-    "singularName": "continent",
-    "pluralName": "continents",
-    "displayName": "Continent"
+    "singularName": "street",
+    "pluralName": "streets",
+    "displayName": "Street",
+    "description": ""
   },
   "options": {
     "draftAndPublish": false
@@ -16,11 +17,11 @@
       "required": true,
       "unique": true
     },
-    "countries": {
+    "city": {
       "type": "relation",
-      "relation": "oneToMany",
-      "target": "api::country.country",
-      "mappedBy": "continent"
+      "relation": "manyToOne",
+      "target": "api::city.city",
+      "inversedBy": "streets"
     }
   }
 }

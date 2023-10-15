@@ -81,6 +81,41 @@
       ],
       "required": true,
       "default": "User"
+    },
+    "adress": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::adress.adress",
+      "mappedBy": "user"
+    },
+    "social_link": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::social-link.social-link"
+    },
+    "support_tickets": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::support-ticket.support-ticket",
+      "mappedBy": "user"
+    },
+    "experiences": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::experience.experience",
+      "mappedBy": "users"
+    },
+    "languages": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::language.language",
+      "mappedBy": "users"
+    },
+    "skills": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::skill.skill",
+      "mappedBy": "users"
     }
   }
 }

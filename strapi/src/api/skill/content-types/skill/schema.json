@@ -1,10 +1,10 @@
 {
   "kind": "collectionType",
-  "collectionName": "languages",
+  "collectionName": "skills",
   "info": {
-    "singularName": "language",
-    "pluralName": "languages",
-    "displayName": "Language",
+    "singularName": "skill",
+    "pluralName": "skills",
+    "displayName": "Skill",
     "description": ""
   },
   "options": {
@@ -16,11 +16,14 @@
       "type": "string",
       "required": true
     },
+    "Desc": {
+      "type": "text"
+    },
     "users": {
       "type": "relation",
       "relation": "manyToMany",
       "target": "plugin::users-permissions.user",
-      "inversedBy": "languages"
+      "inversedBy": "skills"
     }
   }
 }

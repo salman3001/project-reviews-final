@@ -1,5 +1,4 @@
 module.exports = ({ env }) => ({
-  // ...
   "users-permissions": {
     config: {
       register: {
@@ -7,5 +6,4 @@ module.exports = ({ env }) => ({
       },
     },
   },
-  // ...
 });
