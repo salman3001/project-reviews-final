@@ -18,6 +18,7 @@ export interface IndexQs {
   filter: Filter
   relationFilter: RelationFilter
   populate: Populate
+  fields: string[]
 }
 
 class BaseService<T extends LucidModel> {
@@ -32,37 +33,9 @@ class BaseService<T extends LucidModel> {
     let records: ModelPaginatorContract<LucidRow> | LucidRow[] | [] = []
     const query = this.modal.query()
 
-    if (qs.populate) {
-      const populate = JSON.parse(qs.populate as unknown as string) as Populate
-      await this.populate(populate, query)
-    }
-
-    if (qs.search) {
-      const search = JSON.parse(qs.search as unknown as string) as Search
-      console.log(search)
-      let i = 0
-      for (const key in search) {
-        const element = search[key]
-        if ((i = 0)) {
-          query.whereLike(key, '%' + element + '%')
-        } else {
-          query.orWhereLike(key, '%' + element + '%')
-        }
-        i++
-      }
-    }
-
-    if (qs.filter) {
-      const filter = JSON.parse(qs.filter as unknown as string) as Filter
-      for (const key in filter) {
-        const element = filter[key]
-        query.where(key, element)
-      }
-    }
-
     if (qs.relationFilter) {
       const relationFilter = JSON.parse(qs.relationFilter as unknown as string) as RelationFilter
-      await this.relationFiler(relationFilter, query)
+      this.relationFiler(relationFilter, query)
     }
 
     if (qs.orderBy) {
@@ -71,6 +44,44 @@ class BaseService<T extends LucidModel> {
         const type = orderBy[key]
         query.orderBy(key, type)
       }
+    }
+
+    if (qs.populate) {
+      const populate = JSON.parse(qs.populate as unknown as string) as Populate
+      await this.populate(populate, query)
+    }
+
+    if (qs.filter) {
+      const filter = JSON.parse(qs.filter as unknown as string) as Filter
+      for (const key in filter) {
+        const element = filter[key]
+        if (element !== null) {
+          query.where(key, element)
+        }
+      }
+    }
+
+    if (qs.search) {
+      const search = JSON.parse(qs.search as unknown as string) as Search
+      let i = 0
+
+      query.where((b) => {
+        for (const key in search) {
+          const element = search[key]
+          if (element !== '') {
+            if (i === 0) {
+              b.whereLike(key, '%' + element + '%')
+            } else {
+              b.orWhereLike(key, '%' + element + '%')
+            }
+            i++
+          }
+        }
+      })
+    }
+
+    if (qs.fields) {
+      records = await query.select(qs.fields)
     }
 
     if (qs.page) {
@@ -84,11 +95,15 @@ class BaseService<T extends LucidModel> {
 
   public async show(id: number, qs?: { fields: string[]; populate: Populate }) {
     const record = this.modal.query().where('id', id)
+
     if (qs?.fields) {
-      record.select(qs.fields)
+      const fileds = JSON.parse(qs.fields as unknown as string)
+      record.select(fileds)
     }
     if (qs?.populate) {
-      this.populate(qs.populate, record)
+      const populate = JSON.parse(qs.populate as unknown as string) as Populate
+      console.log(populate)
+      await this.populate(populate, record)
     }
     return record.first()
   }
@@ -108,6 +123,16 @@ class BaseService<T extends LucidModel> {
   public async destroy(id: number) {
     const record = await this.modal.find(id)
     return record
+  }
+
+  public async uniqueField(qs: { field: string; value: string }) {
+    const record = await this.modal.findBy(qs.field, qs.value)
+
+    if (record) {
+      return true
+    } else {
+      return false
+    }
   }
 
   private async populate(populate: Populate, query: ModelQueryBuilderContract<any>) {
@@ -134,18 +159,20 @@ class BaseService<T extends LucidModel> {
     return query
   }
 
-  private async relationFiler(filter: RelationFilter, query: ModelQueryBuilderContract<any>) {
+  private relationFiler(filter: RelationFilter, query: ModelQueryBuilderContract<any>) {
     for (const key in filter) {
       const element = filter[key]
 
-      query.whereHas(key, async (q) => {
-        q.where(element.field, element.value)
-        if (element.filter) {
-          console.log('ran')
+      if (element.value !== null && element.value !== '') {
+        console.log('ren')
 
-          await this.relationFiler(element.filter, q)
-        }
-      })
+        query.whereHas(key, (q) => {
+          q.where(element.field, element.value)
+          if (element.filter) {
+            this.relationFiler(element.filter, q)
+          }
+        })
+      }
     }
   }
 }

@@ -152,14 +152,13 @@ export default class AdminUsersController {
     return response.json({ message: 'Role Updates' })
   }
 
-  public async uniqueEmail({ request, response }: HttpContextContract) {
-    const q = request.qs()
-    const user = await AdminUser.findBy('email', q.field)
-
-    if (user) {
-      return response.badRequest({ message: 'Email Already Taken' })
+  public async uniqueField({ request, response }: HttpContextContract) {
+    const qs = request.qs() as any
+    const exist = await AdminUserService.uniqueField(qs)
+    if (exist) {
+      return response.badRequest({ message: 'Field is not unique' })
     } else {
-      return response.ok({ message: 'Email Available' })
+      return response.ok({ message: 'Field available' })
     }
   }
 }

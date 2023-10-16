@@ -3,7 +3,13 @@ definePageMeta({
   layout: "admin-layout",
 });
 
-const { result } = await useGet("/roles");
+const { result: roles } = await useGet("/roles", {
+  populate: {
+    permissions: {
+      fields: ["name", "id"],
+    },
+  },
+});
 </script>
 
 <template>
@@ -23,7 +29,7 @@ const { result } = await useGet("/roles");
           </thead>
 
           <tbody>
-            <tr v-for="role in result.roles">
+            <tr v-for="role in roles">
               <td>{{ role.name }}</td>
               <td class="">
                 <div

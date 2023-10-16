@@ -15,14 +15,20 @@ const categoryId = ref<null | number>(null);
 const isActive = ref<null | number>(null);
 
 const {
-  result: contentData,
+  result: contents,
   pending,
   refresh,
 } = await useGet("/help-center/content", {
   page,
   search,
-  categoryId,
-  isActive,
+  filter: {
+    category_id: categoryId,
+    is_active: isActive,
+  },
+});
+
+const { result: categories } = await useGet("/help-center/categories", {
+  fields: ["name", "id"],
 });
 
 const reload = () => {
@@ -42,25 +48,43 @@ onUnmounted(() => {
     <h1 class="text-3xl font-bold">Knowledge Base</h1>
     <div class="flex flex-wrap gap-4 justify-between mt-8">
       <div>
-        <AdminSearchInput @search="(v) => {
-            page = 1;
-            search = v;
-          }
-          " />
+        <AdminSearchInput
+          @search="
+            (v) => {
+              page = 1;
+              search = v;
+            }
+          "
+        />
       </div>
       <div class="flex gap-4 flex-wrap">
-        <select class="select select-bordered select-sm" onchange="" name="categoryId" v-model="categoryId"
-          @change="page = 1">
+        <select
+          class="select select-bordered select-sm"
+          onchange=""
+          name="categoryId"
+          v-model="categoryId"
+          @change="page = 1"
+        >
           <option :value="null">All Cateories</option>
-          <option v-if="contentData" v-for="category in contentData.categories" :key="category.id" :value="category.id">
+          <option
+            v-if="categories"
+            v-for="category in categories"
+            :key="category.id"
+            :value="category.id"
+          >
             {{ category.name }}
           </option>
         </select>
-        <select class="select select-bordered select-sm" onchange="" name="isActive" v-model="isActive"
-          @change="page = 1">
+        <select
+          class="select select-bordered select-sm"
+          onchange=""
+          name="isActive"
+          v-model="isActive"
+          @change="page = 1"
+        >
           <option :value="null">Status</option>
-          <option value="1">Active</option>
-          <option value="0">Inactive</option>
+          <option :value="true">Active</option>
+          <option :value="false">Inactive</option>
         </select>
         <NuxtLink href="/admin/help-center/content/create">
           <button class="btn btn-primary btn-sm">+ Add Content</button>
@@ -69,12 +93,22 @@ onUnmounted(() => {
     </div>
     <div class="pb-16 mt-8">
       <div class="tabs w-full pr-2 translate-y-0.5 bg-base-100">
-        <NuxtLink href="/admin/help-center/content" class="tab tab-lifted sm:w-24 tab-active"
-          style="border-top: 3px black solid">Content</NuxtLink>
-        <NuxtLink href="/admin/help-center/categories" class="tab tab-lifted sm:w-24">Categories</NuxtLink>
+        <NuxtLink
+          href="/admin/help-center/content"
+          class="tab tab-lifted sm:w-24 tab-active"
+          style="border-top: 3px black solid"
+          >Content</NuxtLink
+        >
+        <NuxtLink
+          href="/admin/help-center/categories"
+          class="tab tab-lifted sm:w-24"
+          >Categories</NuxtLink
+        >
         <div class="tab tab-lifted sm:w-24 flex-1"></div>
       </div>
-      <div class="rounded-xl overflow-hidden border border-t-0 overflow-x-scroll scrollbar-hide pb-24">
+      <div
+        class="rounded-xl overflow-hidden border border-t-0 overflow-x-scroll scrollbar-hide pb-24"
+      >
         <table class="table table-zebra rounded-xl mt-4 min-w-7xl">
           <thead>
             <tr>
@@ -87,11 +121,14 @@ onUnmounted(() => {
             </tr>
           </thead>
           <tbody>
-            <tr v-if="contentData" v-for="(content, i) in contentData.content.data" :key="content.id">
+            <tr
+              v-if="contents"
+              v-for="(content, i) in contents"
+              :key="content.id"
+            >
               <td>
                 {{
-                  (contentData.content.meta.current_page - 1) *
-                  contentData.content.meta.per_page +
+                  (contents.meta.current_page - 1) * contents.meta.per_page +
                   (i + 1)
                 }}
               </td>
@@ -101,7 +138,10 @@ onUnmounted(() => {
               <td>{{ content?.language?.name || "" }}</td>
               <td>{{ content?.category?.name || "" }}</td>
               <td>
-                <div v-if="content.is_active == 1" class="badge badge-success badge-outline bg-base-200">
+                <div
+                  v-if="content.is_active == 1"
+                  class="badge badge-success badge-outline bg-base-200"
+                >
                   Active
                 </div>
                 <div v-else class="badge badge-error badge-outline bg-base-200">
@@ -110,25 +150,40 @@ onUnmounted(() => {
               </td>
               <td>
                 <div class="dropdown dropdown-bottom">
-                  <label tabindex="0" class="btn btn-primary font-normal text-white btn-sm normal-case w-max gap-1">
+                  <label
+                    tabindex="0"
+                    class="btn btn-primary font-normal text-white btn-sm normal-case w-max gap-1"
+                  >
                     Select an Options
                   </label>
-                  <ul class="p-1 shadow menu dropdown-content z-[1] bg-base-100 rounded-box w-32 border-t-4 border-black">
+                  <ul
+                    class="p-1 shadow menu dropdown-content z-[1] bg-base-100 rounded-box w-32 border-t-4 border-black"
+                  >
                     <li>
-                      <NuxtLink :href="`/admin/help-center/content/${content.id}`" class="text-sm p-1">View</NuxtLink>
+                      <NuxtLink
+                        :href="`/admin/help-center/content/${content.id}`"
+                        class="text-sm p-1"
+                        >View</NuxtLink
+                      >
                     </li>
                     <li>
-                      <NuxtLink :href="`/admin/help-center/content/${content.id}/edit/`" class="text-sm p-1">Edit
+                      <NuxtLink
+                        :href="`/admin/help-center/content/${content.id}/edit/`"
+                        class="text-sm p-1"
+                        >Edit
                       </NuxtLink>
                     </li>
                     <li>
-                      <button class="text-sm text-start p-1" @click="
-                        modal.togel('delete', {
-                          apiUrl: '/help-center/content/' + content.id,
-                          tostMessage: 'Content deleted',
-                          modalTitle: 'Delete Content',
-                        })
-                        ">
+                      <button
+                        class="text-sm text-start p-1"
+                        @click="
+                          modal.togel('delete', {
+                            apiUrl: '/help-center/content/' + content.id,
+                            tostMessage: 'Content deleted',
+                            modalTitle: 'Delete Content',
+                          })
+                        "
+                      >
                         Delete
                       </button>
                     </li>
@@ -142,10 +197,15 @@ onUnmounted(() => {
     </div>
     <div class="mt-4 flex justify-end">
       <ClientOnly>
-        <Pagination v-if="!pending" :meta="contentData.content.meta" @pageChange="(p) => {
-            page = p;
-          }
-          " />
+        <Pagination
+          v-if="!pending"
+          :meta="contents.meta"
+          @pageChange="
+            (p) => {
+              page = p;
+            }
+          "
+        />
       </ClientOnly>
     </div>
   </section>

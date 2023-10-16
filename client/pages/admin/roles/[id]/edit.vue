@@ -6,9 +6,18 @@ definePageMeta({
 const route = useRoute();
 const { $event } = useNuxtApp();
 
-const { result } = await useGet(`/roles/${route.params.id}/edit`);
+const { result: role } = await useGet(`/roles/${route.params.id}`, {
+  populate: {
+    permissions: {
+      fields: ["name", "id"],
+    },
+  },
+});
+const { result: permissions } = await useGet(`/permissions`, {
+  fields: ["name", "id"],
+});
 
-const selected = ref([...result?.value?.rolePermissions]);
+const selected = ref([...role.value.permissions.map((p) => p.id)]);
 
 const upDate = async () => {
   const { error, result: res } = await usePut("/roles/" + route.params.id, {
@@ -17,7 +26,7 @@ const upDate = async () => {
 
   if (res) {
     navigateTo("/admin/roles");
-    $event("user:updated");
+    $event("record:updated");
   }
 
   if (error) {
@@ -54,11 +63,11 @@ const upDate = async () => {
     </div>
     <form class="mt-4" enctype="multipart/form-data" @submit.prevent="upDate">
       <div class="pt-2">
-        <p class="text-xl font-semibold">{{ result?.role.name }}</p>
+        <p class="text-xl font-semibold">{{ role.name }}</p>
       </div>
       <div class="py-10 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
         <div
-          v-for="permission in result?.permissions"
+          v-for="permission in permissions"
           class="flex gap-2 justify-start items-center"
         >
           <input
@@ -68,7 +77,7 @@ const upDate = async () => {
             name="permissionId"
             :value="permission.id"
             v-model="selected"
-            :disabled="result?.role.name === 'Super Admin'"
+            :disabled="role.name === 'Super Admin'"
           />
           <label
             class="cursor-pointer text-black font-semibold"
@@ -88,7 +97,7 @@ const upDate = async () => {
         <button
           type="submit"
           class="btn w-36 btn-sm btn-primary"
-          :disabled="result?.role.name === 'Super Admin'"
+          :disabled="role.name === 'Super Admin'"
         >
           Save
         </button>

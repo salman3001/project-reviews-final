@@ -15,18 +15,42 @@ const roleId = ref<null | number>(null);
 const isActive = ref<null | number>(null);
 
 const {
-  result: data,
-  pending,
-  refresh,
+  result: users,
+  pending: usersPending,
+  refresh: refreshUsers,
 } = await useGet("/admin-users", {
+  search: {
+    first_name: search,
+    last_name: search,
+  },
   page,
-  search,
-  roleId,
-  isActive,
+  populate: {
+    avatar: {
+      fields: ["url"],
+    },
+    role: {
+      fields: ["name", "id"],
+    },
+  },
+  filter: {
+    is_active: isActive,
+  },
+  relationFilter: {
+    role: {
+      field: "id",
+      value: roleId,
+    },
+  },
 });
 
+const {
+  result: roles,
+  pending: rolesPending,
+  refresh: refreshRoles,
+} = await useGet("/roles");
+
 const reload = () => {
-  refresh();
+  refreshUsers();
 };
 
 onMounted(() => {
@@ -69,8 +93,8 @@ onUnmounted(() => {
         >
           <option :value="null">All Roles</option>
           <option
-            v-if="data"
-            v-for="role in data.roles"
+            v-if="roles"
+            v-for="role in roles"
             :key="role.id"
             :value="role.id"
           >
@@ -86,8 +110,8 @@ onUnmounted(() => {
           @change="page = 1"
         >
           <option :value="null">Status</option>
-          <option value="1">Active</option>
-          <option value="0">Inactive</option>
+          <option :value="true">Active</option>
+          <option :value="false">Inactive</option>
         </select>
         <NuxtLink href="/admin/admin-users/create">
           <button class="btn btn-primary btn-sm">+ Add User</button>
@@ -108,11 +132,10 @@ onUnmounted(() => {
           </tr>
         </thead>
         <tbody>
-          <tr v-if="data" v-for="(user, i) in data.users.data" :key="user.id">
+          <tr v-if="users" v-for="(user, i) in users.data" :key="user.id">
             <td>
               {{
-                (data.users.meta.current_page - 1) * data.users.meta.per_page +
-                (i + 1)
+                (users.meta.current_page - 1) * users.meta.per_page + (i + 1)
               }}
             </td>
             <td class="flex items-center gap-2">
@@ -160,7 +183,7 @@ onUnmounted(() => {
                       @click="
                         modal.togel('changeRole', {
                           userId: user.id,
-                          roles: data.roles,
+                          roles: roles,
                           currentRoleId: user?.role?.id ?? null,
                         })
                       "
@@ -201,8 +224,8 @@ onUnmounted(() => {
     <div class="mt-4 flex justify-end">
       <ClientOnly>
         <Pagination
-          v-if="!pending"
-          :meta="data.users.meta"
+          v-if="!usersPending"
+          :meta="users.meta"
           @pageChange="
             (p) => {
               page = p;

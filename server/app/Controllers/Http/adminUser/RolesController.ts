@@ -1,25 +1,19 @@
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
-import Permission from 'App/Models/adminUser/Permission'
-import Role from 'App/Models/adminUser/Role'
+import RoleService from 'App/services/admin/RoleService'
 
 export default class RolesController {
-  public async index({ response }: HttpContextContract) {
-    const roles = await Role.query().preload('permissions')
-
-    return response.json({ roles })
+  public async index({ request, response }: HttpContextContract) {
+    const qs = request.qs() as any
+    const roles = await RoleService.index(qs)
+    return response.json(roles)
   }
-
-  public async create({}: HttpContextContract) {}
 
   public async store({}: HttpContextContract) {}
 
-  public async show({}: HttpContextContract) {}
-
-  public async edit({ response, params }: HttpContextContract) {
-    const role = await Role.query().where('id', +params.id).preload('permissions').first()
-    const permissions = await Permission.all()
-    const rolePermissions = role ? role.permissions.map((p) => p.id) : []
-    return response.json({ role, permissions, rolePermissions })
+  public async show({ params, response, request }: HttpContextContract) {
+    const qs = request.qs() as any
+    const role = await RoleService.show(+params.id, qs)
+    response.json(role)
   }
 
   public async update({ request, response, params }: HttpContextContract) {
@@ -29,13 +23,17 @@ export default class RolesController {
 
     console.log(permissions)
 
-    const role = await Role.findOrFail(+params.id)
+    const role = await RoleService.show(+params.id)
 
-    await role.related('permissions').detach()
-    await role.related('permissions').attach([...permissions])
-
+    if (role) {
+      await role.related('permissions').detach()
+      await role.related('permissions').attach([...permissions])
+    }
     return response.json({ message: 'role updated' })
   }
 
-  public async destroy({}: HttpContextContract) {}
+  public async destroy({ params, response }: HttpContextContract) {
+    await RoleService.destroy(+params.id)
+    return response.json({ message: 'role deleted' })
+  }
 }

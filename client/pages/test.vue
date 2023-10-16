@@ -29,15 +29,15 @@ const f = async () => {
         address: {},
       },
       orderBy: {
-        first_name: "esc",
+        first_name: "desc",
       },
       filter: {
-        isActive: false,
+        is_active: true,
       },
       relationFilter: {
         role: {
-          field: "name",
-          value: "Vender",
+          field: "id",
+          value: 1,
         },
       },
     },
