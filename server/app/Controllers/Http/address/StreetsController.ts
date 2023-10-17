@@ -1,52 +1,42 @@
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
-import Street from 'App/Models/address/Street'
 import { schema } from '@ioc:Adonis/Core/Validator'
+import StreetService from 'App/services/address/StreetService'
 
 export default class StreetsController {
-  public async index({ response, request }: HttpContextContract) {
-    const { page, search } = request.qs()
-    let streets: null | Street[] = []
-    const query = Street.query()
-
-    if (search) {
-      query.whereLike('name', '%' + search + '%')
-    }
-
-    if (page) {
-      streets = await query.paginate(page || 1, 10)
-    } else {
-      streets = await query.exec()
-    }
-    return response.ok(streets)
+  public async index({ request, response }: HttpContextContract) {
+    const qs = request.qs() as any
+    const records = await StreetService.index(qs)
+    return response.json(records)
   }
 
-  public async store({ response, request }: HttpContextContract) {
+  public async store({ request, response }: HttpContextContract) {
     const streetSchema = schema.create({
       name: schema.string({ trim: true }),
       cityId: schema.number.optional(),
     })
     const payload = await request.validate({ schema: streetSchema })
-    await Street.create(payload)
-    return response.ok({ message: 'street Created' })
+    const record = await StreetService.store(payload)
+    return response.json({ message: 'record created', data: record })
   }
 
-  public async show({}: HttpContextContract) {}
+  public async show({ params, response, request }: HttpContextContract) {
+    const qs = request.qs() as any
+    const record = await StreetService.show(+params.id, qs)
+    response.json(record)
+  }
 
-  public async update({ response, request, params }: HttpContextContract) {
+  public async update({ request, response, params }: HttpContextContract) {
     const streetSchema = schema.create({
       name: schema.string({ trim: true }),
       cityId: schema.number.optional(),
     })
     const payload = await request.validate({ schema: streetSchema })
-    const street = await Street.findOrFail(+params.id)
-    street.merge(payload)
-    await street.save()
-    return response.ok({ message: 'street updated' })
+    const record = await StreetService.update(params.id, payload)
+    return response.json({ message: 'record updated', data: record })
   }
 
-  public async destroy({ response, params }: HttpContextContract) {
-    const street = await Street.findOrFail(+params.id)
-    await street.delete()
-    return response.ok({ message: 'street deleted' })
+  public async destroy({ params, response }: HttpContextContract) {
+    await StreetService.destroy(+params.id)
+    return response.json({ message: 'record deleted' })
   }
 }

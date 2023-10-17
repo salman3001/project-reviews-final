@@ -1,129 +1,57 @@
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
-import Language from 'App/Models/Language'
-import BlogCategory from 'App/Models/blogs/BlogCategory'
 import BlogCategoryValidator from 'App/Validators/blogs/BlogCategoryValidator'
+import BlogCategoryService from 'App/services/blogs/BlogCategoryService'
 import slugify from 'slugify'
 
 export default class BlogCategoriesController {
   public async index({ request, response }: HttpContextContract) {
-    const { page, languageId, status, search } = request.qs()
-
-    const query = BlogCategory.query()
-
-    if (status) {
-      query.where('status', status === 'true')
-    }
-
-    if (languageId) {
-      query.where('language_id', languageId)
-    }
-
-    if (search) {
-      query.whereLike('name', '%' + search + '%')
-    }
-
-    await query.preload('language', (q) => {
-      q.select(['name'])
-    })
-
-    const blogCategories = await query.paginate(page || 1, 10)
-
-    const languages = await Language.query().select(['name', 'id'])
-
-    return response.json({ blogCategories, languages })
-  }
-
-  public async create({ response }: HttpContextContract) {
-    const languages = await Language.query().select(['name', 'id'])
-    response.ok({ languages })
+    const qs = request.qs() as any
+    const records = await BlogCategoryService.index(qs)
+    return response.json(records)
   }
 
   public async store({ request, response }: HttpContextContract) {
     const { slug, ...payload } = await request.validate(BlogCategoryValidator)
 
-    let category: BlogCategory | null = null
-
     if (slug) {
-      category = await BlogCategory.create({ ...payload, slug })
+      await BlogCategoryService.store({ ...payload, slug })
     } else {
-      category = await BlogCategory.create({ slug: slugify(payload.name), ...payload })
+      await BlogCategoryService.store({ slug: slugify(payload.name), ...payload })
     }
-
-    await category.save()
 
     return response.json({ message: 'Blog Created' })
   }
 
-  public async show({ response, params }: HttpContextContract) {
-    const blog = await BlogCategory.findOrFail(+params.id)
-    await blog.load('language', (q) => {
-      q.select(['name', 'id']).first()
-    })
-    response.ok(blog)
+  public async show({ params, response, request }: HttpContextContract) {
+    const qs = request.qs() as any
+    const record = await BlogCategoryService.show(+params.id, qs)
+    response.json(record)
   }
 
-  public async edit({ response, params }: HttpContextContract) {
-    const category = await BlogCategory.findOrFail(+params.id)
-    await category.load('language', (q) => {
-      q.select(['name', 'id']).first()
-    })
-
-    const languages = await Language.query().select(['name', 'id'])
-
-    response.ok({ languages, category })
-  }
-
-  public async update({ response, params, request }: HttpContextContract) {
-    const category = await BlogCategory.findOrFail(+params.id)
+  public async update({ request, response, params }: HttpContextContract) {
     const { slug, ...payload } = await request.validate(BlogCategoryValidator)
 
     if (slug) {
-      category.merge({ ...payload, slug })
+      await BlogCategoryService.update(+params.id, { ...payload, slug })
     } else {
-      category.merge({ slug: slugify(payload.name), ...payload })
+      await BlogCategoryService.update(+params.id, { slug: slugify(payload.name), ...payload })
     }
 
-    await category.save()
-
-    return response.json({ message: 'Category updated' })
+    return response.json({ message: 'Blog Updated' })
   }
 
   public async destroy({ params, response }: HttpContextContract) {
-    const blogCategory = await BlogCategory.findOrFail(+params.id)
-    await blogCategory.delete()
-    return response.ok({ message: 'Category Deleted' })
+    await BlogCategoryService.destroy(+params.id)
+    return response.json({ message: 'record deleted' })
   }
 
-  public async uniqueName({ request, response }: HttpContextContract) {
-    const q = request.qs()
-    const blogCategory = await BlogCategory.findBy('name', q.field)
-
-    if (blogCategory) {
-      return response.badRequest({ message: 'Name Already Taken' })
+  public async uniqueField({ request, response }: HttpContextContract) {
+    const qs = request.qs() as any
+    const exist = await BlogCategoryService.uniqueField(qs)
+    if (exist) {
+      return response.badRequest({ message: 'Field is not unique' })
     } else {
-      return response.ok({ message: 'Name Available' })
-    }
-  }
-
-  public async uniqueSlug({ request, response }: HttpContextContract) {
-    const q = request.qs()
-    const blogCategory = await BlogCategory.findBy('slug', q.field)
-
-    if (blogCategory) {
-      return response.badRequest({ message: 'Slug already Taken' })
-    } else {
-      return response.ok({ message: 'Slug Available' })
-    }
-  }
-
-  public async uniqueOrder({ request, response }: HttpContextContract) {
-    const q = request.qs()
-    const blogCategory = await BlogCategory.findBy('order', +q.field)
-
-    if (blogCategory) {
-      return response.badRequest({ message: 'Order already Taken' })
-    } else {
-      return response.ok({ message: 'Order Available' })
+      return response.ok({ message: 'Field available' })
     }
   }
 }

@@ -55,8 +55,9 @@ export default class AdminUsersController {
     return response.json(user)
   }
 
-  public async show({ response, params }: HttpContextContract) {
-    const user = await AdminUserService.show(+params.id)
+  public async show({ response, params, request }: HttpContextContract) {
+    const qs = request.qs() as IndexQs
+    const user = await AdminUserService.show(+params.id, qs)
 
     return response.json(user)
   }
@@ -93,8 +94,10 @@ export default class AdminUsersController {
       }
       if (payload.social) {
         await user.load('social')
+        console.log(payload.social)
+
         if (user.social) {
-          SocialService.update(user.social.id, payload.social)
+          await SocialService.update(user.social.id, payload.social)
         } else {
           const social = await SocialService.store(payload.social)
           user.related('social').save(social)
@@ -153,6 +156,8 @@ export default class AdminUsersController {
   }
 
   public async uniqueField({ request, response }: HttpContextContract) {
+    console.log('ran')
+
     const qs = request.qs() as any
     const exist = await AdminUserService.uniqueField(qs)
     if (exist) {

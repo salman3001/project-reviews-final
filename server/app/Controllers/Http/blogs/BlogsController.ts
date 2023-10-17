@@ -1,71 +1,26 @@
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
-import Image from 'App/Models/Image'
-import Language from 'App/Models/Language'
-import Drive from '@ioc:Adonis/Core/Drive'
 import Blog from 'App/Models/blogs/Blog'
-import BlogCategory from 'App/Models/blogs/BlogCategory'
 import BlogValidator from 'App/Validators/blogs/BlogValidator'
 import slugify from 'slugify'
+import BlogService from 'App/services/blogs/BlogService'
+import ImageService from 'App/services/ImageService'
 
 export default class BlogsController {
   public async index({ request, response }: HttpContextContract) {
-    const { page, categoryId, languageId, isPublished, search } = request.qs()
-
-    const query = Blog.query()
-
-    if (isPublished) {
-      query.where('is_published', isPublished)
-    }
-
-    if (categoryId) {
-      query.whereHas('category', (c) => {
-        c.where('blog_category_id', +categoryId)
-      })
-    }
-
-    if (languageId) {
-      query.where('language_id', languageId)
-    }
-
-    if (search) {
-      query.whereLike('title', '%' + search + '%')
-    }
-
-    await query.preload('category', (q) => {
-      q.select(['name'])
-    })
-
-    await query.preload('language', (q) => {
-      q.select(['name'])
-    })
-
-    await query.preload('image', (q) => {
-      q.select(['url'])
-    })
-
-    const blogs = await query.paginate(page || 1, 10)
-    const blogCategories = await BlogCategory.query().select(['name', 'id'])
-    const languages = await Language.query().select(['name', 'id'])
-
-    return response.json({ blogs, blogCategories, languages })
-  }
-
-  public async create({ response }: HttpContextContract) {
-    const categories = await BlogCategory.query().select(['name', 'id'])
-    const languages = await Language.query().select(['name', 'id'])
-
-    response.ok({ languages, categories })
+    const qs = request.qs() as any
+    const records = await BlogService.index(qs)
+    return response.json(records)
   }
 
   public async store({ request, response }: HttpContextContract) {
     const { image, blogCategoryId, slug, ...payload } = await request.validate(BlogValidator)
 
-    let blog: Blog | null = null
+    let blog: null | Blog = null
 
     if (slug) {
-      blog = await Blog.create({ ...payload, slug })
+      blog = await BlogService.store({ ...payload, slug })
     } else {
-      blog = await Blog.create({ slug: slugify(payload.title), ...payload })
+      blog = await BlogService.store({ slug: slugify(payload.title), ...payload })
     }
 
     if (blogCategoryId) {
@@ -73,113 +28,67 @@ export default class BlogsController {
     }
 
     if (image) {
-      await image.moveToDisk('./blogs', {
-        name: blog.title + Date.now() + '.' + image.extname,
-      })
-      const imageName = image?.fileName
-      const createdimage = await Image.create({ url: '/blogs/' + imageName })
-      await blog.related('image').save(createdimage)
+      const createdImage = await ImageService.store(image, '/blogs', 'blog')
+      await blog.related('image').save(createdImage)
     }
-
-    await blog.save()
 
     return response.json({ message: 'Blog Created' })
   }
 
-  public async show({ response, params }: HttpContextContract) {
-    const blog = await Blog.findOrFail(+params.id)
-    await blog.load('category', (q) => {
-      q.select(['name', 'id']).first()
-    })
-    await blog.load('image', (q) => {
-      q.select(['url'])
-    })
-
-    response.ok(blog)
-  }
-
-  public async edit({ response, params }: HttpContextContract) {
-    const blog = await Blog.findOrFail(+params.id)
-    await blog.load('category', (q) => {
-      q.select(['name', 'id']).first()
-    })
-    await blog.load('image', (q) => {
-      q.select(['url'])
-    })
-
-    const categories = await BlogCategory.query().select(['name', 'id'])
-    const languages = await Language.query().select(['name', 'id'])
-
-    response.ok({ languages, categories, blog })
+  public async show({ params, response, request }: HttpContextContract) {
+    const qs = request.qs() as any
+    const record = await BlogService.show(+params.id, qs)
+    response.json(record)
   }
 
   public async update({ request, response, params }: HttpContextContract) {
-    const blog = await Blog.findOrFail(+params.id)
     const { image, blogCategoryId, slug, ...payload } = await request.validate(BlogValidator)
 
+    let blog: null | Blog = null
+
     if (slug) {
-      blog.merge({ ...payload, slug })
+      blog = await BlogService.update(+params.id, { ...payload, slug })
     } else {
-      blog.merge({ slug: slugify(payload.title), ...payload })
+      blog = await BlogService.update(+params.id, { slug: slugify(payload.title), ...payload })
     }
 
     if (blogCategoryId) {
-      blog.related('category').detach()
-      blog.related('category').attach([blogCategoryId])
+      blog && (await blog.related('category').detach())
+      blog && (await blog.related('category').attach([blogCategoryId]))
     }
 
     if (image) {
-      await blog.load('image')
-      if (blog.image) {
-        await Drive.delete(blog.image.url)
+      await blog?.load('image')
+      if (blog?.image) {
+        await ImageService.destroy(blog.image.id)
         await blog.image.delete()
       }
-
-      await image.moveToDisk('./blogs', {
-        name: blog.title + Date.now() + '.' + image.extname,
-      })
-      const imageName = image?.fileName
-      const createdimage = await Image.create({ url: '/blogs/' + imageName })
-      await blog.related('image').save(createdimage)
+      const createdImage = await ImageService.store(image, '/blogs', 'blog')
+      blog && (await blog.related('image').save(createdImage))
     }
 
-    await blog.save()
-
-    return response.json({ message: 'Blog updated' })
+    return response.json({ message: 'Blog Updated' })
   }
 
   public async destroy({ params, response }: HttpContextContract) {
-    const blog = await Blog.query().where('id', +params.id).firstOrFail()
-    await blog?.load('image')
-
-    if (blog?.image) {
-      await Drive.delete(blog.image.url)
-      await blog.image.delete()
+    const blog = await BlogService.show(+params.id)
+    if (blog) {
+      await blog.load('image')
+      if (blog.image) {
+        await blog.image.delete()
+      }
+      await blog.delete()
     }
-
-    await blog.delete()
-    return response.ok({ message: 'Blog Deleted' })
+    return response.json({ message: 'record deleted' })
   }
 
-  public async uniqueTitle({ request, response }: HttpContextContract) {
-    const q = request.qs()
-    const blog = await Blog.findBy('title', q.field)
-
-    if (blog) {
-      return response.badRequest({ message: 'Name Already Taken' })
+  public async uniqueField({ request, response }: HttpContextContract) {
+    const qs = request.qs() as any
+    const exist = await BlogService.uniqueField(qs)
+    if (exist) {
+      return response.badRequest({ message: 'Field is not unique' })
     } else {
-      return response.ok({ message: 'Name Available Available' })
-    }
-  }
-
-  public async uniqueSlug({ request, response }: HttpContextContract) {
-    const q = request.qs()
-    const blog = await Blog.findBy('slug', q.field)
-
-    if (blog) {
-      return response.badRequest({ message: 'Slug already Taken' })
-    } else {
-      return response.ok({ message: 'Slug Available' })
+      return response.ok({ message: 'Field available' })
     }
   }
 }

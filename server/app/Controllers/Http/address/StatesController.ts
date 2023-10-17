@@ -1,74 +1,42 @@
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import { schema } from '@ioc:Adonis/Core/Validator'
-import Continent from 'App/Models/address/Continent'
-import Country from 'App/Models/address/Country'
-import State from 'App/Models/address/State'
+import StateService from 'App/services/address/StateService'
 
 export default class StatesController {
-  public async index({ response, request }: HttpContextContract) {
-    const { page, search, countryId, continentId } = request.qs()
-    let states: null | State[] = []
-    const query = State.query().preload('country', (q) => {
-      q.preload('continent')
-    })
-
-    if (search) {
-      query.whereLike('name', '%' + search + '%')
-    }
-
-    if (continentId) {
-      query.whereHas('country', (q) => {
-        q.whereHas('continent', (q) => {
-          q.where('id', continentId)
-        })
-      })
-    }
-
-    if (countryId) {
-      query.whereHas('country', (q) => {
-        q.where('id', countryId)
-      })
-    }
-
-    if (page) {
-      states = await query.paginate(page || 1, 10)
-    } else {
-      states = await query.exec()
-    }
-
-    const countries = await Country.query().select(['name', 'id'])
-    const continents = await Continent.query().select(['name', 'id'])
-
-    return response.ok({ states, countries, continents })
+  public async index({ request, response }: HttpContextContract) {
+    const qs = request.qs() as any
+    const records = await StateService.index(qs)
+    return response.json(records)
   }
 
-  public async store({ response, request }: HttpContextContract) {
+  public async store({ request, response }: HttpContextContract) {
     const StateSchema = schema.create({
       name: schema.string({ trim: true }),
       countryId: schema.number.optional(),
     })
     const payload = await request.validate({ schema: StateSchema })
-    await State.create(payload)
-    return response.ok({ message: 'State Created' })
+    const record = await StateService.store(payload)
+    return response.json({ message: 'record created', data: record })
   }
 
-  public async show({}: HttpContextContract) {}
+  public async show({ params, response, request }: HttpContextContract) {
+    const qs = request.qs() as any
+    const record = await StateService.show(+params.id, qs)
+    response.json(record)
+  }
 
-  public async update({ response, request, params }: HttpContextContract) {
+  public async update({ request, response, params }: HttpContextContract) {
     const StateSchema = schema.create({
       name: schema.string({ trim: true }),
       countryId: schema.number.optional(),
     })
     const payload = await request.validate({ schema: StateSchema })
-    const state = await State.findOrFail(+params.id)
-    state.merge(payload)
-    await state.save()
-    return response.ok({ message: 'State updated' })
+    const record = await StateService.update(params.id, payload)
+    return response.json({ message: 'record updated', data: record })
   }
 
-  public async destroy({ response, params }: HttpContextContract) {
-    const state = await State.findOrFail(+params.id)
-    await state.delete()
-    return response.ok({ message: 'State deleted' })
+  public async destroy({ params, response }: HttpContextContract) {
+    await StateService.destroy(+params.id)
+    return response.json({ message: 'record deleted' })
   }
 }

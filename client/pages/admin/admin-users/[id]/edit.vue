@@ -15,14 +15,20 @@ const address = useAddressStore();
 
 const { data: roles } = await useFetch($api + "/roles", {
   headers: { Authorization: `Bearer ${token.value}` },
-  transform: (v: any) => v.roles,
 });
 
 const { data: user } = await useFetch(
   $api + "/admin-users/" + route.params.id,
   {
     headers: { Authorization: `Bearer ${token.value}` },
-    transform: (v: any) => v.user,
+    params: {
+      populate: {
+        role: {},
+        avatar: {},
+        address: {},
+        social: {},
+      },
+    },
   }
 );
 
@@ -53,7 +59,7 @@ const updateUser = async (values: any) => {
       headers: { Authorization: `Bearer ${token.value}` },
       method: "put",
     })) as any;
-    $event("user:updated");
+    $event("record:updated");
     navigateTo("/admin/admin-users");
   } catch (error: any) {
     console.log(error.message);
@@ -81,8 +87,8 @@ const updateUser = async (values: any) => {
         </svg>
       </NuxtLink>
       <div class="flex flex-col items-center">
-        <h1 class="text-2xl font-bold">Add User</h1>
-        <p class="text-base-400 text-sm" id="click">Add user details</p>
+        <h1 class="text-2xl font-bold">Edit User</h1>
+        <p class="text-base-400 text-sm" id="click">Edit user details</p>
       </div>
     </div>
     <FormKit
@@ -127,7 +133,7 @@ const updateUser = async (values: any) => {
               <p
                 class="input input-bordered mt-6 justify-center flex items-center"
               >
-                {{ user.email }}
+                {{ user?.email }}
               </p>
               <span class="btn btn-link text-base-400 normal-case"
                 >Change Email</span

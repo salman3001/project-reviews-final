@@ -1,11 +1,8 @@
 import Route from '@ioc:Adonis/Core/Route'
 
 Route.group(() => {
-  Route.get('blogs/unique-title', 'blogs/BlogsController.uniqueTitle')
-  Route.get('blogs/unique-slug', 'blogs/BlogsController.uniqueSlug')
-  Route.resource('blogs', 'blogs/BlogsController')
-  Route.get('blog-categories/unique-name', 'blogs/BlogCategoriesController.uniqueName')
-  Route.get('blog-categories/unique-slug', 'blogs/BlogCategoriesController.uniqueSlug')
-  Route.get('blog-categories/unique-order', 'blogs/BlogCategoriesController.uniqueOrder')
-  Route.resource('blog-categories', 'blogs/BlogCategoriesController')
+  Route.get('blogs/unique-field', 'blogs/BlogsController.uniqueField')
+  Route.resource('blogs', 'blogs/BlogsController').apiOnly()
+  Route.get('blog-categories/unique-field', 'blogs/BlogCategoriesController.uniqueField')
+  Route.resource('blog-categories', 'blogs/BlogCategoriesController').apiOnly()
 }).prefix('api')

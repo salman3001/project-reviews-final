@@ -100,12 +100,13 @@ class BaseService<T extends LucidModel> {
       const fileds = JSON.parse(qs.fields as unknown as string)
       record.select(fileds)
     }
+
     if (qs?.populate) {
       const populate = JSON.parse(qs.populate as unknown as string) as Populate
       console.log(populate)
       await this.populate(populate, record)
     }
-    return record.first()
+    return await record.first()
   }
 
   public async store(payload: any) {

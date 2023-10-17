@@ -1,38 +1,33 @@
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
-import SupportTicket from 'App/Models/helpcenter/SupportTicket'
+import SupportTicketService from 'App/services/helpcenter/SupportTicketService'
 
 export default class SupportTicketsController {
   public async index({ request, response }: HttpContextContract) {
-    const { page, status } = request.qs()
-
-    const query = SupportTicket.query()
-
-    if (status) {
-      query.where('status', status)
-    }
-
-    await query.preload('user', (q) => {
-      q.select(['first_name', 'last_name'])
-    })
-
-    const tickets = await query.paginate(page || 1, 10)
-
-    return response.json(tickets)
+    const qs = request.qs() as any
+    const records = await SupportTicketService.index(qs)
+    return response.json(records)
   }
 
-  public async create({}: HttpContextContract) {}
+  public async store({ request, response }: HttpContextContract) {
+    const payload = await request.validate({} as any)
+    const record = await SupportTicketService.store(payload)
+    return response.json({ message: 'record created', data: record })
+  }
 
-  public async store({}: HttpContextContract) {}
+  public async show({ params, response, request }: HttpContextContract) {
+    const qs = request.qs() as any
+    const record = await SupportTicketService.show(+params.id, qs)
+    response.json(record)
+  }
 
-  public async show({}: HttpContextContract) {}
-
-  public async edit({}: HttpContextContract) {}
-
-  public async update({}: HttpContextContract) {}
+  public async update({ request, response, params }: HttpContextContract) {
+    const payload = await request.validate({} as any)
+    const record = await SupportTicketService.update(params.id, payload)
+    return response.json({ message: 'record updated', data: record })
+  }
 
   public async destroy({ params, response }: HttpContextContract) {
-    const ticket = await SupportTicket.query().where('id', +params.id).firstOrFail()
-    await ticket.delete()
-    return response.ok({ message: 'Ticket Deleted' })
+    await SupportTicketService.destroy(+params.id)
+    return response.json({ message: 'record deleted' })
   }
 }

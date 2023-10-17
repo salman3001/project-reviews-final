@@ -1,4 +1,9 @@
-const unique = async (node: FormKitNode, url: string, skipValue: string) => {
+const unique = async (
+  node: FormKitNode,
+  url: string,
+  field: string,
+  skipValue: string
+) => {
   const { $api } = useNuxtApp();
   const token = useCookie("token");
 
@@ -9,7 +14,8 @@ const unique = async (node: FormKitNode, url: string, skipValue: string) => {
       const res = await $fetch($api + url, {
         headers: { Authorization: `Bearer ${token.value}` },
         params: {
-          field: node.value,
+          field,
+          value: node.value,
         },
       });
       return true;

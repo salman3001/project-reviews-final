@@ -11,7 +11,7 @@ const { $event, $toast } = useNuxtApp();
 
 const address = useAddressStore();
 
-const { result: data } = await useGet("/roles");
+const { result: roles } = await useGet("/roles");
 
 const createUser = async (values: any) => {
   const formData = new FormData();
@@ -37,7 +37,7 @@ const createUser = async (values: any) => {
   const { result, error } = await usePost("/admin-users", formData);
 
   if (result) {
-    $event("user:created");
+    $event("record:created");
     navigateTo("/admin/admin-users");
   }
 
@@ -89,7 +89,7 @@ onMounted(() => {
               label="Email"
               name="email"
               placeholder="Type here..."
-              validation="required|email|unique:/admin-users/unique-email"
+              validation="required|email|unique:/admin-users/unique-field,email"
               :validation-messages="{
                 unique: 'Email already taken',
               }"
@@ -144,7 +144,7 @@ onMounted(() => {
             type="select"
             label="Role"
             name="roleId"
-            :options="data.roles ? [{ label: 'Select Role', value: '', attrs: { disabled: true,selected:true } }, ...data.roles.map((role: any) => ({ label: role.name, value: role.id }))] : []"
+            :options="roles ? [{ label: 'Select Role', value: '', attrs: { disabled: true,selected:true } }, ...roles.map((role: any) => ({ label: role.name, value: role.id }))] : []"
             :plugins="[castNumber]"
           />
         </div>
