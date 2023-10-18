@@ -48,7 +48,7 @@ export default class AdminUsersController {
     }
 
     if (payload.image) {
-      const image = await ImageService.store(payload.image, '/admin_users/', user.firstName)
+      const image = await ImageService.store(payload.image, '/admin-users/', user.firstName)
       await user.related('avatar').save(image)
     }
 
@@ -112,9 +112,9 @@ export default class AdminUsersController {
         await user.load('avatar')
         if (user.avatar) {
           await ImageService.destroy(user.avatar.id)
-          user.related('avatar').save(image)
+          await user.related('avatar').save(image)
         } else {
-          user.related('avatar').save(image)
+          await user.related('avatar').save(image)
         }
       }
     }

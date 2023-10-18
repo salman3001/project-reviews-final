@@ -16,7 +16,8 @@ class ImageService extends BaseService<typeof Image> {
 
   public override async destroy(id: number): Promise<Image> {
     const image = await this.modal.findOrFail(id)
-    Drive.delete(image.url)
+    await Drive.delete(image.url)
+    await image.delete()
     return image
   }
 }
