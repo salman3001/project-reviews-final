@@ -1,12 +1,23 @@
 <script setup lang="ts">
 import BrandLogo from 'components/BrandLogo.vue';
+import authStore from 'src/stores/authStroe';
 import { ref } from 'vue';
+
+const auth = authStore();
 
 const form = ref({
   rememberMe: false,
   email: '',
   password: '',
 });
+
+const login = async () => {
+  await auth.adminLogin(
+    form.value.email,
+    form.value.password,
+    form.value.rememberMe
+  );
+};
 </script>
 <template>
   <q-layout>
@@ -33,25 +44,17 @@ const form = ref({
               <form class="q-gutter-y-md">
                 <div>
                   <label>Email</label>
-                  <q-input
-                    outlined
-                    v-model="form.email"
-                    label="Outlined"
-                    dense
-                  />
+                  <q-input outlined v-model="form.email" dense />
                 </div>
                 <div>
                   <label>Email</label>
-                  <q-input
-                    outlined
-                    v-model="form.password"
-                    label="Outlined"
-                    dense
-                  />
+                  <q-input outlined v-model="form.password" dense />
                   <q-checkbox v-model="form.rememberMe" label="Remember Me"
                   style: />
                 </div>
-                <q-btn color="primary" style="width: 100%">Submit</q-btn>
+                <q-btn color="primary" style="width: 100%" @click="login"
+                  >Submit</q-btn
+                >
               </form>
             </q-card-section>
           </q-card>
