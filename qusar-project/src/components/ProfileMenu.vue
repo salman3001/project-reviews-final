@@ -1,9 +1,22 @@
+<script setup lang="ts">
+import authStore from 'src/stores/authStroe';
+import { useRouter } from 'vue-router';
+
+const auth = authStore()
+const router = useRouter()
+
+
+const logout = async () => {
+  await auth.adminLogout()
+  router.push({ name: 'adminLogin' })
+}
+</script>
 <template>
   <q-btn round icon="account_circle" class="text-black" unelevated>
     <q-menu anchor="bottom left">
       <q-list style="min-width: 100px">
         <q-item clickable v-close-popup>
-          <q-item-section>Sign Out</q-item-section>
+          <q-item-section @click="logout">Sign Out</q-item-section>
         </q-item>
         <!-- <q-item clickable v-close-popup>
           <q-item-section>New incognito tab</q-item-section>

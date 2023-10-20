@@ -1,3 +1,4 @@
+import { useAuth } from 'app/composables/useAuth';
 import { RouteRecordRaw } from 'vue-router';
 
 const routes: RouteRecordRaw[] = [
@@ -24,6 +25,7 @@ const routes: RouteRecordRaw[] = [
   {
     path: '/admin',
     component: () => import('layouts/AdminLayout.vue'),
+    beforeEnter: (to, from, next) => useAuth(to, from, next, 'admin'),
     children: [
       {
         path: '',
@@ -31,44 +33,44 @@ const routes: RouteRecordRaw[] = [
         name: 'adminDashboard',
       },
       {
-        path: '/admin-users',
+        path: 'admin-users',
         component: () => import('pages/admin/AdminUserIndex.vue'),
         name: 'admin.adminUsers.index',
       },
       {
-        path: '/roles',
+        path: 'roles',
         component: () => import('pages/admin/RolesIndex.vue'),
         name: 'admin.roles.index',
       },
       {
-        path: '/help-center/content',
+        path: 'help-center/content',
         component: () =>
           import('pages/help-center/knowledgebase/ContentIndex.vue'),
         name: 'admin.knowlegebase.contnet.index',
       },
       {
-        path: '/help-center/category',
+        path: 'help-center/category',
         component: () =>
           import('pages/help-center/knowledgebase/CategoryIndex.vue'),
         name: 'admin.knowlegebase.category.index',
       },
       {
-        path: '/help-center/contact-message',
+        path: 'help-center/contact-message',
         component: () => import('pages/help-center/ContactMessageIndex.vue'),
         name: 'admin.contactMessage.index',
       },
       {
-        path: '/help-center/support-ticket',
+        path: 'help-center/support-ticket',
         component: () => import('pages/help-center/SupportTicketIndex.vue'),
         name: 'admin.supportTicket.index',
       },
       {
-        path: '/blogs/posts',
+        path: 'blogs/posts',
         component: () => import('pages/blog/BlogsIndex.vue'),
         name: 'admin.blogs.index',
       },
       {
-        path: '/blogs/categories',
+        path: 'blogs/categories',
         component: () => import('pages/blog/CategoryIndex.vue'),
         name: 'admin.blogs.category.index',
       },

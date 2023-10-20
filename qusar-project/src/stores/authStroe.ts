@@ -3,10 +3,9 @@ import { Cookies, Notify } from 'quasar';
 import { api } from 'src/boot/axios';
 import { useRouter } from 'vue-router';
 
-const router = useRouter();
-
 const authStore = defineStore('Auth', () => {
-  const user = Cookies.get('user');
+  const user = () => Cookies.get('user') as any;
+  const router = useRouter();
 
   const setUser = (payload: any) => {
     Cookies.set('user', payload, {
@@ -33,23 +32,25 @@ const authStore = defineStore('Auth', () => {
 
       setUser(res?.data?.user);
       setToken(res?.data?.token?.token);
-      router.push({
-        name: 'adminDashboard',
-      });
+      router.push({ name: 'adminDashboard' });
       Notify.create({ message: 'Login Successfull!', badgeColor: 'positive' });
     } catch (error: any) {
       Notify.create({ message: 'Login Failed!', badgeColor: 'red' });
     }
+
+    return user;
   };
 
   const adminLogout = async () => {
-    console.log('ran');
-
     try {
       await api.get('/auth/admin-logout');
       setUser(null);
       setToken(null);
-      router.push({ name: 'admin.login' });
+      Notify.create({
+        message: 'Logout Successfull!',
+        badgeColor: 'positive',
+      });
+      router.push({ name: 'adminLogin' });
     } catch (error: any) {
       Notify.create({
         message: 'Opps Something went wrong!',
@@ -59,8 +60,8 @@ const authStore = defineStore('Auth', () => {
   };
 
   const hasRole = (name: string) => {
-    if (user) {
-      const u = JSON.parse(user);
+    const u = user();
+    if (u) {
       return u?.role?.name === name;
     } else {
       return false;
@@ -68,11 +69,10 @@ const authStore = defineStore('Auth', () => {
   };
 
   const hasPermission = (name: string) => {
-    if (user) {
-      const u = JSON.parse(user);
-      const permissions = u?.value?.role?.permissions.map(
-        (perm: any) => perm.name
-      );
+    const u = user();
+
+    if (u) {
+      const permissions = u?.role?.permissions.map((perm: any) => perm.name);
 
       if (permissions.includes(name)) {
         return true;

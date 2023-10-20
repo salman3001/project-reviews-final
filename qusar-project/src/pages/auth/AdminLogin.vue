@@ -17,6 +17,7 @@ const login = async () => {
     form.value.password,
     form.value.rememberMe
   );
+
 };
 </script>
 <template>
@@ -24,10 +25,7 @@ const login = async () => {
     <q-page-container>
       <q-page class="row items-center justify-evenly">
         <div class="q-pa-md">
-          <q-card
-            class="my-card q-pa-md"
-            style="min-width: 400px; border-radius: 15px"
-          >
+          <q-card class="my-card q-pa-md" style="min-width: 400px; border-radius: 15px">
             <q-card-section>
               <div class="row justify-center">
                 <BrandLogo />
@@ -49,12 +47,9 @@ const login = async () => {
                 <div>
                   <label>Email</label>
                   <q-input outlined v-model="form.password" dense />
-                  <q-checkbox v-model="form.rememberMe" label="Remember Me"
-                  style: />
+                  <q-checkbox v-model="form.rememberMe" label="Remember Me" style: />
                 </div>
-                <q-btn color="primary" style="width: 100%" @click="login"
-                  >Submit</q-btn
-                >
+                <q-btn color="primary" style="width: 100%" @click="login">Submit</q-btn>
               </form>
             </q-card-section>
           </q-card>
