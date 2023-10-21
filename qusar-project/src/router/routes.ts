@@ -1,4 +1,4 @@
-import { useAuth } from 'app/composables/useAuth';
+import { useAuth } from 'src/composables/useAuth';
 import { RouteRecordRaw } from 'vue-router';
 
 const routes: RouteRecordRaw[] = [
@@ -19,6 +19,16 @@ const routes: RouteRecordRaw[] = [
     path: '/admin-login',
     component: () => import('pages/auth/AdminLogin.vue'),
     name: 'adminLogin',
+  },
+  {
+    path: '/admin-forgot-password',
+    component: () => import('pages/auth/AdminForgotPassword.vue'),
+    name: 'admin.forgotPassword',
+  },
+  {
+    path: '/admin-reset-password',
+    component: () => import('pages/auth/AdminResetPassword.vue'),
+    name: 'admin.resetPassword',
   },
 
   //admin routes

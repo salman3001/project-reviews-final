@@ -1,1 +1,15 @@
 // app global css in SCSS form
+.zebra-table{
+    table {
+      tbody{
+        tr:nth-child(odd) {
+        background-color: #FAF9F6 !important;
+      }
+      td{
+        border-bottom-width: 0px !important;
+        border-top-width: 0px !important;
+      }
+    }
+    }
+}
+

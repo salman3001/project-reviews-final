@@ -7,17 +7,16 @@ const auth = authStore();
 const isPwd = ref(true);
 
 const form = ref({
-  rememberMe: false,
-  email: '',
   password: '',
+  password_confirmation: '',
 });
 
-const login = async () => {
-  await auth.adminLogin(
-    form.value.email,
-    form.value.password,
-    form.value.rememberMe
-  );
+const reset = async () => {
+  // await auth.adminLogin(
+  //   form.value.email,
+  //   form.value.password,
+  //   form.value.rememberMe
+  // );
 };
 </script>
 <template>
@@ -41,21 +40,17 @@ const login = async () => {
                 <BrandLogo />
               </div>
               <div class="text-h5 text-weight-bold text-center">
-                Welcome Back!
+                Reset your password
               </div>
               <div class="text-body2 text-grey-8 text-center">
-                Please enter your crendtials to login
+                Please choose a new password
               </div>
             </q-card-section>
 
             <q-card-section class="q-pt-none">
-              <form class="q-gutter-y-md" @submit.prevent="login">
+              <form class="q-gutter-y-md" @submit.prevent="reset">
                 <div>
-                  <label>Email</label>
-                  <q-input outlined v-model="form.email" dense />
-                </div>
-                <div>
-                  <label>Password</label>
+                  <label>New Password</label>
                   <q-input
                     dense
                     v-model="form.password"
@@ -70,14 +65,23 @@ const login = async () => {
                       />
                     </template>
                   </q-input>
-                  <div class="row items-center justify-between">
-                    <q-checkbox v-model="form.rememberMe" label="Remember Me" />
-                    <router-link
-                      :to="{ name: 'admin.forgotPassword' }"
-                      style="text-decoration: none; color: black"
-                      >Forgot Password</router-link
-                    >
-                  </div>
+                </div>
+                <div>
+                  <label>Confirm New Password</label>
+                  <q-input
+                    dense
+                    v-model="form.password"
+                    outlined
+                    :type="isPwd ? 'password' : 'text'"
+                  >
+                    <template v-slot:append>
+                      <q-icon
+                        :name="isPwd ? 'visibility_off' : 'visibility'"
+                        class="cursor-pointer"
+                        @click="isPwd = !isPwd"
+                      />
+                    </template>
+                  </q-input>
                 </div>
                 <q-btn type="submit" color="primary" style="width: 100%"
                   >Submit</q-btn

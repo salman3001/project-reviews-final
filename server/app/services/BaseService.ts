@@ -8,17 +8,18 @@ import {
 type Populate = Record<string, { fields: string[]; populate: Populate }>
 type Search = Record<string, string> | null
 type Filter = Record<string, string> | null
-type Order = Record<string, 'asc' | 'desc'>
 type RelationFilter = Record<string, { field: string; value: string; filter: RelationFilter }>
 
 export interface IndexQs {
   page: number | null
-  search: Search
-  orderBy: Order
-  filter: Filter
-  relationFilter: RelationFilter
-  populate: Populate
-  fields: string[]
+  rowsPerPage: string | null
+  sortBy: string | null
+  descending: string | null
+  search: Search | null
+  filter: Filter | null
+  relationFilter: RelationFilter | null
+  populate: Populate | null
+  fields: string[] | null
 }
 
 class BaseService<T extends LucidModel> {
@@ -38,11 +39,11 @@ class BaseService<T extends LucidModel> {
       this.relationFiler(relationFilter, query)
     }
 
-    if (qs.orderBy) {
-      const orderBy = JSON.parse(qs.orderBy as unknown as string) as Order
-      for (const key in orderBy) {
-        const type = orderBy[key]
-        query.orderBy(key, type)
+    if (qs.sortBy) {
+      if (qs.descending) {
+        query.orderBy(qs.sortBy, 'desc')
+      } else {
+        query.orderBy(qs.sortBy, 'asc')
       }
     }
 
@@ -85,7 +86,7 @@ class BaseService<T extends LucidModel> {
     }
 
     if (qs.page) {
-      records = await query.paginate(qs.page, this.perPage)
+      records = await query.paginate(qs.page, Number(qs?.rowsPerPage) || this.perPage)
     } else {
       records = await query.exec()
     }

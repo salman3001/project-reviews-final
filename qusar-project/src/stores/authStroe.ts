@@ -19,23 +19,20 @@ const authStore = defineStore('Auth', () => {
     });
   };
 
-  const adminLogin = async (
-    email: string,
-    password: string,
-    rememberMe: boolean
-  ) => {
+  const adminLogin = async (email: string, password: string) => {
     try {
       const res = await api.post('/auth/admin-login', {
         email,
         password,
       });
-
       setUser(res?.data?.user);
       setToken(res?.data?.token?.token);
       router.push({ name: 'adminDashboard' });
-      Notify.create({ message: 'Login Successfull!', badgeColor: 'positive' });
+      Notify.create({ message: 'Login Successfull!', color: 'positive' });
     } catch (error: any) {
-      Notify.create({ message: 'Login Failed!', badgeColor: 'red' });
+      console.log('ran');
+
+      Notify.create({ message: 'Login Failed!', color: 'red' });
     }
 
     return user;
@@ -48,13 +45,13 @@ const authStore = defineStore('Auth', () => {
       setToken(null);
       Notify.create({
         message: 'Logout Successfull!',
-        badgeColor: 'positive',
+        color: 'positive',
       });
       router.push({ name: 'adminLogin' });
     } catch (error: any) {
       Notify.create({
         message: 'Opps Something went wrong!',
-        badgeColor: 'negative',
+        color: 'negative',
       });
     }
   };
