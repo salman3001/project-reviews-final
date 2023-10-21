@@ -34,9 +34,10 @@ class BaseService<T extends LucidModel> {
     let records: ModelPaginatorContract<LucidRow> | LucidRow[] | [] = []
     const query = this.modal.query()
 
+    console.log(qs)
+
     if (qs.relationFilter) {
-      const relationFilter = JSON.parse(qs.relationFilter as unknown as string) as RelationFilter
-      this.relationFiler(relationFilter, query)
+      this.relationFiler(qs.relationFilter, query)
     }
 
     if (qs.sortBy) {
@@ -48,14 +49,12 @@ class BaseService<T extends LucidModel> {
     }
 
     if (qs.populate) {
-      const populate = JSON.parse(qs.populate as unknown as string) as Populate
-      await this.populate(populate, query)
+      await this.populate(qs.populate, query)
     }
 
     if (qs.filter) {
-      const filter = JSON.parse(qs.filter as unknown as string) as Filter
-      for (const key in filter) {
-        const element = filter[key]
+      for (const key in qs.filter) {
+        const element = qs.filter[key]
         if (element !== null) {
           query.where(key, element)
         }
@@ -63,12 +62,11 @@ class BaseService<T extends LucidModel> {
     }
 
     if (qs.search) {
-      const search = JSON.parse(qs.search as unknown as string) as Search
       let i = 0
 
       query.where((b) => {
-        for (const key in search) {
-          const element = search[key]
+        for (const key in qs.search) {
+          const element = qs.search[key]
           if (element !== '') {
             if (i === 0) {
               b.whereLike(key, '%' + element + '%')
@@ -98,14 +96,12 @@ class BaseService<T extends LucidModel> {
     const record = this.modal.query().where('id', id)
 
     if (qs?.fields) {
-      const fileds = JSON.parse(qs.fields as unknown as string)
-      record.select(fileds)
+      record.select(qs?.fields)
     }
 
     if (qs?.populate) {
-      const populate = JSON.parse(qs.populate as unknown as string) as Populate
-      console.log(populate)
-      await this.populate(populate, record)
+      console.log(qs.populate)
+      await this.populate(qs.populate, record)
     }
     return await record.first()
   }

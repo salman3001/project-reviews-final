@@ -44,44 +44,46 @@ const routes: RouteRecordRaw[] = [
       },
       {
         path: 'admin-users',
-        component: () => import('pages/admin/AdminUserIndex.vue'),
+        component: () => import('pages/admin/admin-users/AdminUserIndex.vue'),
         name: 'admin.adminUsers.index',
       },
       {
         path: 'roles',
-        component: () => import('pages/admin/RolesIndex.vue'),
+        component: () => import('pages/admin/roles/RolesIndex.vue'),
         name: 'admin.roles.index',
       },
       {
         path: 'help-center/content',
         component: () =>
-          import('pages/help-center/knowledgebase/ContentIndex.vue'),
+          import('pages/admin/help-center/knowledgebase/ContentIndex.vue'),
         name: 'admin.knowlegebase.contnet.index',
       },
       {
         path: 'help-center/category',
         component: () =>
-          import('pages/help-center/knowledgebase/CategoryIndex.vue'),
+          import('pages/admin/help-center/knowledgebase/CategoryIndex.vue'),
         name: 'admin.knowlegebase.category.index',
       },
       {
         path: 'help-center/contact-message',
-        component: () => import('pages/help-center/ContactMessageIndex.vue'),
+        component: () =>
+          import('pages/admin/help-center/ContactMessageIndex.vue'),
         name: 'admin.contactMessage.index',
       },
       {
         path: 'help-center/support-ticket',
-        component: () => import('pages/help-center/SupportTicketIndex.vue'),
+        component: () =>
+          import('pages/admin/help-center/SupportTicketIndex.vue'),
         name: 'admin.supportTicket.index',
       },
       {
         path: 'blogs/posts',
-        component: () => import('pages/blog/BlogsIndex.vue'),
+        component: () => import('pages/admin/blog/BlogsIndex.vue'),
         name: 'admin.blogs.index',
       },
       {
         path: 'blogs/categories',
-        component: () => import('pages/blog/CategoryIndex.vue'),
+        component: () => import('pages/admin/blog/CategoryIndex.vue'),
         name: 'admin.blogs.category.index',
       },
     ],
