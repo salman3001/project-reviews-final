@@ -2,7 +2,7 @@ import { AxiosRequestConfig } from 'axios';
 import { Notify } from 'quasar';
 import { api } from 'src/boot/axios';
 import { AdditionalParams } from 'src/type';
-import { onMounted, reactive, ref } from 'vue';
+import { onMounted, ref } from 'vue';
 
 interface RequestProps {
   pagination: {
@@ -28,36 +28,37 @@ export const useGetTableData = (
     sortBy: 'id',
     descending: false,
     page: 1,
-    rowsPerPage: 3,
+    rowsPerPage: 10,
     rowsNumber: 10,
   });
 
   const onRequest = async (props: RequestProps) => {
+    const { descending, page, rowsPerPage, sortBy } = props.pagination;
+    const filter = props.filter;
     try {
       loading.value = true;
       const res = await api.get(url, {
         params: {
-          sortBy: props?.pagination.sortBy,
-          descending: props?.pagination?.descending,
-          page: props?.pagination?.page,
-          rowsPerPage: props?.pagination?.rowsPerPage,
+          sortBy: sortBy,
+          descending: descending,
+          page: page,
+          rowsPerPage: rowsPerPage,
           populate: {
             role: {
               fielfd: ['dds'],
             },
           },
-          ...props.filter,
+          ...filter,
           ...additionalPrams,
         },
         ...config,
       });
 
-      console.log(res);
-
       data.value = res?.data?.data;
       pagination.value.page = res?.data?.meta?.current_page;
       pagination.value.rowsPerPage = res?.data?.meta?.per_page;
       pagination.value.rowsNumber = res?.data?.meta?.total;
+      pagination.value.descending = descending;
       loading.value = false;
     } catch (error: any) {
       loading.value = false;
@@ -73,7 +74,6 @@ export const useGetTableData = (
         // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
         // http.ClientRequest in node.js
         Notify.create({ message: 'Server Not Reachable!', color: 'negative' });
-        console.log(error.request);
       } else {
         // Something happened in setting up the request that triggered an Error
         Notify.create({ message: error.message, color: 'negative' });

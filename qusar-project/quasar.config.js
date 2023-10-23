@@ -11,7 +11,7 @@
 const { configure } = require('quasar/wrappers');
 const path = require('path');
 
-module.exports = configure(function (/* ctx */) {
+module.exports = configure(function (ctx) {
   return {
     eslint: {
       // fix: true,
@@ -63,7 +63,9 @@ module.exports = configure(function (/* ctx */) {
 
       // publicPath: '/',
       // analyze: true,
-      // env: {},
+      env: {
+        UPLOAD: ctx.dev ? 'http://127.0.0.1:3333/uploads' : 'somehting else',
+      },
       // rawDefine: {}
       // ignorePublicFolder: true,
       // minify: false,

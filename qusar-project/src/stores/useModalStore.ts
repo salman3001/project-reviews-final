@@ -3,7 +3,7 @@ import { ref } from 'vue';
 
 type IModalContent =
   | null
-  | 'deleteRecord'
+  | 'deleteAdminUser'
   | 'changeRole'
   | 'changeAdminStatus'
   | 'delete'
@@ -13,7 +13,7 @@ type IModalContent =
   | 'addCountry'
   | 'editCountry';
 
-const modalStore = defineStore('modal', () => {
+const useModalStore = defineStore('modal', () => {
   const show = ref(false);
   const meta = ref<any>(null);
   const content = ref<IModalContent>(null);
@@ -32,4 +32,4 @@ const modalStore = defineStore('modal', () => {
   };
 });
 
-export default modalStore;
+export default useModalStore;

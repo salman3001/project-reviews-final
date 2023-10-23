@@ -125,12 +125,14 @@ export default class AdminUsersController {
   }
 
   public async destroy({ params, response }: HttpContextContract) {
-    const user = await AdminUserService.destroy(+params.id)
+    const user = await AdminUserService.show(+params.id)
     await user?.load('avatar')
 
     if (user?.avatar) {
       await ImageService.destroy(user.avatar.id)
     }
+
+    await AdminUserService.destroy(+params.id)
 
     return response.json({ message: 'User Deleted' })
   }
@@ -149,6 +151,9 @@ export default class AdminUsersController {
   public async changeRole({ params, response, request }: HttpContextContract) {
     const roleId = request.input('roleId')
     const role = await Role.find(+roleId)
+    console.log(roleId)
+    console.log(role)
+
     const user = await AdminUser.find(+params.id)
     await user?.related('role').dissociate()
     if (role) await user?.related('role').associate(role)
@@ -156,8 +161,6 @@ export default class AdminUsersController {
   }
 
   public async uniqueField({ request, response }: HttpContextContract) {
-    console.log('ran')
-
     const qs = request.qs() as any
     const exist = await AdminUserService.uniqueField(qs)
     if (exist) {

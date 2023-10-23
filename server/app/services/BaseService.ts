@@ -14,7 +14,7 @@ export interface IndexQs {
   page: number | null
   rowsPerPage: string | null
   sortBy: string | null
-  descending: string | null
+  descending: boolean | null
   search: Search | null
   filter: Filter | null
   relationFilter: RelationFilter | null
@@ -33,17 +33,14 @@ class BaseService<T extends LucidModel> {
   public async index(qs: IndexQs) {
     let records: ModelPaginatorContract<LucidRow> | LucidRow[] | [] = []
     const query = this.modal.query()
-
-    console.log(qs)
-
     if (qs.relationFilter) {
       this.relationFiler(qs.relationFilter, query)
     }
 
     if (qs.sortBy) {
-      if (qs.descending) {
+      if (qs.descending === true) {
         query.orderBy(qs.sortBy, 'desc')
-      } else {
+      } else if (qs.descending === false) {
         query.orderBy(qs.sortBy, 'asc')
       }
     }
@@ -100,7 +97,6 @@ class BaseService<T extends LucidModel> {
     }
 
     if (qs?.populate) {
-      console.log(qs.populate)
       await this.populate(qs.populate, record)
     }
     return await record.first()
@@ -119,7 +115,8 @@ class BaseService<T extends LucidModel> {
   }
 
   public async destroy(id: number) {
-    const record = await this.modal.find(id)
+    const record = await this.modal.findOrFail(id)
+    await record?.delete()
     return record
   }
 
@@ -162,8 +159,6 @@ class BaseService<T extends LucidModel> {
       const element = filter[key]
 
       if (element.value !== null && element.value !== '') {
-        console.log('ren')
-
         query.whereHas(key, (q) => {
           q.where(element.field, element.value)
           if (element.filter) {

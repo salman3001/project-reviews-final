@@ -1,15 +1,18 @@
 // app global css in SCSS form
-.zebra-table{
-    table {
-      tbody{
-        tr:nth-child(odd) {
-        background-color: #FAF9F6 !important;
+.zebra-table {
+  table {
+    tbody {
+      tr:nth-child(odd) {
+        background-color: #faf9f6 !important;
       }
-      td{
+      td {
         border-bottom-width: 0px !important;
         border-top-width: 0px !important;
       }
     }
-    }
+  }
 }
 
+.q-dialog__backdrop {
+  backdrop-filter: blur(2px);
+}

@@ -39,6 +39,7 @@ export default class AdminUserValidator {
       lastName: schema.string({ trim: true }),
       phone: schema.string.optional({ trim: true }, [rules.minLength(8)]),
       password: schema.string({ trim: true }, [rules.minLength(8), rules.alphaNum()]),
+      desc: schema.string.optional(),
       isActive: schema.boolean.optional(),
     }),
     address: schema.object.optional().members({

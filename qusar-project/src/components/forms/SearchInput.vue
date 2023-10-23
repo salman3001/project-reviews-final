@@ -1,23 +1,17 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 
-const text = ref('');
+
+const text = ref('')
+
 </script>
 <template>
-  <q-input
-    outlined
-    v-model="text"
-    placeholder="Search"
-    dense
-    class="gt-sm rounded-sm"
-  >
+  <q-input type="text" outlined v-model="text" placeholder="Search" dense class="rounded-sm" :debounce="500"
+    @update:model-value="(val) => {
+      $emit('search', val)
+    }">
     <template v-slot:append>
-      <q-icon
-        v-if="text !== ''"
-        name="close"
-        @click="text = ''"
-        class="cursor-pointer"
-      />
+      <q-icon v-if="text !== ''" name="close" @click="text = ''" class="cursor-pointer" />
       <q-icon name="search" />
     </template>
   </q-input>

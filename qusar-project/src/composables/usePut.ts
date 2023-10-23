@@ -1,24 +1,24 @@
 import { AxiosRequestConfig } from 'axios';
 import { Notify } from 'quasar';
 import { api } from 'src/boot/axios';
-import { Ref, ref, toValue } from 'vue';
+import { ref } from 'vue';
 
-export const useGet = (
-  url: string | Ref | (() => string),
+export const usePut = (
+  url: string,
+  body: any,
   config: AxiosRequestConfig<any> | undefined
 ) => {
   const loading = ref(false);
-  const data = ref([]);
 
-  const fetchData = async (
-    url: string | Ref | (() => string),
-    config?: AxiosRequestConfig<any> | undefined
-  ) => {
+  const trigger = async () => {
     try {
       loading.value = true;
-      const res = await api.get(toValue(url), config);
-      data.value = res.data;
+      await api.post(url, body, config);
       loading.value = false;
+      Notify.create({
+        message: 'Record Updated',
+        color: 'positive',
+      });
     } catch (error: any) {
       loading.value = false;
       if (error?.response) {
@@ -41,9 +41,5 @@ export const useGet = (
     }
   };
 
-  const trigger = async (config?: AxiosRequestConfig<any>) => {
-    await fetchData(url, { ...config });
-  };
-
-  return { data, loading, trigger };
+  return { loading, trigger };
 };

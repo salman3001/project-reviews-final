@@ -48,6 +48,16 @@ const routes: RouteRecordRaw[] = [
         name: 'admin.adminUsers.index',
       },
       {
+        path: 'admin-users/create',
+        component: () => import('pages/admin/admin-users/AdminUserCreate.vue'),
+        name: 'admin.adminUsers.create',
+      },
+      {
+        path: 'admin-users/:id/edit',
+        component: () => import('pages/admin/admin-users/AdminUserEdit.vue'),
+        name: 'admin.adminUsers.edit',
+      },
+      {
         path: 'roles',
         component: () => import('pages/admin/roles/RolesIndex.vue'),
         name: 'admin.roles.index',
