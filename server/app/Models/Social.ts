@@ -21,6 +21,9 @@ export default class Social extends BaseModel {
   public pintrest: string
 
   @column()
+  public linkedin: string
+
+  @column()
   public vk: string
 
   @column()

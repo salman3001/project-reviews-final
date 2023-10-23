@@ -90,16 +90,18 @@ class BaseService<T extends LucidModel> {
   }
 
   public async show(id: number, qs?: { fields: string[]; populate: Populate }) {
-    const record = this.modal.query().where('id', id)
+    const query = this.modal.query()
+    if (qs?.populate) {
+      await this.populate(qs.populate, query)
+    }
+
+    query.where('id', id)
 
     if (qs?.fields) {
-      record.select(qs?.fields)
+      query.select(qs?.fields)
     }
 
-    if (qs?.populate) {
-      await this.populate(qs.populate, record)
-    }
-    return await record.first()
+    return await query.first()
   }
 
   public async store(payload: any) {
@@ -133,19 +135,20 @@ class BaseService<T extends LucidModel> {
   private async populate(populate: Populate, query: ModelQueryBuilderContract<any>) {
     for (const key in populate) {
       const fields = populate[key].fields
+
       const antoherPopulate = populate[key].populate
 
       if (fields) {
-        await query.preload(key, async (q) => {
+        query.preload(key, (q) => {
           q.select(fields)
           if (antoherPopulate) {
-            await this.populate(antoherPopulate, q)
+            this.populate(antoherPopulate, q)
           }
         })
       } else {
-        await query.preload(key, async (q) => {
+        query.preload(key, (q) => {
           if (antoherPopulate) {
-            await this.populate(antoherPopulate, q)
+            this.populate(antoherPopulate, q)
           }
         })
       }

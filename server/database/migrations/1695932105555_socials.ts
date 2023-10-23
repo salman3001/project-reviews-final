@@ -11,6 +11,7 @@ export default class extends BaseSchema {
       table.string('twitter')
       table.string('instagram')
       table.string('pintrest')
+      table.string('linkedin')
       table.string('vk')
       table.string('whatsapp')
       table.string('telegram')

@@ -3,7 +3,7 @@ import { ref } from 'vue';
 
 type IModalContent =
   | null
-  | 'deleteAdminUser'
+  | 'deleteRecord'
   | 'changeRole'
   | 'changeAdminStatus'
   | 'delete'

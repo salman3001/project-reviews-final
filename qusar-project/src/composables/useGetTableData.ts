@@ -82,7 +82,7 @@ export const useGetTableData = (
   };
 
   onMounted(() => {
-    tableRef.value.requestServerInteraction();
+    tableRef.value && tableRef.value.requestServerInteraction();
   });
 
   return { data, loading, pagination, onRequest, tableRef };

@@ -63,6 +63,11 @@ const routes: RouteRecordRaw[] = [
         name: 'admin.roles.index',
       },
       {
+        path: 'roles/:id/edit',
+        component: () => import('pages/admin/roles/RolesEdit.vue'),
+        name: 'admin.roles.edit',
+      },
+      {
         path: 'help-center/content',
         component: () =>
           import('pages/admin/help-center/knowledgebase/ContentIndex.vue'),

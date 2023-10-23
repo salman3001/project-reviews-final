@@ -28,7 +28,6 @@ export default class AdminUserUpdateValidator {
       extnames: ['jpg', 'jpeg', 'png', 'webp', 'gif'],
       size: '2mb',
     }),
-    roleId: schema.string.optional({ trim: true }),
     user: schema.object().members({
       email: schema.string({ trim: true }, [rules.email()]),
       firstName: schema.string({ trim: true }),
@@ -36,6 +35,7 @@ export default class AdminUserUpdateValidator {
       phone: schema.string.optional({ trim: true }, [rules.minLength(8)]),
       desc: schema.string.optional(),
       isActive: schema.boolean.optional(),
+      roleId: schema.string.optional({ trim: true }),
     }),
     address: schema.object.optional().members({
       address: schema.string.optional({ trim: true }),
@@ -52,6 +52,7 @@ export default class AdminUserUpdateValidator {
       twitter: schema.string.optional({ trim: true }),
       instagram: schema.string.optional({ trim: true }),
       pintrest: schema.string.optional({ trim: true }),
+      linkedin: schema.string.optional({ trim: true }),
       vk: schema.string.optional({ trim: true }),
       whatsapp: schema.string.optional({ trim: true }),
       telegram: schema.string.optional({ trim: true }),

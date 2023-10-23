@@ -10,15 +10,23 @@ export default class extends BaseSchema {
       table
         .integer('admin_user_id', 10)
         .unsigned()
+        .nullable()
         .references('id')
         .inTable('admin_users')
         .onDelete('CASCADE')
 
-      table.integer('user_id', 10).unsigned().references('id').inTable('users').onDelete('CASCADE')
+      table
+        .integer('user_id', 10)
+        .unsigned()
+        .nullable()
+        .references('id')
+        .inTable('users')
+        .onDelete('CASCADE')
 
       table
         .integer('continent_id', 10)
         .unsigned()
+        .nullable()
         .references('id')
         .inTable('continents')
         .onDelete('SET NULL')
@@ -26,6 +34,7 @@ export default class extends BaseSchema {
       table
         .integer('country_id', 10)
         .unsigned()
+        .nullable()
         .references('id')
         .inTable('countries')
         .onDelete('SET NULL')
@@ -33,6 +42,7 @@ export default class extends BaseSchema {
       table
         .integer('state_id', 10)
         .unsigned()
+        .nullable()
         .references('id')
         .inTable('states')
         .onDelete('SET NULL')
@@ -40,6 +50,7 @@ export default class extends BaseSchema {
       table
         .integer('city_id', 10)
         .unsigned()
+        .nullable()
         .references('id')
         .inTable('cities')
         .onDelete('SET NULL')
@@ -47,6 +58,7 @@ export default class extends BaseSchema {
       table
         .integer('street_id', 10)
         .unsigned()
+        .nullable()
         .references('id')
         .inTable('streets')
         .onDelete('SET NULL')

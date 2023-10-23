@@ -42,8 +42,8 @@ export default class AdminUsersController {
       user.related('social').save(social)
     }
 
-    if (payload.roleId) {
-      const role = await RoleService.show(+payload.roleId)
+    if (payload.user.roleId) {
+      const role = await RoleService.show(+payload.user.roleId)
       if (role) await user.related('role').associate(role)
     }
 
@@ -103,8 +103,8 @@ export default class AdminUsersController {
           user.related('social').save(social)
         }
       }
-      if (payload.roleId) {
-        user.roleId = +payload.roleId
+      if (payload.user.roleId) {
+        user.roleId = +payload.user.roleId
       }
 
       if (payload.image) {
