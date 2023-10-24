@@ -14,7 +14,7 @@ type Search = Record<string, string> | null;
 type Filter = Record<string, string> | null;
 type RelationFilter = Record<
   string,
-  { field: string; value: string; filter: RelationFilter }
+  { field: string; value: string; filter?: RelationFilter }
 >;
 
 export interface AdditionalParams {
