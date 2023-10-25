@@ -9,6 +9,10 @@ import { computed, onMounted, reactive, ref } from 'vue';
 import useModalStore from 'src/stores/useModalStore';
 import { useRouter } from 'vue-router';
 import { api } from 'src/boot/axios';
+import {
+  KnowledgebaseCategoryApi,
+  LanguageApi,
+} from 'src/utils/BaseApiService';
 
 const modal = useModalStore();
 const router = useRouter();
@@ -26,9 +30,9 @@ const filter = reactive<AdditionalParams>({
   relationFilter: {
     category: {
       field: 'id',
-      value: ''
-    }
-  }
+      value: '',
+    },
+  },
 });
 
 const search = computed({
@@ -67,9 +71,6 @@ const lanugageId = computed({
   },
 });
 
-const categories = ref<null | any[]>(null)
-const languages = ref<null | any[]>(null)
-
 const { data, loading, onRequest, pagination, tableRef } = useGetTableData(
   '/help-center/content',
   {
@@ -84,6 +85,20 @@ const { data, loading, onRequest, pagination, tableRef } = useGetTableData(
   }
 );
 
+const categories = ref(null);
+KnowledgebaseCategoryApi.index({
+  fields: ['name', 'id'],
+}).then(({ data }) => {
+  categories.value = data.value;
+});
+
+const languages = ref(null);
+LanguageApi.index({
+  fields: ['name', 'id'],
+}).then(({ data }) => {
+  languages.value = data.value;
+});
+
 const colomns: QTableProps['columns'] = [
   { name: 'id', field: 'id', label: 'ID', align: 'left' },
   {
@@ -93,8 +108,6 @@ const colomns: QTableProps['columns'] = [
     align: 'left',
     sortable: true,
     style: 'min-width:500px;',
-
-
   },
   {
     name: 'language',
@@ -123,40 +136,6 @@ const colomns: QTableProps['columns'] = [
 ];
 
 onMounted(async () => {
-  try {
-    const res = await api.get('/help-center/categories/', {
-      params: {
-        fields: ['name', 'id']
-      } as AdditionalParams,
-    });
-    if (res?.data) {
-      categories.value = res.data;
-    }
-  } catch (error) {
-    Notify.create({
-      message: 'Failed to fetch categories',
-      color: 'negative',
-      icon: 'warning',
-    });
-  }
-
-  try {
-    const res = await api.get('/language', {
-      params: {
-        fields: ['name', 'id']
-      } as AdditionalParams,
-    });
-    if (res?.data) {
-      languages.value = res.data;
-    }
-  } catch (error) {
-    Notify.create({
-      message: 'Failed to fetch categories',
-      color: 'negative',
-      icon: 'warning',
-    });
-  }
-
   uploads.value = process.env.UPLOAD as string;
 });
 </script>
@@ -165,50 +144,120 @@ onMounted(async () => {
   <q-page class="row q-pa-lg">
     <div class="colomn q-gutter-y-lg" style="width: 100%">
       <div class="row justify-between q-gutter-y-sm">
-        <SearchInput @search="(val) => {
-          //@ts-ignore
-          filter.search.title = val;
-        }
-          " />
+        <SearchInput
+          @search="
+            (val) => {
+              //@ts-ignore
+              filter.search.title = val;
+            }
+          "
+        />
 
         <div class="row q-gutter-sm">
-          <q-select v-model="categoryId" v-if="categories" dense options-dense emit-value map-options outlined :options="[{ label: 'All', value: '' }, ...categories.map((r: any) => ({
+          <q-select
+            v-model="categoryId"
+            v-if="categories"
+            dense
+            options-dense
+            emit-value
+            map-options
+            outlined
+            :options="[{ label: 'All', value: '' }, ...categories.map((r: any) => ({
             label: r.name,
             value: r.id,
-          }))]" label="Categories" class="col-auto" style="min-width: 8rem" />
-          <q-select v-model="lanugageId" v-if="languages" dense options-dense emit-value map-options outlined
+          }))]"
+            label="Categories"
+            class="col-auto"
+            style="min-width: 8rem"
+          />
+          <q-select
+            v-model="lanugageId"
+            v-if="languages"
+            dense
+            options-dense
+            emit-value
+            map-options
+            outlined
             :options="[{ label: 'All', value: null }, ...languages.map((r: any) => ({
               label: r.name,
               value: r.id,
-            }))]" label="Languages" class="col-auto" style="min-width: 8rem" />
-          <q-select outlined dense options-dense emit-value map-options v-model="status" :options="[
-            { label: 'All', value: null },
-            { label: 'Active', value: 1 },
-            { label: 'Inactive', value: 0 },
-          ]" label="Status" class="col-auto" style="min-width: 8rem" />
-          <q-btn-dropdown outline label="Export" style="border: 1px solid lightgray">
+            }))]"
+            label="Languages"
+            class="col-auto"
+            style="min-width: 8rem"
+          />
+          <q-select
+            outlined
+            dense
+            options-dense
+            emit-value
+            map-options
+            v-model="status"
+            :options="[
+              { label: 'All', value: null },
+              { label: 'Active', value: 1 },
+              { label: 'Inactive', value: 0 },
+            ]"
+            label="Status"
+            class="col-auto"
+            style="min-width: 8rem"
+          />
+          <q-btn-dropdown
+            outline
+            label="Export"
+            style="border: 1px solid lightgray"
+          >
             <q-list dense>
               <q-item clickable v-close-popup @click="exportCSV(colomns, data)">
                 <q-item-section>
                   <q-item-label>
-                    <q-icon name="receipt_long" /> Export CSV</q-item-label>
+                    <q-icon name="receipt_long" /> Export CSV</q-item-label
+                  >
                 </q-item-section>
               </q-item>
             </q-list>
           </q-btn-dropdown>
-          <q-btn color="primary" @click="() => {
-            router.push({ name: 'admin.knowlegebase.contnet.create' });
-          }
-            ">+ Add Content</q-btn>
+          <q-btn
+            color="primary"
+            @click="
+              () => {
+                router.push({ name: 'admin.knowlegebase.contnet.create' });
+              }
+            "
+            >+ Add Content</q-btn
+          >
         </div>
       </div>
-      <q-table ref="tableRef" flat bordered title="Content" :loading="loading" :rows="data" :columns="colomns"
-        class="zebra-table" v-model:pagination="pagination" :filter="filter" @request="onRequest" row-key="id" wrap-cells>
+      <q-table
+        ref="tableRef"
+        flat
+        bordered
+        title="Content"
+        :loading="loading"
+        :rows="data"
+        :columns="colomns"
+        class="zebra-table"
+        v-model:pagination="pagination"
+        :filter="filter"
+        @request="onRequest"
+        row-key="id"
+        wrap-cells
+      >
         <template v-slot:body-cell-is_active="props">
           <q-td :props="props">
             <div>
-              <q-badge v-if="props.row.is_active" color="positive" outline :label="props.value" />
-              <q-badge v-if="!props.row.is_active" color="secondary" outline :label="props.value" />
+              <q-badge
+                v-if="props.row.is_active"
+                color="positive"
+                outline
+                :label="props.value"
+              />
+              <q-badge
+                v-if="!props.row.is_active"
+                color="secondary"
+                outline
+                :label="props.value"
+              />
             </div>
           </q-td>
         </template>
@@ -217,38 +266,53 @@ onMounted(async () => {
             <div class="">
               <q-btn-dropdown size="sm" color="primary" label="Options">
                 <q-list dense>
-                  <q-item clickable v-close-popup @click="() => {
-                    router.push({
-                      name: 'admin.knowlegebase.contnet.show',
-                      params: { id: props.row.id },
-                    });
-                  }
-                    ">
+                  <q-item
+                    clickable
+                    v-close-popup
+                    @click="
+                      () => {
+                        router.push({
+                          name: 'admin.knowlegebase.contnet.show',
+                          params: { id: props.row.id },
+                        });
+                      }
+                    "
+                  >
                     <q-item-section>
                       <q-item-label> <q-icon name="edit" /> View </q-item-label>
                     </q-item-section>
                   </q-item>
-                  <q-item clickable v-close-popup @click="() => {
-                    router.push({
-                      name: 'admin.knowlegebase.contnet.edit',
-                      params: { id: props.row.id },
-                    });
-                  }
-                    ">
+                  <q-item
+                    clickable
+                    v-close-popup
+                    @click="
+                      () => {
+                        router.push({
+                          name: 'admin.knowlegebase.contnet.edit',
+                          params: { id: props.row.id },
+                        });
+                      }
+                    "
+                  >
                     <q-item-section>
                       <q-item-label> <q-icon name="edit" /> Edit </q-item-label>
                     </q-item-section>
                   </q-item>
-                  <q-item clickable v-close-popup @click="
-                    modal.togel('deleteRecord', {
-                      url: '/help-center/content/' + props.row.id,
-                      tableRef,
-                      title: 'Delete Content?',
-                    })
-                    ">
+                  <q-item
+                    clickable
+                    v-close-popup
+                    @click="
+                      modal.togel('deleteRecord', {
+                        url: '/help-center/content/' + props.row.id,
+                        tableRef,
+                        title: 'Delete Content?',
+                      })
+                    "
+                  >
                     <q-item-section>
                       <q-item-label>
-                        <q-icon name="delete" /> Delete</q-item-label>
+                        <q-icon name="delete" /> Delete</q-item-label
+                      >
                     </q-item-section>
                   </q-item>
                 </q-list>
