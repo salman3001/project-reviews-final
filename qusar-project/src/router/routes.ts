@@ -71,7 +71,13 @@ const routes: RouteRecordRaw[] = [
         path: 'help-center/content',
         component: () =>
           import('pages/admin/help-center/knowledgebase/ContentIndex.vue'),
-        name: 'admin.knowlegebase.contnet.index',
+        name: 'admin.knowlegebase.content.index',
+      },
+      {
+        path: 'help-center/content',
+        component: () =>
+          import('pages/admin/help-center/knowledgebase/ContentCreate.vue'),
+        name: 'admin.knowlegebase.content.create',
       },
       {
         path: 'help-center/category',

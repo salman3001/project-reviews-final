@@ -221,7 +221,7 @@ onMounted(async () => {
             color="primary"
             @click="
               () => {
-                router.push({ name: 'admin.knowlegebase.contnet.create' });
+                router.push({ name: 'admin.knowlegebase.content.create' });
               }
             "
             >+ Add Content</q-btn
@@ -288,7 +288,7 @@ onMounted(async () => {
                     @click="
                       () => {
                         router.push({
-                          name: 'admin.knowlegebase.contnet.edit',
+                          name: 'admin.knowlegebase.content.edit',
                           params: { id: props.row.id },
                         });
                       }

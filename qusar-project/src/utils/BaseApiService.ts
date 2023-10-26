@@ -30,13 +30,22 @@ class BaseApiService {
         data.value = res?.data;
       }
       loading.value = false;
-    } catch (error) {
+    } catch (error: any) {
       loading.value = false;
-      Notify.create({
-        message: `Failed to fetch ${this.name}`,
-        color: 'negative',
-        icon: 'error',
-      });
+      if (error?.response) {
+        Notify.create({
+          message:
+            error?.response?.data?.message || `Failed to fetch ${this.name}`,
+          color: 'negative',
+        });
+      } else if (error?.request) {
+        Notify.create({
+          message: `Trying to fetch ${this.name}.Server Not Reachable!`,
+          color: 'negative',
+        });
+      } else {
+        Notify.create({ message: error.message, color: 'negative' });
+      }
     }
 
     return { loading, data };
@@ -61,19 +70,27 @@ class BaseApiService {
         data.value = res?.data;
       }
       loading.value = false;
-    } catch (error) {
-      loading.value = false;
-      Notify.create({
-        message: `Failed to fetch ${this.name}`,
-        color: 'negative',
-        icon: 'error',
-      });
+    } catch (error: any) {
+      if (error?.response) {
+        Notify.create({
+          message:
+            error?.response?.data?.message || `Failed to fetch ${this.name}`,
+          color: 'negative',
+        });
+      } else if (error?.request) {
+        Notify.create({
+          message: `Trying to fetch ${this.name}.Server Not Reachable!`,
+          color: 'negative',
+        });
+      } else {
+        Notify.create({ message: error.message, color: 'negative' });
+      }
     }
 
     return { loading, data };
   }
 
-  public async post(data: any, config?: AxiosRequestConfig<any> | undefined) {
+  public post(data: any, config?: AxiosRequestConfig<any> | undefined) {
     const loading = ref(false);
     const execute = async () => {
       try {
@@ -85,13 +102,21 @@ class BaseApiService {
           color: 'positive',
           icon: 'done',
         });
-      } catch (error) {
-        loading.value = false;
-        Notify.create({
-          message: `Failed to create ${this.name}`,
-          color: 'negative',
-          icon: 'error',
-        });
+      } catch (error: any) {
+        if (error?.response) {
+          Notify.create({
+            message:
+              error?.response?.data?.message || `Failed to create ${this.name}`,
+            color: 'negative',
+          });
+        } else if (error?.request) {
+          Notify.create({
+            message: `Trying to create ${this.name}.Server Not Reachable!`,
+            color: 'negative',
+          });
+        } else {
+          Notify.create({ message: error.message, color: 'negative' });
+        }
       }
     };
 
@@ -101,7 +126,7 @@ class BaseApiService {
     };
   }
 
-  public async put(
+  public put(
     id: string,
     data: any,
     config?: AxiosRequestConfig<any> | undefined
@@ -117,13 +142,21 @@ class BaseApiService {
           color: 'positive',
           icon: 'done',
         });
-      } catch (error) {
-        loading.value = false;
-        Notify.create({
-          message: `Failed to update ${this.name}`,
-          color: 'negative',
-          icon: 'error',
-        });
+      } catch (error: any) {
+        if (error?.response) {
+          Notify.create({
+            message:
+              error?.response?.data?.message || `Failed to updtae ${this.name}`,
+            color: 'negative',
+          });
+        } else if (error?.request) {
+          Notify.create({
+            message: `Trying to update ${this.name}.Server Not Reachable!`,
+            color: 'negative',
+          });
+        } else {
+          Notify.create({ message: error.message, color: 'negative' });
+        }
       }
     };
 
@@ -133,10 +166,7 @@ class BaseApiService {
     };
   }
 
-  public async delete(
-    id: string,
-    config?: AxiosRequestConfig<any> | undefined
-  ) {
+  public delete(id: string, config?: AxiosRequestConfig<any> | undefined) {
     const loading = ref(false);
     const execute = async () => {
       try {
@@ -148,13 +178,21 @@ class BaseApiService {
           color: 'positive',
           icon: 'done',
         });
-      } catch (error) {
-        loading.value = false;
-        Notify.create({
-          message: `Failed to delete ${this.name}`,
-          color: 'negative',
-          icon: 'error',
-        });
+      } catch (error: any) {
+        if (error?.response) {
+          Notify.create({
+            message:
+              error?.response?.data?.message || `Failed to delete ${this.name}`,
+            color: 'negative',
+          });
+        } else if (error?.request) {
+          Notify.create({
+            message: `Trying to delte ${this.name}.Server Not Reachable!`,
+            color: 'negative',
+          });
+        } else {
+          Notify.create({ message: error.message, color: 'negative' });
+        }
       }
     };
 
