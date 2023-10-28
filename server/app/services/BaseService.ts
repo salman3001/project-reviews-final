@@ -161,7 +161,7 @@ class BaseService<T extends LucidModel> {
     for (const key in filter) {
       const element = filter[key]
 
-      if (element.value !== null && element.value !== '') {
+      if (element.value !== null && element.value !== '' && element.value !== undefined) {
         query.whereHas(key, (q) => {
           q.where(element.field, element.value)
           if (element.filter) {

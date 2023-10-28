@@ -140,6 +140,7 @@ onMounted(() => {
             dense
             options-dense
             emit-value
+            map-options
             outlined
             :options="[{ label: 'All', value: null }, ...roles.map((r: any) => ({
             label: r.name,

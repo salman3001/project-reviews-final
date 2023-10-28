@@ -43,11 +43,6 @@ export const useGetTableData = (
           descending: descending,
           page: page,
           rowsPerPage: rowsPerPage,
-          populate: {
-            role: {
-              fielfd: ['dds'],
-            },
-          },
           ...filter,
           ...additionalPrams,
         },

@@ -1,14 +1,12 @@
 <script setup lang="ts">
-import { Notify, QTableProps } from 'quasar';
+import { QTableProps } from 'quasar';
 import SearchInput from 'src/components/forms/SearchInput.vue';
-import { useGet } from 'src/composables/useGet';
 import { useGetTableData } from 'src/composables/useGetTableData';
 import { AdditionalParams } from 'src/type';
 import { exportCSV } from 'src/utils/exportCSV';
 import { computed, onMounted, reactive, ref } from 'vue';
 import useModalStore from 'src/stores/useModalStore';
 import { useRouter } from 'vue-router';
-import { api } from 'src/boot/axios';
 import {
   KnowledgebaseCategoryApi,
   LanguageApi,
@@ -16,7 +14,6 @@ import {
 
 const modal = useModalStore();
 const router = useRouter();
-const uploads = ref('');
 
 const filter = reactive<AdditionalParams>({
   search: {
@@ -134,10 +131,6 @@ const colomns: QTableProps['columns'] = [
     align: 'center',
   },
 ];
-
-onMounted(async () => {
-  uploads.value = process.env.UPLOAD as string;
-});
 </script>
 
 <template>
@@ -272,14 +265,16 @@ onMounted(async () => {
                     @click="
                       () => {
                         router.push({
-                          name: 'admin.knowlegebase.contnet.show',
+                          name: 'admin.knowlegebase.content.show',
                           params: { id: props.row.id },
                         });
                       }
                     "
                   >
                     <q-item-section>
-                      <q-item-label> <q-icon name="edit" /> View </q-item-label>
+                      <q-item-label>
+                        <q-icon name="visibility" /> View
+                      </q-item-label>
                     </q-item-section>
                   </q-item>
                   <q-item

@@ -28,7 +28,6 @@ export default class HelpcenterContentCategoryValidator {
     slug: schema.string.optional({ trim: true }),
     languageId: schema.number.optional(),
     order: schema.number.optional(),
-    content: schema.string.optional(),
     metaTitle: schema.string.optional(),
     metaKeywords: schema.string.optional(),
     metaDesc: schema.string.optional(),

@@ -3,7 +3,6 @@ import { useRouter } from 'vue-router';
 import { rules } from '../../../../utils/validationRules';
 import {
   KnowledgebaseCategoryApi,
-  KnowledgebaseContentApi,
   LanguageApi,
 } from '../../../../utils/BaseApiService';
 import { ref } from 'vue';
@@ -11,23 +10,15 @@ import { ref } from 'vue';
 const router = useRouter();
 
 const form = ref({
-  title: '',
+  name: '',
   slug: '',
   languageId: null,
-  knowledgeBaseCategoryId: null,
   order: null,
   content: '',
   metaTitle: '',
   metaKeywords: '',
   metaDesc: '',
   isActive: false,
-});
-
-const categories = ref<any[] | null>(null);
-KnowledgebaseCategoryApi.index({
-  fields: ['name', 'id'],
-}).then(({ data }) => {
-  categories.value = data.value;
 });
 
 const languages = ref<null | any[]>(null);
@@ -37,12 +28,12 @@ LanguageApi.index({
   languages.value = data.value;
 });
 
-const { execute: createContent, loading: IsPostingContnet } =
-  KnowledgebaseContentApi.post(form.value);
+const { execute: createCategory, loading: IsPostingCategory } =
+  KnowledgebaseCategoryApi.post(form.value);
 
 const submit = async () => {
-  createContent().then(() => {
-    router.push({ name: 'admin.knowlegebase.content.index' });
+  createCategory().then(() => {
+    router.push({ name: 'admin.knowlegebase.category.index' });
   });
 };
 </script>
@@ -56,11 +47,11 @@ const submit = async () => {
         style="cursor: pointer"
         @click="
           () => {
-            router.push({ name: 'admin.knowlegebase.content.index' });
+            router.push({ name: 'admin.knowlegebase.category.index' });
           }
         "
       />
-      <span class="text-h6"> Add Content </span>
+      <span class="text-h6"> Add Categroy </span>
     </div>
     <q-form class="column q-gutter-y-xl" @submit="submit">
       <div class="q-gutter-y-md">
@@ -68,17 +59,17 @@ const submit = async () => {
           <q-input
             :debounce="500"
             outlined
-            v-model="form.title"
+            v-model="form.name"
             label="Title"
             class="col-12 col-sm-6 col-md-3"
             :rules="[
               $rules.required('required'),
               async (v) =>
                 (await rules.unique(
-                  '/help-center/content/unique-field',
-                  'title',
+                  '/help-center/categories/unique-field',
+                  'name',
                   v
-                )) || 'title Already Taken',
+                )) || 'name Already Taken',
             ]"
           />
           <q-input
@@ -91,7 +82,7 @@ const submit = async () => {
               (v) => rules.slug(v) || 'Slug is not valid',
               async (v) =>
                 (await rules.unique(
-                  '/help-center/content/unique-field',
+                  '/help-center/categories/unique-field',
                   'slug',
                   v
                 )) || 'Slug Already Taken',
@@ -109,18 +100,6 @@ const submit = async () => {
             class="col-12 col-sm-6 col-md-3"
             :options="[...languages.map((l:any)=>({label:l?.name,value:l?.id}))]"
           />
-
-          <q-select
-            v-if="categories"
-            outlined
-            debounce="500"
-            v-model="form.knowledgeBaseCategoryId"
-            emit-value
-            map-options
-            label="Category"
-            class="col-12 col-sm-6 col-md-3"
-            :options="[...categories.map((c:any)=>({label:c?.name,value:c?.id}))]"
-          />
           <q-input
             outlined
             :debounce="500"
@@ -131,23 +110,12 @@ const submit = async () => {
             :rules="[
               async (v) =>
                 (await rules.unique(
-                  '/help-center/content/unique-field',
+                  '/help-center/categories/unique-field',
                   'order',
                   v
                 )) || 'Order number not avaialabe. Choose another one',
             ]"
           />
-          <div
-            class="full-width"
-            style="display: flex; min-height: 25rem; flex-direction: column"
-          >
-            <QuillEditor
-              v-model:content="form.content"
-              contentType="html"
-              theme="snow"
-              toolbar="full"
-            />
-          </div>
         </div>
 
         <div class="column q-gutter-y-md">
@@ -181,12 +149,12 @@ const submit = async () => {
           style="background-color: #e6e4d9; color: #aeaca1; min-width: 8rem"
           @click="
             () => {
-              router.push({ name: 'admin.knowlegebase.content.index' });
+              router.push({ name: 'admin.knowlegebase.category.index' });
             }
           "
           >Cancle</q-btn
         >
-        <q-btn color="primary" v-if="IsPostingContnet">
+        <q-btn color="primary" v-if="IsPostingCategory">
           <q-circular-progress
             indeterminate
             size="20px"

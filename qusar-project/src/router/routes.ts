@@ -74,16 +74,46 @@ const routes: RouteRecordRaw[] = [
         name: 'admin.knowlegebase.content.index',
       },
       {
-        path: 'help-center/content',
+        path: 'help-center/content/:id/',
+        component: () =>
+          import('pages/admin/help-center/knowledgebase/ContentView.vue'),
+        name: 'admin.knowlegebase.content.show',
+      },
+      {
+        path: 'help-center/content/create',
         component: () =>
           import('pages/admin/help-center/knowledgebase/ContentCreate.vue'),
         name: 'admin.knowlegebase.content.create',
+      },
+      {
+        path: 'help-center/content/:id/edit',
+        component: () =>
+          import('pages/admin/help-center/knowledgebase/ContentEdit.vue'),
+        name: 'admin.knowlegebase.content.edit',
       },
       {
         path: 'help-center/category',
         component: () =>
           import('pages/admin/help-center/knowledgebase/CategoryIndex.vue'),
         name: 'admin.knowlegebase.category.index',
+      },
+      {
+        path: 'help-center/category/:id/',
+        component: () =>
+          import('pages/admin/help-center/knowledgebase/CategoryView.vue'),
+        name: 'admin.knowlegebase.category.show',
+      },
+      {
+        path: 'help-center/category/create',
+        component: () =>
+          import('pages/admin/help-center/knowledgebase/CategoryCreate.vue'),
+        name: 'admin.knowlegebase.category.create',
+      },
+      {
+        path: 'help-center/category/:id/edit',
+        component: () =>
+          import('pages/admin/help-center/knowledgebase/CategoryEdit.vue'),
+        name: 'admin.knowlegebase.category.edit',
       },
       {
         path: 'help-center/contact-message',

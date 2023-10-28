@@ -3,6 +3,9 @@ import { api } from 'src/boot/axios';
 
 export const rules = {
   async unique(url: string, field: string, value: string, skip?: string) {
+    if (value === null || value === '') {
+      return true;
+    }
     if (skip && skip === value) {
       return true;
     }
@@ -31,5 +34,18 @@ export const rules = {
       }
       return false;
     }
+  },
+
+  slug(value: string) {
+    if (value === null || value === '') {
+      return true;
+    }
+    if (value.includes(' ')) {
+      return false;
+    }
+    if (['*', '?', '@', '!', '$', '%', '^', '&', '*'].includes(value)) {
+      return false;
+    }
+    return true;
   },
 };

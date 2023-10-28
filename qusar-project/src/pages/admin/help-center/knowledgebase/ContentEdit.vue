@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useRouter } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import { rules } from '../../../../utils/validationRules';
 import {
   KnowledgebaseCategoryApi,
@@ -9,6 +9,7 @@ import {
 import { ref } from 'vue';
 
 const router = useRouter();
+const route = useRoute();
 
 const form = ref({
   title: '',
@@ -37,11 +38,28 @@ LanguageApi.index({
   languages.value = data.value;
 });
 
-const { execute: createContent, loading: IsPostingContnet } =
-  KnowledgebaseContentApi.post(form.value);
+const content = ref<null | Record<string, any>>(null);
+KnowledgebaseContentApi.show(route.params.id as string).then(({ data }) => {
+  content.value = data.value;
+  form.value.title = (data.value as any).title;
+  (form.value.slug = (data.value as any).slug),
+    (form.value.languageId = (data.value as any).language_id),
+    (form.value.knowledgeBaseCategoryId = (
+      data.value as any
+    ).knowledge_base_category_id),
+    (form.value.order = (data.value as any).order),
+    (form.value.content = (data.value as any).content),
+    (form.value.metaTitle = (data.value as any).meta_title),
+    (form.value.metaKeywords = (data.value as any).meta_keywords),
+    (form.value.metaDesc = (data.value as any).meta_desc);
+  form.value.isActive = (data.value as any).is_active == 1 ? true : false;
+});
+
+const { execute: updateContent, loading: IsPostingContnet } =
+  KnowledgebaseContentApi.put(route.params.id as string, form.value);
 
 const submit = async () => {
-  createContent().then(() => {
+  updateContent().then(() => {
     router.push({ name: 'admin.knowlegebase.content.index' });
   });
 };
@@ -60,7 +78,7 @@ const submit = async () => {
           }
         "
       />
-      <span class="text-h6"> Add Content </span>
+      <span class="text-h6"> Update Content </span>
     </div>
     <q-form class="column q-gutter-y-xl" @submit="submit">
       <div class="q-gutter-y-md">
@@ -77,7 +95,8 @@ const submit = async () => {
                 (await rules.unique(
                   '/help-center/content/unique-field',
                   'title',
-                  v
+                  v,
+                  content?.title
                 )) || 'title Already Taken',
             ]"
           />
@@ -93,7 +112,8 @@ const submit = async () => {
                 (await rules.unique(
                   '/help-center/content/unique-field',
                   'slug',
-                  v
+                  v,
+                  content?.slug
                 )) || 'Slug Already Taken',
             ]"
             hint="It will be auto created if you don't add it."
@@ -133,7 +153,8 @@ const submit = async () => {
                 (await rules.unique(
                   '/help-center/content/unique-field',
                   'order',
-                  v
+                  v,
+                  content?.order
                 )) || 'Order number not avaialabe. Choose another one',
             ]"
           />
@@ -198,7 +219,7 @@ const submit = async () => {
           />
         </q-btn>
         <q-btn v-else color="primary" type="submit" style="min-width: 8rem"
-          >Save</q-btn
+          >Update</q-btn
         >
       </div>
     </q-form>
