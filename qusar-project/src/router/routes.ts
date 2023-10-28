@@ -133,6 +133,16 @@ const routes: RouteRecordRaw[] = [
         name: 'admin.blogs.index',
       },
       {
+        path: 'blogs/posts/create',
+        component: () => import('pages/admin/blog/BlogsCreate.vue'),
+        name: 'admin.blogs.create',
+      },
+      {
+        path: 'blogs/posts/:id/edit',
+        component: () => import('pages/admin/blog/BlogsEdit.vue'),
+        name: 'admin.blogs.edit',
+      },
+      {
         path: 'blogs/categories',
         component: () => import('pages/admin/blog/CategoryIndex.vue'),
         name: 'admin.blogs.category.index',

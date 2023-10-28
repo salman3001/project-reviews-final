@@ -4,7 +4,7 @@ import SearchInput from 'src/components/forms/SearchInput.vue';
 import { useGetTableData } from 'src/composables/useGetTableData';
 import { AdditionalParams } from 'src/type';
 import { exportCSV } from 'src/utils/exportCSV';
-import { computed, reactive, ref } from 'vue';
+import { computed, onMounted, reactive, ref } from 'vue';
 import useModalStore from 'src/stores/useModalStore';
 import { useRouter } from 'vue-router';
 import { LanguageApi, blogCategoryApi } from 'src/utils/BaseApiService';
@@ -94,6 +94,7 @@ const colomns: QTableProps['columns'] = [
     field: 'title',
     label: 'Title',
     align: 'left',
+    style: 'height:auto;'
   },
   {
     name: 'language',
@@ -121,148 +122,74 @@ const colomns: QTableProps['columns'] = [
     align: 'center',
   },
 ];
+
+onMounted(() => {
+  uploads.value = process.env.UPLOAD as string;
+});
 </script>
 
 <template>
   <q-page class="row q-pa-lg">
     <div class="colomn q-gutter-y-lg" style="width: 100%">
       <div class="row justify-between q-gutter-y-sm">
-        <SearchInput
-          @search="
-            (val) => {
-              //@ts-ignore
-              filter.search.title = val;
-              //@ts-ignore
-            }
-          "
-        />
+        <SearchInput @search="(val) => {
+          //@ts-ignore
+          filter.search.title = val;
+          //@ts-ignore
+        }
+          " />
 
         <div class="row q-gutter-sm">
-          <q-select
-            v-model="categoryId"
-            v-if="categories"
-            dense
-            options-dense
-            emit-value
-            map-options
-            outlined
-            :options="[{ label: 'All', value: null }, ...categories.map((r: any) => ({
+          <q-select v-model="categoryId" v-if="categories" dense options-dense emit-value map-options outlined :options="[{ label: 'All', value: null }, ...categories.map((r: any) => ({
             label: r.name,
             value: r.id,
-          }))]"
-            label="Category"
-            class="col-auto"
-            style="min-width: 8rem"
-          />
-          <q-select
-            dense
-            v-model="languageId"
-            v-if="languages"
-            options-dense
-            emit-value
-            map-options
-            outlined
-            :options="[{ label: 'All', value: null }, ...languages.map((r: any) => ({
+          }))]" label="Category" class="col-auto" style="min-width: 8rem" />
+          <q-select dense v-model="languageId" v-if="languages" options-dense emit-value map-options outlined :options="[{ label: 'All', value: null }, ...languages.map((r: any) => ({
             label: r.name,
             value: r.id,
-          }))]"
-            label="Language"
-            class="col-auto"
-            style="min-width: 8rem"
-          />
-          <q-select
-            outlined
-            dense
-            options-dense
-            emit-value
-            map-options
-            v-model="isPublished"
-            :options="[
-              { label: 'All', value: null },
-              { label: 'Published', value: 1 },
-              { label: 'Draft', value: 0 },
-            ]"
-            label="Status"
-            class="col-auto"
-            style="min-width: 8rem"
-          />
-          <q-btn-dropdown
-            outline
-            label="Export"
-            style="border: 1px solid lightgray"
-          >
+          }))]" label="Language" class="col-auto" style="min-width: 8rem" />
+          <q-select outlined dense options-dense emit-value map-options v-model="isPublished" :options="[
+            { label: 'All', value: null },
+            { label: 'Published', value: 1 },
+            { label: 'Draft', value: 0 },
+          ]" label="Status" class="col-auto" style="min-width: 8rem" />
+          <q-btn-dropdown outline label="Export" style="border: 1px solid lightgray">
             <q-list dense>
               <q-item clickable v-close-popup @click="exportCSV(colomns, data)">
                 <q-item-section>
                   <q-item-label>
-                    <q-icon name="receipt_long" /> Export CSV</q-item-label
-                  >
+                    <q-icon name="receipt_long" /> Export CSV</q-item-label>
                 </q-item-section>
               </q-item>
             </q-list>
           </q-btn-dropdown>
-          <q-btn
-            color="primary"
-            @click="
-              () => {
-                router.push({ name: 'admin.blogs.create' });
-              }
-            "
-            >+ Add blog</q-btn
-          >
+          <q-btn color="primary" @click="() => {
+            router.push({ name: 'admin.blogs.create' });
+          }
+            ">+ Add blog</q-btn>
         </div>
       </div>
-      <q-table
-        ref="tableRef"
-        flat
-        bordered
-        title="Blog Posts"
-        :loading="loading"
-        :rows="data"
-        :columns="colomns"
-        class="zebra-table"
-        v-model:pagination="pagination"
-        :filter="filter"
-        @request="onRequest"
-        row-key="id"
-      >
-        <template v-slot:body-cell-first_name="props">
+      <q-table ref="tableRef" flat bordered title="Blog Posts" :loading="loading" :rows="data" :columns="colomns"
+        class="zebra-table" v-model:pagination="pagination" :filter="filter" @request="onRequest" row-key="id">
+        <template v-slot:body-cell-title="props">
           <q-td :props="props" class="row q-gutter-x-xs items-center">
-            <q-avatar size="30px">
-              <img
-                :src="
-                  props.row?.image?.url
-                    ? uploads + props.row?.image?.url
-                    : '/images/sample-dp.png'
-                "
-                :style="{
-                  border:
-                    props.row.is_active === 1
-                      ? '2px green solid'
-                      : '2px red solid',
-                }"
-              />
-            </q-avatar>
-            <div>
-              {{ props.row.title }}
+            <div class="row items-center" style="flex-wrap: nowrap;max-width: 400px;min-width: 300px;">
+              <div style="max-width: 110px;min-width: 110px;max-height: 70px; display: flex;padding: 5px;">
+                <img :src="props.row?.image?.url
+                  ? uploads + props.row?.image?.url : '/images/dummy-thumb.jpg'"
+                  style="width: 100%;object-fit: cover;" />
+              </div>
+              <div style="white-space: wrap;">
+                {{ props.row.title }}
+              </div>
             </div>
           </q-td>
         </template>
         <template v-slot:body-cell-is_published="props">
           <q-td :props="props">
             <div>
-              <q-badge
-                v-if="props.row.is_published == 1"
-                color="positive"
-                outline
-                :label="props.value"
-              />
-              <q-badge
-                v-if="props.row.is_published == 0"
-                color="secondary"
-                outline
-                :label="props.value"
-              />
+              <q-badge v-if="props.row.is_published == 1" color="positive" outline :label="props.value" />
+              <q-badge v-if="props.row.is_published == 0" color="secondary" outline :label="props.value" />
             </div>
           </q-td>
         </template>
@@ -271,39 +198,28 @@ const colomns: QTableProps['columns'] = [
             <div class="">
               <q-btn-dropdown size="sm" color="primary" label="Options">
                 <q-list dense>
-                  <q-item
-                    clickable
-                    v-close-popup
-                    @click="
-                      () => {
-                        router.push({
-                          name: 'admin.blogs.edit',
-                          params: { id: props.row.id },
-                        });
-                      }
-                    "
-                  >
+                  <q-item clickable v-close-popup @click="() => {
+                    router.push({
+                      name: 'admin.blogs.edit',
+                      params: { id: props.row.id },
+                    });
+                  }
+                    ">
                     <q-item-section>
                       <q-item-label>
-                        <q-icon name="edit" /> Edit Blog</q-item-label
-                      >
+                        <q-icon name="edit" /> Edit Blog</q-item-label>
                     </q-item-section>
                   </q-item>
-                  <q-item
-                    clickable
-                    v-close-popup
-                    @click="
-                      modal.togel('deleteRecord', {
-                        url: '/blogs/' + props.row.id,
-                        tableRef,
-                        title: 'Delete Blog?',
-                      })
-                    "
-                  >
+                  <q-item clickable v-close-popup @click="
+                    modal.togel('deleteRecord', {
+                      url: '/blogs/' + props.row.id,
+                      tableRef,
+                      title: 'Delete Blog?',
+                    })
+                    ">
                     <q-item-section>
                       <q-item-label>
-                        <q-icon name="delete" /> Delete</q-item-label
-                      >
+                        <q-icon name="delete" /> Delete</q-item-label>
                     </q-item-section>
                   </q-item>
                 </q-list>

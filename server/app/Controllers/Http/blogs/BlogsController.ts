@@ -13,6 +13,8 @@ export default class BlogsController {
   }
 
   public async store({ request, response }: HttpContextContract) {
+    console.log(request.file('image'))
+
     const { image, blogCategoryId, slug, ...payload } = await request.validate(BlogValidator)
 
     let blog: null | Blog = null
@@ -28,7 +30,7 @@ export default class BlogsController {
     }
 
     if (image) {
-      const createdImage = await ImageService.store(image, '/blogs', 'blog')
+      const createdImage = await ImageService.store(image, '/blogs/', 'blog')
       await blog.related('image').save(createdImage)
     }
 

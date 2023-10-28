@@ -1,0 +1,42 @@
+<script setup lang="ts">
+import { Ref, ref } from 'vue';
+
+defineProps<{
+  name: string,
+  error?: string
+  url?: string
+}>()
+
+const file = ref<File | null>(null)
+const previewImageRef = ref(null) as unknown as Ref<HTMLImageElement>
+
+
+function previewSelectedImage() {
+  if (file.value && ['image/png', 'image/jpeg', 'image/jpg', 'image/webp'].includes(file.value.type)) {
+    const reader = new FileReader();
+    reader.readAsDataURL(file.value);
+    reader.onload = function (e: any) {
+      previewImageRef.value.src = e.target.result as string;
+    }
+  }
+}
+</script>
+
+<template>
+  <div class="column justify-center items-center"
+    style=" border: 1px solid lightgray;border-radius: 10px;overflow: hidden;">
+    <label>
+      <img ref="previewImageRef" alt="Preview" style="max-width: 100%;" :src="url
+        ?? '/images/dummy-thumb.jpg'">
+    </label>
+    <div>
+      <q-file dense filled v-model="file" :name="name" accept="image/*" max-file-size="3000000" label="Upload Image"
+        @update:model-value="previewSelectedImage" style="width: 100%;">
+        <template v-slot:prepend>
+          <q-icon name="attach_file" />
+        </template>
+      </q-file>
+    </div>
+
+  </div>
+</template>
