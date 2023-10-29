@@ -12,6 +12,7 @@ export default class ContinentsController {
   public async store({ request, response }: HttpContextContract) {
     const continentSchema = schema.create({
       name: schema.string({ trim: true }),
+      isActive: schema.boolean.optional(),
     })
     const payload = await request.validate({ schema: continentSchema })
     const record = await ContinentService.store(payload)
@@ -27,6 +28,7 @@ export default class ContinentsController {
   public async update({ request, response, params }: HttpContextContract) {
     const continentSchema = schema.create({
       name: schema.string({ trim: true }),
+      isActive: schema.boolean.optional(),
     })
     const payload = await request.validate({ schema: continentSchema })
     const record = await ContinentService.update(params.id, payload)

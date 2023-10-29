@@ -1,6 +1,12 @@
 import { defineStore } from 'pinia';
+import {
+  ContinentsApi,
+  StateApi,
+  CountriesApi,
+  CityApi,
+  StreetApi,
+} from 'src/utils/BaseApiService';
 import { computed, ref } from 'vue';
-import { api } from 'boot/axios';
 
 const addressStore = defineStore('addressStore', () => {
   const continents = ref([]);
@@ -10,76 +16,66 @@ const addressStore = defineStore('addressStore', () => {
   const streets = ref([]);
 
   const getCountinents = async () => {
-    try {
-      const res = await api.get('/address/continents');
-      continents.value = res?.data;
-      countries.value = [];
-      states.value = [];
-      cities.value = [];
-      streets.value = [];
-    } catch (error: any) {
-      console.log(error.message);
-    }
+    const { data } = await ContinentsApi.index();
+    continents.value = data?.value as any;
+    countries.value = [];
+    states.value = [];
+    cities.value = [];
+    streets.value = [];
   };
 
-  const getCountries = async (continentId: number) => {
-    try {
-      const res = await api.get('/address/countries', {
-        params: {
-          continentId,
+  const getCountries = async (continentId: string) => {
+    const { data } = await CountriesApi.index({
+      relationFilter: {
+        continent: {
+          field: 'id',
+          value: continentId,
         },
-      });
-
-      countries.value = res?.data;
-      states.value = [];
-      cities.value = [];
-      streets.value = [];
-    } catch (error: any) {
-      console.log(error.message);
-    }
+      },
+    });
+    countries.value = data?.value as any;
+    states.value = [];
+    cities.value = [];
+    streets.value = [];
   };
 
-  const getstates = async (countryId: number) => {
-    try {
-      const res = await api.get('/address/states', {
-        params: {
-          countryId,
+  const getstates = async (countryId: string) => {
+    const { data } = await StateApi.index({
+      relationFilter: {
+        country: {
+          field: 'id',
+          value: countryId,
         },
-      });
-      states.value = res?.data;
-      cities.value = [];
-      streets.value = [];
-    } catch (error: any) {
-      console.log(error.message);
-    }
+      },
+    });
+    states.value = data?.value as any;
+    cities.value = [];
+    streets.value = [];
   };
 
-  const getCities = async (stateId: number) => {
-    try {
-      const res = await api.get('/address/cities', {
-        params: {
-          stateId,
+  const getCities = async (stateId: string) => {
+    const { data } = await CityApi.index({
+      relationFilter: {
+        state: {
+          field: 'id',
+          value: stateId,
         },
-      });
-      cities.value = res?.data;
-      streets.value = [];
-    } catch (error: any) {
-      console.log(error.message);
-    }
+      },
+    });
+    cities.value = data?.value as any;
+    streets.value = [];
   };
 
-  const getStreets = async (cityId: number) => {
-    try {
-      const res = await api.get('/address/streets', {
-        params: {
-          cityId,
+  const getStreets = async (cityId: string) => {
+    const { data } = await StreetApi.index({
+      relationFilter: {
+        city: {
+          field: 'id',
+          value: cityId,
         },
-      });
-
-      streets.value = res?.data;
-    } catch (error: any) {
-      console.log(error.message);
-    }
+      },
+    });
+    streets.value = data?.value as any;
   };
 
   const selectContinents = computed(() =>
@@ -138,6 +134,11 @@ const addressStore = defineStore('addressStore', () => {
     selectStates,
     selectCities,
     selectStreets,
+    continents,
+    countries,
+    states,
+    cities,
+    streets,
   };
 });
 

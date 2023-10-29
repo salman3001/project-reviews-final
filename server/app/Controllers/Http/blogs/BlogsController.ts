@@ -65,7 +65,7 @@ export default class BlogsController {
         await ImageService.destroy(blog.image.id)
         await blog.image.delete()
       }
-      const createdImage = await ImageService.store(image, '/blogs', 'blog')
+      const createdImage = await ImageService.store(image, '/blogs/', 'blog')
       blog && (await blog.related('image').save(createdImage))
     }
 

@@ -10,6 +10,9 @@ export default class Country extends BaseModel {
   public name: string
 
   @column()
+  public isActive: boolean
+
+  @column()
   public continentId: number
 
   @belongsTo(() => Continent)

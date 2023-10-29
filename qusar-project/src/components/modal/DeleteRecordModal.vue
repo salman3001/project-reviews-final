@@ -33,7 +33,7 @@ const handeler = async () => {
 </script>
 
 <template>
-  <q-card>
+  <q-card style="width: 100%">
     <q-toolbar style="background-color: #ebeae4">
       <q-toolbar-title
         ><span class="text-weight-bold">{{

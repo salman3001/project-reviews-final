@@ -1,4 +1,3 @@
-import { DateTime } from 'luxon'
 import { BaseModel, BelongsTo, HasMany, belongsTo, column, hasMany } from '@ioc:Adonis/Lucid/Orm'
 import City from './City'
 import Country from './Country'
@@ -9,6 +8,9 @@ export default class State extends BaseModel {
 
   @column()
   public name: string
+
+  @column()
+  public isActive: boolean
 
   @column()
   public countryId: number

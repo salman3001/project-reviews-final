@@ -11,7 +11,13 @@ type IModalContent =
   | 'addContinent'
   | 'editContinent'
   | 'addCountry'
-  | 'editCountry';
+  | 'editCountry'
+  | 'addState'
+  | 'editState'
+  | 'addCity'
+  | 'editCity'
+  | 'addStreet'
+  | 'editStreet';
 
 const modalStore = defineStore('modal', () => {
   const show = ref(false);

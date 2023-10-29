@@ -1,39 +1,22 @@
 <script setup lang="ts">
 import { useRoute, useRouter } from 'vue-router';
 import { rules } from '../../../utils/validationRules';
-import {
-  BlogApi,
-  LanguageApi,
-  blogCategoryApi,
-} from '../../../utils/BaseApiService';
-import { onMounted, ref } from 'vue';
-import ImageInput from 'src/components/forms/ImageInput.vue';
+import { LanguageApi, blogCategoryApi } from '../../../utils/BaseApiService';
+import { ref } from 'vue';
 
 const router = useRouter();
 const route = useRoute();
-const uploads = ref('');
 
 const form = ref({
-  title: '',
+  name: '',
   slug: '',
   languageId: null,
-  blogCategoryId: null,
-  longDesc: '',
+  order: null,
+  status: false,
   metaTitle: '',
   metaKeywords: '',
   metaDesc: '',
-  isPublished: false,
-  image: null,
 });
-
-const categories = ref<any[] | null>(null);
-blogCategoryApi
-  .index({
-    fields: ['name', 'id'],
-  })
-  .then(({ data }) => {
-    categories.value = data.value;
-  });
 
 const languages = ref<null | any[]>(null);
 LanguageApi.index({
@@ -42,56 +25,29 @@ LanguageApi.index({
   languages.value = data.value;
 });
 
-const blog = ref<null | Record<string, any>>();
-BlogApi.show(route.params.id as string, {
-  populate: {
-    category: {
-      fields: ['name'],
-    },
-    image: {
-      fields: ['url'],
-    },
-  },
-}).then(({ data }) => {
-  blog.value = data.value;
-  form.value.title = (data.value as any)?.title;
+const category = ref<any | Record<string, any>>(null);
+blogCategoryApi.show(route.params.id as string).then(({ data }) => {
+  category.value = data.value;
+  form.value.name = (data.value as any)?.name;
   form.value.slug = (data.value as any)?.slug;
   form.value.languageId = (data.value as any)?.language_id;
-  form.value.blogCategoryId = (data.value as any)?.category
-    ? (data.value as any)?.category[0]?.id
-    : null;
-  form.value.longDesc = (data.value as any)?.long_desc;
+  form.value.order = (data.value as any)?.order;
+  form.value.status = (data.value as any)?.status == 1 ? true : false;
   form.value.metaTitle = (data.value as any)?.meta_title;
   form.value.metaKeywords = (data.value as any)?.meta_keywords;
   form.value.metaDesc = (data.value as any)?.meta_desc;
-  form.value.isPublished =
-    (data.value as any)?.is_published == 1 ? true : false;
 });
 
-const { execute: createBlog, loading: posting } = BlogApi.put(
+const { execute: updateCategory, loading: posting } = blogCategoryApi.put(
   route.params.id as string,
-  form.value,
-  {
-    headers: {
-      'Content-Type': 'multipart/form-data',
-    },
-  }
+  form.value
 );
 
-const submit = async (e: SubmitEvent) => {
-  const formData = new FormData(e.target);
-
-  const image = formData.get('image');
-  form.value.image = image as null;
-
-  createBlog().then(() => {
-    router.push({ name: 'admin.blogs.index' });
+const submit = async () => {
+  updateCategory().then(() => {
+    router.push({ name: 'admin.blogs.category.index' });
   });
 };
-
-onMounted(() => {
-  uploads.value = process.env.UPLOAD as string;
-});
 </script>
 
 <template>
@@ -103,11 +59,11 @@ onMounted(() => {
         style="cursor: pointer"
         @click="
           () => {
-            router.push({ name: 'admin.blogs.index' });
+            router.push({ name: 'admin.blogs.category.index' });
           }
         "
       />
-      <span class="text-h6"> Edit Blog </span>
+      <span class="text-h6"> Edit Blog Category</span>
     </div>
     <q-form class="column q-gutter-y-xl" @submit="submit">
       <div class="q-gutter-y-md">
@@ -115,18 +71,18 @@ onMounted(() => {
           <q-input
             :debounce="500"
             outlined
-            v-model="form.title"
-            label="Title"
+            v-model="form.name"
+            label="Name"
             class="col-12 col-sm-6 col-md-3"
             :rules="[
               $rules.required('required'),
               async (v) =>
                 (await rules.unique(
-                  '/blogs/unique-field',
-                  'title',
+                  'blog-categories/unique-field',
+                  'name',
                   v,
-                  blog?.title
-                )) || 'title Already Taken',
+                  category?.name
+                )) || 'Name Already Taken',
             ]"
           />
           <q-input
@@ -139,13 +95,30 @@ onMounted(() => {
               (v) => rules.slug(v) || 'Slug is not valid',
               async (v) =>
                 (await rules.unique(
-                  '/blogs/unique-field',
+                  'blog-categories/unique-field',
                   'slug',
                   v,
-                  blog?.slug
+                  category?.slug
                 )) || 'Slug Already Taken',
             ]"
             hint="It will be auto created if you don't add it."
+          />
+          <q-input
+            type="number"
+            :debounce="500"
+            outlined
+            v-model="form.order"
+            label="Order"
+            class="col-12 col-sm-6 col-md-3"
+            :rules="[
+              async (v) =>
+                (await rules.unique(
+                  'blog-categories/unique-field',
+                  'order',
+                  v,
+                  category?.order
+                )) || 'Order No. Not Availabale',
+            ]"
           />
           <q-select
             v-if="languages"
@@ -158,36 +131,6 @@ onMounted(() => {
             class="col-12 col-sm-6 col-md-3"
             :options="[...languages.map((l: any) => ({ label: l?.name, value: l?.id }))]"
           />
-
-          <q-select
-            v-if="categories"
-            outlined
-            debounce="500"
-            v-model="form.blogCategoryId"
-            emit-value
-            map-options
-            label="Category"
-            class="col-12 col-sm-6 col-md-3"
-            :options="[...categories.map((c: any) => ({ label: c?.name, value: c?.id }))]"
-          />
-          <div style="max-width: 250px">
-            <ImageInput
-              name="image"
-              width="250px"
-              :url="blog?.image?.url ? uploads + blog?.image?.url : undefined"
-            />
-          </div>
-          <div
-            class="full-width"
-            style="display: flex; min-height: 25rem; flex-direction: column"
-          >
-            <QuillEditor
-              v-model:content="form.longDesc"
-              contentType="html"
-              theme="snow"
-              toolbar="full"
-            />
-          </div>
         </div>
 
         <div class="column q-gutter-y-md">
@@ -212,7 +155,7 @@ onMounted(() => {
               label="Meta Description"
               class="col-12"
             />
-            <q-toggle label="Publsih" v-model="form.isPublished" />
+            <q-toggle label="Publsih" v-model="form.status" />
           </div>
         </div>
       </div>
@@ -221,7 +164,7 @@ onMounted(() => {
           style="background-color: #e6e4d9; color: #aeaca1; min-width: 8rem"
           @click="
             () => {
-              router.push({ name: 'admin.blogs.index' });
+              router.push({ name: 'admin.blogs.category.index' });
             }
           "
           >Cancle</q-btn
@@ -238,7 +181,7 @@ onMounted(() => {
           />
         </q-btn>
         <q-btn v-else color="primary" type="submit" style="min-width: 8rem"
-          >Update</q-btn
+          >Save</q-btn
         >
       </div>
     </q-form>

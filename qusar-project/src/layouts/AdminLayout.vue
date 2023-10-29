@@ -155,7 +155,45 @@ function toggleLeftDrawer() {
                   }"
                   class="text-black"
                   style="text-decoration: none"
-                  >Contact Messages</router-link
+                  >Blog Categories</router-link
+                >
+              </q-item-section>
+            </q-item>
+          </NavMenu>
+          <NavMenu title="Location">
+            <q-item clickable v-close-popup>
+              <q-item-section>
+                <router-link
+                  :to="{
+                    name: 'admin.location.continent.index',
+                  }"
+                  class="text-black"
+                  style="text-decoration: none"
+                  >Continents</router-link
+                >
+              </q-item-section>
+            </q-item>
+            <q-item clickable v-close-popup>
+              <q-item-section>
+                <router-link
+                  :to="{
+                    name: 'admin.location.country.index',
+                  }"
+                  class="text-black"
+                  style="text-decoration: none"
+                  >Countries</router-link
+                >
+              </q-item-section>
+            </q-item>
+            <q-item clickable v-close-popup>
+              <q-item-section>
+                <router-link
+                  :to="{
+                    name: 'admin.location.state.index',
+                  }"
+                  class="text-black"
+                  style="text-decoration: none"
+                  >States</router-link
                 >
               </q-item-section>
             </q-item>

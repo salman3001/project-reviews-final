@@ -12,6 +12,7 @@ export default class StatesController {
   public async store({ request, response }: HttpContextContract) {
     const StateSchema = schema.create({
       name: schema.string({ trim: true }),
+      isActive: schema.boolean.optional(),
       countryId: schema.number.optional(),
     })
     const payload = await request.validate({ schema: StateSchema })
@@ -28,6 +29,7 @@ export default class StatesController {
   public async update({ request, response, params }: HttpContextContract) {
     const StateSchema = schema.create({
       name: schema.string({ trim: true }),
+      isActive: schema.boolean.optional(),
       countryId: schema.number.optional(),
     })
     const payload = await request.validate({ schema: StateSchema })

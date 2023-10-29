@@ -133,6 +133,11 @@ const routes: RouteRecordRaw[] = [
         name: 'admin.blogs.index',
       },
       {
+        path: 'blogs/posts/:id/',
+        component: () => import('pages/admin/blog/BlogsView.vue'),
+        name: 'admin.blogs.show',
+      },
+      {
         path: 'blogs/posts/create',
         component: () => import('pages/admin/blog/BlogsCreate.vue'),
         name: 'admin.blogs.create',
@@ -146,6 +151,36 @@ const routes: RouteRecordRaw[] = [
         path: 'blogs/categories',
         component: () => import('pages/admin/blog/CategoryIndex.vue'),
         name: 'admin.blogs.category.index',
+      },
+      {
+        path: 'blogs/categories/:id/',
+        component: () => import('pages/admin/blog/CategoryView.vue'),
+        name: 'admin.blogs.category.show',
+      },
+      {
+        path: 'blogs/categories/create',
+        component: () => import('pages/admin/blog/CategoryCreate.vue'),
+        name: 'admin.blogs.category.create',
+      },
+      {
+        path: 'blogs/categories/:id/edit',
+        component: () => import('pages/admin/blog/CategoryEdit.vue'),
+        name: 'admin.blogs.category.edit',
+      },
+      {
+        path: 'location/continents',
+        component: () => import('pages/admin/location/ContinentsList.vue'),
+        name: 'admin.location.continent.index',
+      },
+      {
+        path: 'location/countries',
+        component: () => import('pages/admin/location/CountryList.vue'),
+        name: 'admin.location.country.index',
+      },
+      {
+        path: 'location/states',
+        component: () => import('pages/admin/location/StateList.vue'),
+        name: 'admin.location.state.index',
       },
     ],
   },

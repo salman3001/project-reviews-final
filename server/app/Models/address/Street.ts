@@ -1,5 +1,5 @@
-import { DateTime } from 'luxon'
-import { BaseModel, column } from '@ioc:Adonis/Lucid/Orm'
+import { BaseModel, BelongsTo, belongsTo, column } from '@ioc:Adonis/Lucid/Orm'
+import City from './City'
 
 export default class Street extends BaseModel {
   @column({ isPrimary: true })
@@ -9,5 +9,11 @@ export default class Street extends BaseModel {
   public name: string
 
   @column()
+  public isActive: boolean
+
+  @column()
   public cityId: number
+
+  @belongsTo(() => City)
+  public city: BelongsTo<typeof City>
 }

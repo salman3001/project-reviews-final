@@ -4,39 +4,60 @@ import SearchInput from 'src/components/forms/SearchInput.vue';
 import { useGetTableData } from 'src/composables/useGetTableData';
 import { AdditionalParams } from 'src/type';
 import { exportCSV } from 'src/utils/exportCSV';
-import { computed, onMounted, reactive, ref } from 'vue';
+import { onMounted, reactive, ref } from 'vue';
 import useModalStore from 'src/stores/useModalStore';
-import { useRouter } from 'vue-router';
-import { LanguageApi, blogCategoryApi } from 'src/utils/BaseApiService';
+import { ContinentsApi, CountriesApi } from 'src/utils/BaseApiService';
+import useAddressStore from 'src/stores/addressStore';
 
 const modal = useModalStore();
-const router = useRouter();
-const uploads = ref('');
+const address = useAddressStore();
 
 const filter = reactive<AdditionalParams>({
-  populate: {
-    language: {},
-  },
   search: {
     name: '',
   },
   filter: {
-    languageId: null,
-    status: null,
+    is_active: null,
+  },
+  relationFilter: {
+    country: {
+      field: 'id',
+      value: '',
+      filter: {
+        continent: {
+          field: 'id',
+          value: '',
+        },
+      },
+    },
   },
 });
 
-const languages = ref<null | Record<string, any>>(null);
-LanguageApi.index().then(({ data }) => {
-  languages.value = data.value;
+const countries = ref<null | any[]>(null);
+CountriesApi.index({
+  fields: ['name', 'id'],
+}).then(({ data }) => {
+  countries.value = data.value;
+});
+
+const continents = ref<null | any[]>(null);
+ContinentsApi.index({
+  fields: ['name', 'id'],
+}).then(({ data }) => {
+  continents.value = data.value;
 });
 
 const { data, loading, onRequest, pagination, tableRef } = useGetTableData(
-  'blog-categories',
+  'address/states',
   {
     populate: {
-      language: {
-        fields: ['name', 'id'],
+      country: {
+        fields: ['name', 'id', 'continent_id'],
+        populate: {
+          continent: {
+            fields: ['name', 'id'],
+          },
+        },
       },
     },
   }
@@ -52,15 +73,22 @@ const colomns: QTableProps['columns'] = [
     style: 'height:auto;',
   },
   {
-    name: 'language',
-    field: (row: any) => row?.language?.name,
-    label: 'Language',
+    name: 'continent',
+    field: (row: any) => row?.country?.continent?.name,
+    label: 'Continent',
     align: 'left',
+    style: 'height:auto;',
   },
-  { name: 'order', field: 'order', label: 'Order', align: 'center' },
   {
-    name: 'status',
-    field: (row: any) => (row?.status == 1 ? 'Active' : 'Inactive'),
+    name: 'country',
+    field: (row: any) => row?.country?.name,
+    label: 'Country',
+    align: 'left',
+    style: 'height:auto;',
+  },
+  {
+    name: 'is_active',
+    field: (row: any) => (row?.is_active == 1 ? 'Active' : 'Inactive'),
     label: 'Status',
     align: 'center',
   },
@@ -73,7 +101,7 @@ const colomns: QTableProps['columns'] = [
 ];
 
 onMounted(() => {
-  uploads.value = process.env.UPLOAD as string;
+  address.getCountinents();
 });
 </script>
 
@@ -92,18 +120,35 @@ onMounted(() => {
         />
         <div class="row q-gutter-sm">
           <q-select
+            v-if="continents"
+            outlined
+            autocomplete
             dense
-            v-model="filter.filter.languageId"
-            v-if="languages"
             options-dense
             emit-value
             map-options
+            v-model="filter.relationFilter.country.filter.continent.value"
+            :options="[ { label: 'All', value: null },...address.continents.map((v:any)=>({label:v?.name,value:v?.id}))]"
+            @update:model-value="
+              (value) => {
+                filter.relationFilter.country.value;
+                address.getCountries(value);
+              }
+            "
+            label="Continent"
+            class="col-auto"
+            style="min-width: 8rem"
+          />
+          <q-select
+            v-if="countries"
             outlined
-            :options="[{ label: 'All', value: null }, ...languages.map((r: any) => ({
-            label: r.name,
-            value: r.id,
-          }))]"
-            label="Language"
+            dense
+            options-dense
+            emit-value
+            map-options
+            v-model="filter.relationFilter.country.value"
+            :options="[ { label: 'All', value: null },...address.countries.map((v:any)=>({label:v?.name,value:v?.id}))]"
+            label="Country"
             class="col-auto"
             style="min-width: 8rem"
           />
@@ -113,7 +158,7 @@ onMounted(() => {
             options-dense
             emit-value
             map-options
-            v-model="filter.filter.status"
+            v-model="filter.filter.is_active"
             :options="[
               { label: 'All', value: null },
               { label: 'Active', value: 1 },
@@ -142,10 +187,10 @@ onMounted(() => {
             color="primary"
             @click="
               () => {
-                router.push({ name: 'admin.blogs.category.create' });
+                modal.togel('addState', { tableRef });
               }
             "
-            >+ Add category</q-btn
+            >+ Add State</q-btn
           >
         </div>
       </div>
@@ -154,7 +199,7 @@ onMounted(() => {
         ref="tableRef"
         flat
         bordered
-        title="Blog Categories"
+        title="States"
         :loading="loading"
         :rows="data"
         :columns="colomns"
@@ -164,17 +209,17 @@ onMounted(() => {
         @request="onRequest"
         row-key="id"
       >
-        <template v-slot:body-cell-status="props">
+        <template v-slot:body-cell-is_active="props">
           <q-td :props="props">
             <div>
               <q-badge
-                v-if="props.row.status == 1"
+                v-if="props.row.is_active == 1"
                 color="positive"
                 outline
                 :label="props.value"
               />
               <q-badge
-                v-if="props.row.status == 0"
+                v-if="props.row.is_active == 0"
                 color="secondary"
                 outline
                 :label="props.value"
@@ -191,30 +236,10 @@ onMounted(() => {
                     clickable
                     v-close-popup
                     @click="
-                      () => {
-                        router.push({
-                          name: 'admin.blogs.category.show',
-                          params: { id: props.row.id },
-                        });
-                      }
-                    "
-                  >
-                    <q-item-section>
-                      <q-item-label>
-                        <q-icon name="visibility" /> View
-                      </q-item-label>
-                    </q-item-section>
-                  </q-item>
-                  <q-item
-                    clickable
-                    v-close-popup
-                    @click="
-                      () => {
-                        router.push({
-                          name: 'admin.blogs.category.edit',
-                          params: { id: props.row.id },
-                        });
-                      }
+                      modal.togel('editState', {
+                        id: props.row?.id,
+                        tableRef,
+                      })
                     "
                   >
                     <q-item-section>
@@ -226,9 +251,9 @@ onMounted(() => {
                     v-close-popup
                     @click="
                       modal.togel('deleteRecord', {
-                        url: '/blog-categories/' + props.row.id,
+                        url: '/address/states/' + props.row.id,
                         tableRef,
-                        title: 'Delete Category?',
+                        title: 'Delete State?',
                       })
                     "
                   >

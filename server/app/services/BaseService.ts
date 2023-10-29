@@ -168,6 +168,12 @@ class BaseService<T extends LucidModel> {
             this.relationFiler(element.filter, q)
           }
         })
+      } else if (element.filter) {
+        query.whereHas(key, (q) => {
+          if (element.filter) {
+            this.relationFiler(element.filter, q)
+          }
+        })
       }
     }
   }

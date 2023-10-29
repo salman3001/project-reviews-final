@@ -12,6 +12,7 @@ export default class CitiesController {
   public async store({ request, response }: HttpContextContract) {
     const citySchema = schema.create({
       name: schema.string({ trim: true }),
+      isActive: schema.boolean.optional(),
       stateId: schema.number.optional(),
     })
     const payload = await request.validate({ schema: citySchema })
@@ -28,6 +29,7 @@ export default class CitiesController {
   public async update({ request, response, params }: HttpContextContract) {
     const citySchema = schema.create({
       name: schema.string({ trim: true }),
+      isActive: schema.boolean.optional(),
       stateId: schema.number.optional(),
     })
     const payload = await request.validate({ schema: citySchema })
