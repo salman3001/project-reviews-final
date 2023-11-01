@@ -5,13 +5,13 @@ export default class NotificationSetting extends BaseModel {
   public id: number
 
   @column()
-  public onMessageRecieve: number
+  public onMessageRecieve: boolean
   @column()
-  public onCommentReply: number
+  public onCommentReply: boolean
   @column()
-  public onProductUpdate: number
+  public onProductUpdate: boolean
   @column()
-  public onOffers: number
+  public onOffers: boolean
   @column()
-  public userId: number
+  public userId: boolean
 }

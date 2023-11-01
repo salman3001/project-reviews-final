@@ -1,7 +1,7 @@
-import { schema, rules } from '@ioc:Adonis/Core/Validator'
+import { schema, CustomMessages, rules } from '@ioc:Adonis/Core/Validator'
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 
-export default class AdminUserValidator {
+export default class UserCreateValidator {
   constructor(protected ctx: HttpContextContract) {}
 
   /*
@@ -24,24 +24,23 @@ export default class AdminUserValidator {
    *    ```
    */
   public schema = schema.create({
-    image: schema.file.optional({
-      extnames: ['JPG', 'jpg', 'jpeg', 'png', 'webp', 'gif'],
-
+    image: schema.file({
+      extnames: ['jpg', 'jpeg', 'png', 'webp', 'gif'],
       size: '2mb',
     }),
     user: schema.object().members({
-      email: schema.string({ trim: true }, [
-        rules.email(),
-        rules.unique({ table: 'admin_users', column: 'email' }),
-        rules.normalizeEmail({ allLowercase: true }),
-      ]),
       firstName: schema.string({ trim: true }),
       lastName: schema.string({ trim: true }),
-      phone: schema.string.optional({ trim: true }, [rules.minLength(8)]),
-      password: schema.string({ trim: true }, [rules.minLength(8), rules.alphaNum()]),
+      email: schema.string({ trim: true }, [
+        rules.email(),
+        rules.normalizeEmail({ allLowercase: true }),
+      ]),
+      userName: schema.string({ trim: true }),
+      password: schema.string({ trim: true }),
+      phone: schema.string.optional(),
       desc: schema.string.optional(),
       isActive: schema.boolean.optional(),
-      roleId: schema.string.optional({ trim: true }),
+      isPublic: schema.boolean.optional(),
     }),
     address: schema.object.optional().members({
       address: schema.string.optional({ trim: true }),
@@ -63,6 +62,46 @@ export default class AdminUserValidator {
       whatsapp: schema.string.optional({ trim: true }),
       telegram: schema.string.optional({ trim: true }),
     }),
+    favoriteLinks: schema.array.optional().members(
+      schema.object().members({
+        link: schema.string({ trim: true }),
+      })
+    ),
+    workExperience: schema.array.optional().members(
+      schema.object().members({
+        jobIndustryId: schema.number.optional(),
+        jobFunction: schema.string.optional({ trim: true }),
+        jobTitle: schema.string.optional({ trim: true }),
+        jobDepartmentId: schema.number.optional(),
+        companyName: schema.string.optional({ trim: true }),
+        companySize: schema.string.optional({ trim: true }),
+        cityId: schema.number.optional(),
+        stateId: schema.number.optional(),
+        countryId: schema.number.optional(),
+        startDate: schema.date.optional(),
+        endDate: schema.date.optional(),
+        desc: schema.string.optional({ trim: true }),
+        isCurrent: schema.boolean.optional(),
+      })
+    ),
+    education: schema.array.optional().members(
+      schema.object().members({
+        institute: schema.string.optional({ trim: true }),
+        degree: schema.string.optional({ trim: true }),
+        field: schema.string.optional({ trim: true }),
+        startDate: schema.date.optional(),
+        endDate: schema.date.optional(),
+        desc: schema.string.optional({ trim: true }),
+      })
+    ),
+    languages: schema.array.optional().members(schema.number()),
+    skills: schema.array.optional().members(schema.number()),
+    NotificationSettings: schema.object.optional().members({
+      onMessageRecieve: schema.boolean.optional(),
+      onCommentReply: schema.boolean.optional(),
+      onProductUpdate: schema.boolean.optional(),
+      onOffers: schema.boolean.optional(),
+    }),
   })
 
   /**
@@ -76,5 +115,5 @@ export default class AdminUserValidator {
    * }
    *
    */
-  public messages = {}
+  public messages: CustomMessages = {}
 }

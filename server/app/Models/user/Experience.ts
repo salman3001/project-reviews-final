@@ -65,7 +65,7 @@ export default class Experience extends BaseModel {
   public desc: string
 
   @column()
-  public isCurrent: number
+  public isCurrent: boolean
 
   @column()
   public userId: number

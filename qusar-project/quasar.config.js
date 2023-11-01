@@ -64,7 +64,12 @@ module.exports = configure(function (ctx) {
       // publicPath: '/',
       // analyze: true,
       env: {
-        UPLOAD: ctx.dev ? 'http://127.0.0.1:3333/uploads' : 'somehting else',
+        UPLOAD: ctx.dev
+          ? 'http://127.0.0.1:3333/uploads'
+          : 'https://project-reviews-server.onrender.com/uploads',
+        baseApi: ctx.dev
+          ? 'http://127.0.0.1:3333/api'
+          : 'https://project-reviews-server.onrender.com/api',
       },
       // rawDefine: {}
       // ignorePublicFolder: true,

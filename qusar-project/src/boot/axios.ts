@@ -22,7 +22,7 @@ const removeAll = () => {
 // "export default () => {}" function below (which runs individually
 // for each client)
 const api = axios.create({
-  baseURL: 'http://127.0.0.1:3333/api',
+  baseURL: process.env.baseApi,
 });
 
 api.interceptors.request.use((config) => {
