@@ -1,12 +1,13 @@
 <script setup lang="ts">
-import { QTableProps } from 'quasar';
+import { QTableProps, date } from 'quasar';
 import { useGetTableData } from 'src/composables/useGetTableData';
 import { AdditionalParams } from 'src/type';
 import { exportCSV } from 'src/utils/exportCSV';
 import { computed, reactive } from 'vue';
-import useModalStore from 'src/stores/useModalStore';
+import modalStore from 'src/stores/modalStore';
 
-const modal = useModalStore();
+const modal = modalStore();
+const { formatDate } = date
 
 const filter = reactive<AdditionalParams>({
   filter: {
@@ -58,15 +59,19 @@ const colomns: QTableProps['columns'] = [
   },
   {
     name: 'created_at',
-    field: 'created_at',
+    field: (row: any) => formatDate(row?.created_at, 'DD-MM-YYYY HH:mm'),
     label: 'Date',
     align: 'center',
+    style: 'min-width:150px'
+
   },
   {
     name: 'updated_at',
-    field: 'updated_at',
+    field: (row: any) => formatDate(row?.updated_at, 'DD-MM-YYYY HH:mm'),
     label: 'Updated',
     align: 'center',
+    style: 'min-width:150px'
+
   },
   {
     name: 'option',
@@ -92,76 +97,32 @@ const colomns: QTableProps['columns'] = [
         /> -->
 
         <div class="row q-gutter-sm">
-          <q-select
-            outlined
-            dense
-            options-dense
-            emit-value
-            map-options
-            v-model="status"
-            :options="[
-              { label: 'All', value: null },
-              { label: 'Open', value: 'Open' },
-              { label: 'Closed', value: 'Closed' },
-              { label: 'Responded', value: 'Responded' },
-            ]"
-            label="Status"
-            class="col-auto"
-            style="min-width: 8rem"
-          />
-          <q-btn-dropdown
-            outline
-            label="Export"
-            style="border: 1px solid lightgray"
-          >
+          <q-select outlined dense options-dense emit-value map-options v-model="status" :options="[
+            { label: 'All', value: null },
+            { label: 'Open', value: 'Open' },
+            { label: 'Closed', value: 'Closed' },
+            { label: 'Responded', value: 'Responded' },
+          ]" label="Status" class="col-auto" style="min-width: 8rem" />
+          <q-btn-dropdown outline label="Export" style="border: 1px solid lightgray">
             <q-list dense>
               <q-item clickable v-close-popup @click="exportCSV(colomns, data)">
                 <q-item-section>
                   <q-item-label>
-                    <q-icon name="receipt_long" /> Export CSV</q-item-label
-                  >
+                    <q-icon name="receipt_long" /> Export CSV</q-item-label>
                 </q-item-section>
               </q-item>
             </q-list>
           </q-btn-dropdown>
         </div>
       </div>
-      <q-table
-        ref="tableRef"
-        flat
-        bordered
-        title="Suppor Tickets"
-        :loading="loading"
-        :rows="data"
-        :columns="colomns"
-        class="zebra-table"
-        v-model:pagination="pagination"
-        :filter="filter"
-        @request="onRequest"
-        row-key="id"
-        wrap-cells
-      >
+      <q-table ref="tableRef" flat bordered title="Suppor Tickets" :loading="loading" :rows="data" :columns="colomns"
+        class="zebra-table" v-model:pagination="pagination" :filter="filter" @request="onRequest" row-key="id" wrap-cells>
         <template v-slot:body-cell-status="props">
           <q-td :props="props">
             <div>
-              <q-badge
-                v-if="props.row.status === 'Open'"
-                color="positive"
-                outline
-                :label="props.value"
-              />
-              <q-badge
-                v-if="props.row.status === 'Responded'"
-                color="secondary"
-                outline
-                :label="props.value"
-              />
-              <q-badge
-                v-if="props.row.status === 'Closed'"
-                color="negative"
-                outline
-                :label="props.value"
-              />
+              <q-badge v-if="props.row.status === 'Open'" color="positive" outline :label="props.value" />
+              <q-badge v-if="props.row.status === 'Responded'" color="secondary" outline :label="props.value" />
+              <q-badge v-if="props.row.status === 'Closed'" color="negative" outline :label="props.value" />
             </div>
           </q-td>
         </template>
@@ -204,21 +165,16 @@ const colomns: QTableProps['columns'] = [
                       <q-item-label> <q-icon name="edit" /> Edit </q-item-label>
                     </q-item-section>
                   </q-item> -->
-                  <q-item
-                    clickable
-                    v-close-popup
-                    @click="
-                      modal.togel('deleteRecord', {
-                        url: '/help-center/support-ticket/' + props.row.id,
-                        tableRef,
-                        title: 'Delete Support ticket?',
-                      })
-                    "
-                  >
+                  <q-item clickable v-close-popup @click="
+                    modal.togel('deleteRecord', {
+                      url: '/help-center/support-ticket/' + props.row.id,
+                      tableRef,
+                      title: 'Delete Support ticket?',
+                    })
+                    ">
                     <q-item-section>
                       <q-item-label>
-                        <q-icon name="delete" /> Delete</q-item-label
-                      >
+                        <q-icon name="delete" /> Delete</q-item-label>
                     </q-item-section>
                   </q-item>
                 </q-list>

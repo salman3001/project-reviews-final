@@ -7,6 +7,7 @@ export default class extends BaseSchema {
     this.schema.createTable(this.tableName, (table) => {
       table.increments('id').primary()
       table.string('name', 15).notNullable()
+      table.boolean('is_active').defaultTo(false)
       /**
        * Uses timestamptz for PostgreSQL and DATETIME2 for MSSQL
        */

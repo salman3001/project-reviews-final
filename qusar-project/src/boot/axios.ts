@@ -9,7 +9,11 @@ declare module '@vue/runtime-core' {
   }
 }
 
-const token = Cookies.get('token');
+const token = () => Cookies.get('token');
+const removeAll = () => {
+  Cookies.remove('token');
+  Cookies.remove('user');
+};
 
 // Be careful when using SSR for cross-request state pollution
 // due to creating a Singleton instance here;
@@ -19,10 +23,25 @@ const token = Cookies.get('token');
 // for each client)
 const api = axios.create({
   baseURL: 'http://127.0.0.1:3333/api',
-  headers: {
-    Authorization: `Bearer ${token}`,
-  },
 });
+
+api.interceptors.request.use((config) => {
+  config.headers.Authorization = `Bearer ${token()}`;
+  return config;
+});
+
+// api.interceptors.response.use(
+//   (res) => {
+//     return res;
+//   },
+//   (error) => {
+//     console.log(error.response.status === 401);
+
+//     if (error.response.status === 401) {
+//       removeAll();
+//     }
+//   }
+// );
 
 export default boot(({ app }) => {
   // for use inside Vue files (Options API) through this.$axios and this.$api

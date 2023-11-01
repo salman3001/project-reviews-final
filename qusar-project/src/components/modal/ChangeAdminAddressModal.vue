@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { Notify } from 'quasar';
 import { api } from 'src/boot/axios';
-import useModalStore from 'src/stores/useModalStore';
+import modalStore from 'src/stores/modalStore';
 import { ref } from 'vue';
 
-const modal = useModalStore();
+const modal = modalStore();
 const selectRole = ref(modal?.meta?.selectedRole);
 const loading = ref(false);
 const update = async () => {
@@ -42,9 +42,7 @@ const update = async () => {
 <template>
   <q-card>
     <q-toolbar style="background-color: #ebeae4">
-      <q-toolbar-title
-        ><span class="text-weight-bold">Change Role</span></q-toolbar-title
-      >
+      <q-toolbar-title><span class="text-weight-bold">Change Role</span></q-toolbar-title>
       <q-btn flat dense icon="close" v-close-popup />
     </q-toolbar>
 
@@ -52,107 +50,42 @@ const update = async () => {
       <div class="column q-gutter-y-md">
         <p class="text-subtitle1">Location Information</p>
         <div class="row q-col-gutter-md">
-          <q-input
-            outlined
-            v-model="form.address.address"
-            class="col-12 col-md-9"
-            label="Address"
-          />
-          <q-select
-            outlined
-            emit-value
-            map-options
-            v-model="form.address.continentId"
-            :options="address.selectContinents"
-            label="Continet"
-            class="col-12 col-sm-6 col-md-3"
-            @update:model-value="
-              (value) => {
+          <q-input outlined v-model="form.address.address" class="col-12 col-md-9" label="Address" />
+          <q-select outlined emit-value map-options v-model="form.address.continentId" :options="address.selectContinents"
+            label="Continet" class="col-12 col-sm-6 col-md-3" @update:model-value="(value) => {
                 address.getCountries(value);
               }
-            "
-          />
-          <q-select
-            outlined
-            emit-value
-            map-options
-            v-model="form.address.countryId"
-            label="Country"
-            class="col-12 col-sm-6 col-md-3"
-            :options="address.selectContries"
-            @update:model-value="
-              (value) => {
+              " />
+          <q-select outlined emit-value map-options v-model="form.address.countryId" label="Country"
+            class="col-12 col-sm-6 col-md-3" :options="address.selectContries" @update:model-value="(value) => {
                 address.getstates(value);
               }
-            "
-          />
-          <q-select
-            outlined
-            emit-value
-            map-options
-            v-model="form.address.stateId"
-            label="State"
-            class="col-12 col-sm-6 col-md-3"
-            :options="address.selectStates"
-            @update:model-value="
-              (value) => {
+              " />
+          <q-select outlined emit-value map-options v-model="form.address.stateId" label="State"
+            class="col-12 col-sm-6 col-md-3" :options="address.selectStates" @update:model-value="(value) => {
                 address.getCities(value);
               }
-            "
-          />
-          <q-select
-            outlined
-            emit-value
-            map-options
-            v-model="form.address.cityId"
-            label="City"
-            class="col-12 col-sm-6 col-md-3"
-            :options="address.selectCities"
-            @update:model-value="
-              (value) => {
+              " />
+          <q-select outlined emit-value map-options v-model="form.address.cityId" label="City"
+            class="col-12 col-sm-6 col-md-3" :options="address.selectCities" @update:model-value="(value) => {
                 address.getStreets(value);
               }
-            "
-          />
-          <q-select
-            outlined
-            emit-value
-            map-options
-            v-model="form.address.streetId"
-            label="Street"
-            class="col-12 col-sm-6 col-md-3"
-            :options="address.selectStreets"
-          />
-          <q-input
-            outlined
-            v-model="form.address.zip"
-            class="col-12 col-sm-6 col-md-3"
-            label="Post Code"
-          />
+              " />
+          <q-select outlined emit-value map-options v-model="form.address.streetId" label="Street"
+            class="col-12 col-sm-6 col-md-3" :options="address.selectStreets" />
+          <q-input outlined v-model="form.address.zip" class="col-12 col-sm-6 col-md-3" label="Post Code" />
         </div>
       </div>
     </q-card-section>
     <q-card-section class="row justify-end">
       <div class="q-gutter-sm">
-        <q-btn
-          flat
-          style="background-color: #f2f0dc"
-          @click="modal.show = !modal.show"
-          >Cancle</q-btn
-        >
+        <q-btn flat style="background-color: #f2f0dc" @click="modal.show = !modal.show">Cancle</q-btn>
         <q-btn color="primary" v-if="loading">
-          <q-circular-progress
-            indeterminate
-            size="20px"
-            class="q-px-10"
-            :thickness="1"
-            color="grey-8"
-            track-color="orange-2"
-          />
+          <q-circular-progress indeterminate size="20px" class="q-px-10" :thickness="1" color="grey-8"
+            track-color="orange-2" />
         </q-btn>
         <q-btn v-else color="primary" @click="update" :disable="loading">
-          Change</q-btn
-        >
+          Change</q-btn>
       </div>
     </q-card-section>
   </q-card>

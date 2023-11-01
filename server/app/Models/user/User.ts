@@ -19,6 +19,7 @@ import Social from '../Social'
 import FavoriteLink from '../FavoriteLink'
 import Experience from './Experience'
 import Skill from './Skill'
+import Image from '../Image'
 
 export default class User extends BaseModel {
   @column({ isPrimary: true })
@@ -53,6 +54,9 @@ export default class User extends BaseModel {
 
   @column()
   public isPublic: number
+
+  @hasOne(() => Image)
+  public avatar: HasOne<typeof Image>
 
   @hasOne(() => Social)
   public social: HasOne<typeof Social>

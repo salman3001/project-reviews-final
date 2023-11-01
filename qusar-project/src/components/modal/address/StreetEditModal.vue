@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import useModalStore from '../../../stores/modalStore';
+import modalStore from '../../../stores/modalStore';
 import { ref } from 'vue';
 import { StreetApi } from '../../../utils/BaseApiService';
 
-const modal = useModalStore();
+const modal = modalStore();
 
 const form = ref({
   name: '',
@@ -30,10 +30,10 @@ const { execute, loading } = StreetApi.put(modal.meta?.id, form.value);
 
     <q-card-section class="column q-px-md-sm">
       <q-form @submit="async () => {
-          await execute();
-          modal.show = !modal.show;
-          modal.meta.tableRef.setPagination({}, true);
-        }
+        await execute();
+        modal.show = !modal.show;
+        modal.meta.tableRef.setPagination({}, true);
+      }
         ">
         <q-input outlined v-model="form.name" label="Name" :rules="[$rules.required('required')]" />
         <q-toggle v-model="form.isActive" label="Activate" class="col-12 col-sm-6 col-md-3" />

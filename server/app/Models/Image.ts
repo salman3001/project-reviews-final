@@ -13,6 +13,9 @@ export default class Image extends BaseModel {
   public url_sm: string
 
   @column()
+  public userId: number
+
+  @column()
   public adminUserId: number
 
   @column()

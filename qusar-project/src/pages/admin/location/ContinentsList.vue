@@ -5,9 +5,9 @@ import { useGetTableData } from 'src/composables/useGetTableData';
 import { AdditionalParams } from 'src/type';
 import { exportCSV } from 'src/utils/exportCSV';
 import { reactive } from 'vue';
-import useModalStore from 'src/stores/useModalStore';
+import modalStore from 'src/stores/modalStore';
 
-const modal = useModalStore();
+const modal = modalStore();
 
 const filter = reactive<AdditionalParams>({
   search: {

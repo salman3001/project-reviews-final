@@ -1,20 +1,17 @@
 <script setup lang="ts">
 import ProfileImageInput from 'src/components/forms/ProfileImageInput.vue';
 import { onMounted, ref } from 'vue';
-import { useRoute, useRouter } from 'vue-router';
+import { useRouter } from 'vue-router';
 import { rules } from '../../../utils/validationRules';
 import { api } from 'src/boot/axios';
 import { Notify } from 'quasar';
 import useAddressStore from 'src/stores/addressStore';
-import { AdditionalParams } from 'src/type';
 
 const router = useRouter();
-const route = useRoute();
+const isPwd = ref(true);
 const loading = ref(false);
 const roles = ref<null | any[]>(null);
-const user = ref<any>(null);
 const address = useAddressStore();
-const uploads = process.env.UPLOAD;
 
 const form = ref({
   user: {
@@ -28,15 +25,15 @@ const form = ref({
     isActive: false,
     roleId: '',
   },
-  // address: {
-  //   address: '',
-  //   continentId: '',
-  //   countryId: '',
-  //   stateId: '',
-  //   cityId: '',
-  //   streetId: '',
-  //   zip: '',
-  // },
+  address: {
+    address: '',
+    continentId: '',
+    countryId: '',
+    stateId: '',
+    cityId: '',
+    streetId: '',
+    zip: '',
+  },
   social: {
     website: '',
     facebook: '',
@@ -67,10 +64,10 @@ const submit = async (e: SubmitEvent) => {
 
   try {
     loading.value = true;
-    const res = await api.put('/admin-users/' + route.params.id, formData);
+    const res = await api.post('/admin-users', formData);
     loading.value = false;
     Notify.create({
-      message: 'User updated',
+      message: 'User added',
       color: 'positive',
       icon: 'check_circle',
     });
@@ -92,75 +89,6 @@ const submit = async (e: SubmitEvent) => {
 };
 
 onMounted(async () => {
-  try {
-    const res = await api.get('/admin-users/' + route.params.id, {
-      params: {
-        populate: {
-          role: {
-            fields: ['id'],
-          },
-          avatar: {
-            fields: ['url'],
-          },
-          address: {
-            populate: {
-              continent: {
-                fields: ['*'],
-              },
-              country: {
-                fields: ['*'],
-              },
-              state: {
-                fields: ['*'],
-              },
-              city: {
-                fields: ['*'],
-              },
-              street: {
-                fields: ['*'],
-              },
-            },
-          },
-          social: {
-            fields: ['*'],
-          },
-        },
-      } as AdditionalParams,
-    });
-    if (res?.data) {
-      user.value = res.data;
-      form.value.user.firstName = res.data?.first_name;
-      form.value.user.lastName = res.data?.last_name;
-      form.value.user.email = res.data?.email;
-      form.value.user.email = res.data?.email;
-      form.value.user.roleId = res.data?.role?.id;
-      form.value.user.isActive = res.data?.is_active === 1 ? true : false;
-      // form.value.address.address = res.data?.address?.address;
-      // form.value.address.continentId = res.data?.address?.continentId;
-      // form.value.address.countryId = res.data?.address?.countryId;
-      // form.value.address.stateId = res.data?.address?.stateId;
-      // form.value.address.cityId = res.data?.address?.cityId;
-      // form.value.address.streetId = res.data?.address?.streetId;
-      form.value.social.website = res.data?.social?.website;
-      form.value.social.facebook = res.data?.social?.facebook;
-      form.value.social.instagram = res.data?.social?.instagram;
-      form.value.social.linkedin = res.data?.social?.linkedin;
-      form.value.social.pintrest = res.data?.social?.pintrest;
-      form.value.social.telegram = res.data?.social?.telegram;
-      form.value.social.twitter = res.data?.social?.twitter;
-      form.value.social.vk = res.data?.social?.vk;
-      form.value.social.whatsapp = res.data?.social?.whatsapp;
-
-      // ds
-    }
-  } catch (error) {
-    Notify.create({
-      message: 'Failed to fetch user',
-      color: 'negative',
-      icon: 'warning',
-    });
-  }
-
   try {
     const res = await api.get('/roles');
     if (res?.data) {
@@ -187,15 +115,12 @@ onMounted(async () => {
         router.push({ name: 'admin.adminUsers.index' });
       }
         " />
-      <span class="text-h6"> Edit User </span>
+      <span class="text-h6"> Add User </span>
     </div>
     <q-form class="column q-gutter-y-md" @submit="submit">
       <p class="text-subtitle1">General Information</p>
       <div>
-        <ProfileImageInput name="image" :url="user?.avatar?.url
-          ? uploads + user?.avatar?.url
-          : '/images/upload-preview.png'
-          " />
+        <ProfileImageInput name="image" />
       </div>
       <div class="q-gutter-y-md">
         <div class="row q-col-gutter-md">
@@ -208,13 +133,28 @@ onMounted(async () => {
               $rules.required('required'),
               $rules.email('Email is not valid'),
               async (v) =>
-                (await rules.unique(
-                  '/admin-users/unique-field',
-                  'email',
-                  v,
-                  user?.email
-                )) || 'Email Already Taken',
+                (await rules.unique('/admin-users/unique-field', 'email', v)) ||
+                'Email Already Taken',
             ]" />
+          <q-input outlined v-model="form.user.password" :type="isPwd ? 'password' : 'text'" label="Password"
+            class="col-12 col-sm-6 col-md-3" :rules="[
+              $rules.required('required'),
+              $rules.minLength(8, 'Minimum 9 charectors required'),
+              $rules.alphaNum('Password Must be alpha numeric'),
+            ]">
+            <template v-slot:append>
+              <q-icon :name="isPwd ? 'visibility_off' : 'visibility'" class="cursor-pointer" @click="isPwd = !isPwd" />
+            </template>
+          </q-input>
+          <q-input outlined v-model="form.user.password_confirmaton" :type="isPwd ? 'password' : 'text'"
+            label="Cofirm Password" class="col-12 col-sm-6 col-md-3" :rules="[
+              $rules.required('required'),
+              $rules.sameAs(form.user.password, 'Password doesnt match'),
+            ]">
+            <template v-slot:append>
+              <q-icon :name="isPwd ? 'visibility_off' : 'visibility'" class="cursor-pointer" @click="isPwd = !isPwd" />
+            </template>
+          </q-input>
           <q-input outlined v-model="form.user.desc" type="textarea" class="col-12" label="Description" />
         </div>
 
@@ -226,18 +166,44 @@ onMounted(async () => {
               label="Role" class="col-12 col-sm-6 col-md-3" />
           </div>
         </div>
+
         <div class="column q-gutter-y-md">
           <p class="text-subtitle1">Location Information</p>
-          <div v-if="user">
-            <p>
-              {{
-                `${user?.address?.address || ''} ${user?.address?.continent?.name || ''
-                  } ${user?.address?.country?.name || ''} ${user?.address?.state?.name || ''
-                  } ${user?.address?.city?.name || ''} ${user?.address?.street?.name || ''
-                  } ${user?.address?.continent?.zip || ''}`
-              }}
-            </p>
-            <q-btn outline> Change Address </q-btn>
+          <div class="row q-col-gutter-md">
+            <q-input outlined v-model="form.address.address" class="col-12 col-md-9" label="Address" />
+            <q-select outlined emit-value map-options v-model="form.address.continentId"
+              :options="address.selectContinents" label="Continet" class="col-12 col-sm-6 col-md-3" @update:model-value="(value) => {
+                form.address.countryId = '';
+                form.address.stateId = '';
+                form.address.cityId = '';
+                form.address.streetId = '';
+                address.getCountries(value);
+              }
+                " />
+            <q-select outlined emit-value map-options v-model="form.address.countryId" label="Country"
+              class="col-12 col-sm-6 col-md-3" :options="address.selectContries" @update:model-value="(value) => {
+                form.address.stateId = '';
+                form.address.cityId = '';
+                form.address.streetId = '';
+                address.getstates(value);
+              }
+                " />
+            <q-select outlined emit-value map-options v-model="form.address.stateId" label="State"
+              class="col-12 col-sm-6 col-md-3" :options="address.selectStates" @update:model-value="(value) => {
+                form.address.cityId = '';
+                form.address.streetId = '';
+                address.getCities(value);
+              }
+                " />
+            <q-select outlined emit-value map-options v-model="form.address.cityId" label="City"
+              class="col-12 col-sm-6 col-md-3" :options="address.selectCities" @update:model-value="(value) => {
+                form.address.streetId = '';
+                address.getStreets(value);
+              }
+                " />
+            <q-select outlined emit-value map-options v-model="form.address.streetId" label="Street"
+              class="col-12 col-sm-6 col-md-3" :options="address.selectStreets" />
+            <q-input outlined v-model="form.address.zip" class="col-12 col-sm-6 col-md-3" label="Post Code" />
           </div>
         </div>
 
@@ -265,7 +231,7 @@ onMounted(async () => {
           <q-circular-progress indeterminate size="20px" class="q-px-10" :thickness="1" color="grey-8"
             track-color="orange-2" style="min-width: 8rem" />
         </q-btn>
-        <q-btn v-else color="primary" type="submit" style="min-width: 8rem">Update</q-btn>
+        <q-btn v-else color="primary" type="submit" style="min-width: 8rem">Save</q-btn>
       </div>
     </q-form>
   </div>

@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import useModalStore from '../../../stores/modalStore';
+import modalStore from '../../../stores/modalStore';
 import { onMounted, ref } from 'vue';
 import { CityApi } from '../../../utils/BaseApiService';
 import useAddressStore from 'src/stores/addressStore';
 
-const modal = useModalStore();
+const modal = modalStore();
 const address = useAddressStore();
 
 const form = ref({
@@ -39,11 +39,13 @@ const { execute, loading } = CityApi.post(form.value);
         <q-select outlined emit-value map-options :options="address.selectContinents" label="Continet"
           class="col-12 col-sm-6 col-md-3" v-model="form.continentId" @update:model-value="(value) => {
             form.countryId = '';
+            form.stateId = ''
             address.getCountries(value);
           }
             " :rules="[$rules.required('required')]" />
         <q-select outlined emit-value map-options v-model="form.countryId" label="Country"
           class="col-12 col-sm-6 col-md-3" :options="address.selectContries" @update:model-value="(value) => {
+            form.stateId = ''
             address.getstates(value);
           }
             " :rules="[$rules.required('required')]" />

@@ -1,20 +1,21 @@
 import { defineStore } from 'pinia';
-import { Cookies, Notify } from 'quasar';
+import { Notify, useQuasar } from 'quasar';
 import { api } from 'src/boot/axios';
 import { useRouter } from 'vue-router';
 
 const authStore = defineStore('Auth', () => {
-  const user = () => Cookies.get('user') as any;
+  const $q = useQuasar();
+  const user = () => $q.cookies.get('user') as any;
   const router = useRouter();
 
   const setUser = (payload: any) => {
-    Cookies.set('user', payload, {
+    $q.cookies.set('user', payload, {
       expires: 1,
     });
   };
 
   const setToken = (payload: any) => {
-    Cookies.set('token', payload, {
+    $q.cookies.set('token', payload, {
       expires: 1,
     });
   };
@@ -30,8 +31,6 @@ const authStore = defineStore('Auth', () => {
       router.push({ name: 'adminDashboard' });
       Notify.create({ message: 'Login Successfull!', color: 'positive' });
     } catch (error: any) {
-      console.log('ran');
-
       Notify.create({ message: 'Login Failed!', color: 'red' });
     }
 
@@ -41,8 +40,8 @@ const authStore = defineStore('Auth', () => {
   const adminLogout = async () => {
     try {
       await api.get('/auth/admin-logout');
-      setUser(null);
-      setToken(null);
+      $q.cookies.remove('token');
+      $q.cookies.remove('user');
       Notify.create({
         message: 'Logout Successfull!',
         color: 'positive',

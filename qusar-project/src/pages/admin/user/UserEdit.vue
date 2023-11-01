@@ -183,28 +183,54 @@ onMounted(async () => {
 <template>
   <div class="q-pa-lg">
     <div class="row items-center q-gutter-sm">
-      <q-icon name="keyboard_backspace" size="30px" style="cursor: pointer" @click="() => {
-        router.push({ name: 'admin.adminUsers.index' });
-      }
-        " />
+      <q-icon
+        name="keyboard_backspace"
+        size="30px"
+        style="cursor: pointer"
+        @click="
+          () => {
+            router.push({ name: 'admin.adminUsers.index' });
+          }
+        "
+      />
       <span class="text-h6"> Edit User </span>
     </div>
     <q-form class="column q-gutter-y-md" @submit="submit">
       <p class="text-subtitle1">General Information</p>
       <div>
-        <ProfileImageInput name="image" :url="user?.avatar?.url
-          ? uploads + user?.avatar?.url
-          : '/images/upload-preview.png'
-          " />
+        <ProfileImageInput
+          name="image"
+          :url="
+            user?.avatar?.url
+              ? uploads + user?.avatar?.url
+              : '/images/upload-preview.png'
+          "
+        />
       </div>
       <div class="q-gutter-y-md">
         <div class="row q-col-gutter-md">
-          <q-input outlined v-model="form.user.firstName" label="First Name" class="col-12 col-sm-6 col-md-3"
-            :rules="[$rules.required('required')]" />
-          <q-input outlined v-model="form.user.lastName" label="Last Name" class="col-12 col-sm-6 col-md-3"
-            :rules="[$rules.required('required')]" />
-          <q-input outlined debounce="500" v-model="form.user.email" type="email" label="Email"
-            class="col-12 col-sm-6 col-md-3" :rules="[
+          <q-input
+            outlined
+            v-model="form.user.firstName"
+            label="First Name"
+            class="col-12 col-sm-6 col-md-3"
+            :rules="[$rules.required('required')]"
+          />
+          <q-input
+            outlined
+            v-model="form.user.lastName"
+            label="Last Name"
+            class="col-12 col-sm-6 col-md-3"
+            :rules="[$rules.required('required')]"
+          />
+          <q-input
+            outlined
+            debounce="500"
+            v-model="form.user.email"
+            type="email"
+            label="Email"
+            class="col-12 col-sm-6 col-md-3"
+            :rules="[
               $rules.required('required'),
               $rules.email('Email is not valid'),
               async (v) =>
@@ -214,16 +240,35 @@ onMounted(async () => {
                   v,
                   user?.email
                 )) || 'Email Already Taken',
-            ]" />
-          <q-input outlined v-model="form.user.desc" type="textarea" class="col-12" label="Description" />
+            ]"
+          />
+          <q-input
+            outlined
+            v-model="form.user.desc"
+            type="textarea"
+            class="col-12"
+            label="Description"
+          />
         </div>
 
         <div class="column q-gutter-y-md">
           <p class="text-subtitle1">Role Information</p>
           <div class="row q-col-gutter-md">
-            <q-toggle v-model="form.user.isActive" label="Activate" class="col-12 col-sm-6 col-md-3" />
-            <q-select v-if="roles" outlined map-options emit-value v-model="form.user.roleId" :options="roles"
-              label="Role" class="col-12 col-sm-6 col-md-3" />
+            <q-toggle
+              v-model="form.user.isActive"
+              label="Activate"
+              class="col-12 col-sm-6 col-md-3"
+            />
+            <q-select
+              v-if="roles"
+              outlined
+              map-options
+              emit-value
+              v-model="form.user.roleId"
+              :options="roles"
+              label="Role"
+              class="col-12 col-sm-6 col-md-3"
+            />
           </div>
         </div>
         <div class="column q-gutter-y-md">
@@ -231,10 +276,13 @@ onMounted(async () => {
           <div v-if="user">
             <p>
               {{
-                `${user?.address?.address || ''} ${user?.address?.continent?.name || ''
-                  } ${user?.address?.country?.name || ''} ${user?.address?.state?.name || ''
-                  } ${user?.address?.city?.name || ''} ${user?.address?.street?.name || ''
-                  } ${user?.address?.continent?.zip || ''}`
+                `${user?.address?.address || ''}  ${
+                  user?.address?.continent?.name || ''
+                } ${user?.address?.country?.name || ''} ${
+                  user?.address?.state?.name
+                } ${user?.address?.city?.name || ''} ${
+                  user?.address?.street?.name || ''
+                } ${user?.address?.continent?.zip || ''}`
               }}
             </p>
             <q-btn outline> Change Address </q-btn>
@@ -244,28 +292,87 @@ onMounted(async () => {
         <div class="column q-gutter-y-md">
           <p class="text-subtitle1">Social Information</p>
           <div class="row q-col-gutter-md">
-            <q-input outlined v-model="form.social.website" class="col-12 col-sm-6 col-md-3" label="Website URL" />
-            <q-input outlined v-model="form.social.facebook" label="Facebook URL" class="col-12 col-sm-6 col-md-3" />
-            <q-input outlined v-model="form.social.twitter" label="Twitter URL" class="col-12 col-sm-6 col-md-3" />
-            <q-input outlined v-model="form.social.instagram" label="Instagram URL" class="col-12 col-sm-6 col-md-3" />
-            <q-input outlined v-model="form.social.pintrest" label="Pintrest URL" class="col-12 col-sm-6 col-md-3" />
-            <q-input outlined v-model="form.social.linkedin" label="Linkedin URL" class="col-12 col-sm-6 col-md-3" />
-            <q-input outlined v-model="form.social.vk" class="col-12 col-sm-6 col-md-3" label="VK URL" />
-            <q-input outlined v-model="form.social.whatsapp" class="col-12 col-sm-6 col-md-3" label="Whatsapp URL" />
-            <q-input outlined v-model="form.social.telegram" class="col-12 col-sm-6 col-md-3" label="Telegram URL" />
+            <q-input
+              outlined
+              v-model="form.social.website"
+              class="col-12 col-sm-6 col-md-3"
+              label="Website URL"
+            />
+            <q-input
+              outlined
+              v-model="form.social.facebook"
+              label="Facebook URL"
+              class="col-12 col-sm-6 col-md-3"
+            />
+            <q-input
+              outlined
+              v-model="form.social.twitter"
+              label="Twitter URL"
+              class="col-12 col-sm-6 col-md-3"
+            />
+            <q-input
+              outlined
+              v-model="form.social.instagram"
+              label="Instagram URL"
+              class="col-12 col-sm-6 col-md-3"
+            />
+            <q-input
+              outlined
+              v-model="form.social.pintrest"
+              label="Pintrest URL"
+              class="col-12 col-sm-6 col-md-3"
+            />
+            <q-input
+              outlined
+              v-model="form.social.linkedin"
+              label="Linkedin URL"
+              class="col-12 col-sm-6 col-md-3"
+            />
+            <q-input
+              outlined
+              v-model="form.social.vk"
+              class="col-12 col-sm-6 col-md-3"
+              label="VK URL"
+            />
+            <q-input
+              outlined
+              v-model="form.social.whatsapp"
+              class="col-12 col-sm-6 col-md-3"
+              label="Whatsapp URL"
+            />
+            <q-input
+              outlined
+              v-model="form.social.telegram"
+              class="col-12 col-sm-6 col-md-3"
+              label="Telegram URL"
+            />
           </div>
         </div>
       </div>
       <div class="row justify-end q-gutter-md">
-        <q-btn style="background-color: #e6e4d9; color: #aeaca1; min-width: 8rem" @click="() => {
-          router.push({ name: 'admin.adminUsers.index' });
-        }
-          ">Cancle</q-btn>
+        <q-btn
+          style="background-color: #e6e4d9; color: #aeaca1; min-width: 8rem"
+          @click="
+            () => {
+              router.push({ name: 'admin.adminUsers.index' });
+            }
+          "
+          >Cancle</q-btn
+        >
         <q-btn color="primary" v-if="loading">
-          <q-circular-progress indeterminate size="20px" class="q-px-10" :thickness="1" color="grey-8"
-            track-color="orange-2" style="min-width: 8rem" />
+          <q-circular-progress
+            indeterminate
+            size="20px"
+            class="q-px-10"
+            :thickness="1"
+            color="grey-8"
+            track-color="orange-2"
+            style="min-width: 8rem"
+          />
         </q-btn>
-        <q-btn v-else color="primary" type="submit" style="min-width: 8rem">Update</q-btn>
+        <q-btn v-else color="primary" type="submit" style="min-width: 8rem"
+          >Update</q-btn
+        >
       </div>
     </q-form>
   </div>

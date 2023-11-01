@@ -1,76 +1,65 @@
 <script setup lang="ts">
-import { QTableProps } from 'quasar';
+import { QTableProps, date } from 'quasar';
 import SearchInput from 'src/components/forms/SearchInput.vue';
 import { useGet } from 'src/composables/useGet';
 import { useGetTableData } from 'src/composables/useGetTableData';
 import { AdditionalParams } from 'src/type';
 import { exportCSV } from 'src/utils/exportCSV';
-import { computed, onMounted, reactive, ref } from 'vue';
+import { onMounted, reactive, ref } from 'vue';
 import modalStore from 'src/stores/modalStore';
 import { useRouter } from 'vue-router';
+import { CountriesApi } from 'src/utils/BaseApiService';
 
 const modal = modalStore();
 const router = useRouter();
 const uploads = ref('');
 
+const { formatDate } = date
+
 const filter = reactive<AdditionalParams>({
-  populate: {
-    role: {},
-    avatar: {},
-  },
   search: {
     first_name: '',
     last_name: '',
   },
   filter: {
-    roleId: null,
     is_active: null,
   },
+  relationFilter: {
+    address: {
+      field: 'country_id',
+      value: '',
+      filter: {
+        country: {
+          field: 'id',
+          value: ''
+        }
+      }
+    }
+  }
 });
 
-const roleId = computed({
-  get() {
-    return filter.filter.roleId;
-  },
-  set(newValue) {
-    filter.filter.roleId = newValue;
-  },
-});
 
-const status = computed({
-  get() {
-    return filter.filter.is_active;
-  },
-  set(newValue) {
-    filter.filter.is_active = newValue;
-  },
-});
-
-const {
-  data: roles,
-  loading: rolesLoading,
-  trigger: getRoles,
-} = useGet('roles', {});
+const countries = ref<null | any[]>(null)
+CountriesApi.index({
+  fields: ['name', 'id']
+}).then(({ data }) => {
+  countries.value = data.value
+})
 
 const { data, loading, onRequest, pagination, tableRef } = useGetTableData(
-  'admin-users',
+  'users',
   {
     populate: {
-      role: {
-        fields: ['*'],
+      address: {
+        fields: ['country_id'],
         populate: {
-          AdminUser: {
-            fields: ['*'],
-            populate: {
-              role: {
-                fields: ['*'],
-              },
-            },
-          },
-        },
+          country: {
+            fields: ['name']
+          }
+        }
       },
       avatar: {
-        fields: ['*'],
+        fields: ['url'],
       },
     },
   }
@@ -92,12 +81,18 @@ const colomns: QTableProps['columns'] = [
     align: 'left',
   },
   {
-    name: 'role',
-    field: (row: any) => row?.role?.name,
-    label: 'Role',
+    name: 'country',
+    field: (row: any) => row?.address?.country?.name,
+    label: 'Country',
     align: 'center',
   },
   { name: 'phone', field: 'phone', label: 'Phone', align: 'center' },
+  {
+    name: 'created_at',
+    field: (row: any) => formatDate(row?.created_at, 'DD-MM-YYYY'),
+    label: 'Joined',
+    align: 'center'
+  },
   {
     name: 'is_active',
     field: (row: any) => (row?.is_active === 1 ? 'Active' : 'Inactive'),
@@ -113,7 +108,6 @@ const colomns: QTableProps['columns'] = [
 ];
 
 onMounted(() => {
-  getRoles();
   uploads.value = process.env.UPLOAD as string;
 });
 </script>
@@ -131,11 +125,12 @@ onMounted(() => {
           " />
 
         <div class="row q-gutter-sm">
-          <q-select v-model="roleId" v-if="!rolesLoading" dense options-dense emit-value map-options outlined :options="[{ label: 'All', value: null }, ...roles.map((r: any) => ({
-            label: r.name,
-            value: r.id,
-          }))]" label="Role" class="col-auto" style="min-width: 8rem" />
-          <q-select outlined dense options-dense emit-value map-options v-model="status" :options="[
+          <q-select v-model="filter.relationFilter.address.filter.country.value" v-if="countries" dense options-dense
+            emit-value map-options outlined :options="[{ label: 'All', value: null }, ...countries.map((r: any) => ({
+              label: r.name,
+              value: r.id,
+            }))]" label="Country" class="col-auto" style="min-width: 8rem" />
+          <q-select outlined dense options-dense emit-value map-options v-model="filter.filter.is_active" :options="[
             { label: 'All', value: null },
             { label: 'Active', value: 1 },
             { label: 'Inactive', value: 0 },
@@ -151,16 +146,16 @@ onMounted(() => {
             </q-list>
           </q-btn-dropdown>
           <q-btn color="primary" @click="() => {
-            router.push({ name: 'admin.adminUsers.create' });
+            router.push({ name: 'admin.user.create' });
           }
             ">+ Add User</q-btn>
         </div>
       </div>
-      <q-table ref="tableRef" flat bordered title="Admin Users" :loading="loading" :rows="data" :columns="colomns"
+      <q-table ref="tableRef" flat bordered title="Users" :loading="loading" :rows="data" :columns="colomns"
         class="zebra-table" v-model:pagination="pagination" :filter="filter" @request="onRequest" row-key="id">
         <template v-slot:body-cell-first_name="props">
           <q-td :props="props" class="row q-gutter-x-xs items-center" style="flex-wrap: nowrap;">
-            <q-avatar size=" 30px">
+            <q-avatar size="30px">
               <img :src="props.row?.avatar?.url
                 ? uploads + props.row?.avatar?.url
                 : '/images/sample-dp.png'
@@ -208,7 +203,6 @@ onMounted(() => {
                     modal.togel('changeAdminStatus', {
                       id: props.row.id,
                       tableRef,
-                      selectedRole: roles
                     })
                     ">
                     <q-item-section>
@@ -219,7 +213,7 @@ onMounted(() => {
 
                   <q-item clickable v-close-popup @click="() => {
                     router.push({
-                      name: 'admin.adminUsers.edit',
+                      name: 'admin.user.edit',
                       params: { id: props.row.id },
                     });
                   }
@@ -231,7 +225,7 @@ onMounted(() => {
                   </q-item>
                   <q-item clickable v-close-popup @click="
                     modal.togel('deleteRecord', {
-                      url: '/admin-users/' + props.row.id,
+                      url: '/users/' + props.row.id,
                       tableRef,
                       title: 'Delete User?',
                     })

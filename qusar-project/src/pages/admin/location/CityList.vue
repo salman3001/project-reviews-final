@@ -5,11 +5,10 @@ import { useGetTableData } from 'src/composables/useGetTableData';
 import { AdditionalParams } from 'src/type';
 import { exportCSV } from 'src/utils/exportCSV';
 import { onMounted, reactive, ref } from 'vue';
-import useModalStore from 'src/stores/useModalStore';
+import modalStore from 'src/stores/modalStore';
 import useAddressStore from 'src/stores/addressStore';
-import qs from 'qs';
 
-const modal = useModalStore();
+const modal = modalStore();
 const address = useAddressStore();
 
 const filter = reactive<AdditionalParams>({
@@ -178,7 +177,7 @@ onMounted(() => {
               <q-btn-dropdown size="sm" color="primary" label="Options">
                 <q-list dense>
                   <q-item clickable v-close-popup @click="
-                    modal.togel('editState', {
+                    modal.togel('editCity', {
                       id: props.row?.id,
                       tableRef,
                     })

@@ -133,7 +133,24 @@ function toggleLeftDrawer() {
                 }" class="text-black" style="text-decoration: none">Cities</router-link>
               </q-item-section>
             </q-item>
+            <q-item clickable v-close-popup>
+              <q-item-section>
+                <router-link :to="{
+                  name: 'admin.location.street.index',
+                }" class="text-black" style="text-decoration: none">Street</router-link>
+              </q-item-section>
+            </q-item>
           </NavMenu>
+
+          <router-link :to="{
+            name: 'admin.user.index',
+          }" class="text-black" style="text-decoration: none;text-transform: uppercase; font-weight: 500;">
+
+            <q-btn flat>
+
+              Users
+            </q-btn>
+          </router-link>
         </div>
       </q-toolbar>
     </q-header>

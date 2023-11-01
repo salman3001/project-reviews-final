@@ -14,6 +14,7 @@ export default class extends BaseSchema {
         .references('id')
         .inTable('admin_users')
         .onDelete('SET NULL')
+      table.integer('user_id').unsigned().references('id').inTable('users').onDelete('SET NULL')
 
       table.integer('blog_id').unsigned().references('id').inTable('blogs').onDelete('SET NULL')
       /**

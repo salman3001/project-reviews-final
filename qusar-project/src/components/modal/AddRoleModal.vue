@@ -1,50 +1,32 @@
 <script setup lang="ts">
-import modalStore from '../../../stores/modalStore';
-import { onMounted, ref } from 'vue';
-import { ContinentsApi, CountriesApi } from '../../../utils/BaseApiService';
+import modalStore from 'src/stores/modalStore';
+import { ref } from 'vue';
+import { RoleApi } from 'src/utils/BaseApiService';
 
 const modal = modalStore();
 
 const form = ref({
   name: '',
   isActive: false,
-  continentId: '',
 });
 
-const continents = ref<null | any[]>(null);
-
-onMounted(() => {
-  ContinentsApi.index({
-    fields: ['name', 'id'],
-  }).then(({ data }) => {
-    continents.value = data.value;
-  });
-});
-
-const { execute, loading } = CountriesApi.post(form.value);
+const { execute, loading } = RoleApi.post(form.value);
 </script>
 
 <template>
   <q-card style="width: 100%">
     <q-toolbar style="background-color: #ebeae4">
-      <q-toolbar-title><span class="text-weight-bold">Add Country</span></q-toolbar-title>
+      <q-toolbar-title><span class="text-weight-bold">Add Role</span></q-toolbar-title>
       <q-btn flat dense icon="close" v-close-popup />
     </q-toolbar>
 
     <q-card-section class="column q-px-md-sm">
       <q-form @submit="async () => {
-          await execute();
-          modal.show = !modal.show;
-          modal.meta.tableRef.setPagination({}, true);
-        }
+        await execute();
+        modal.show = !modal.show;
+        modal.meta.tableRef.setPagination({}, true);
+      }
         ">
-        <q-select v-if="continents" outlined options-dense emit-value map-options v-model="form.continentId" :options="[
-          { label: 'All', value: '' },
-          ...continents.map((c) => ({
-            label: c?.name,
-            value: c?.id,
-          })),
-        ]" :rules="[$rules.required('required')]" label="Continent" class="col-auto" style="min-width: 8rem" />
         <q-input outlined v-model="form.name" label="Name" :rules="[$rules.required('required')]" />
         <q-toggle v-model="form.isActive" label="Activate" class="col-12 col-sm-6 col-md-3" />
         <div class="row q-gutter-sm justify-end q-pt-lg">

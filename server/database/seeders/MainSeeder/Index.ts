@@ -29,7 +29,11 @@ export default class extends BaseSeeder {
       { name: 'Dreate User' },
     ]).createMany(3)
 
-    await RoleFactory.merge([{ name: 'Super Admin' }, { name: 'Moderator' }, { name: 'Vender' }])
+    await RoleFactory.merge([
+      { name: 'Super Admin', isActive: true },
+      { name: 'Moderator' },
+      { name: 'Vender' },
+    ])
       .with('permissions', 1, (perm) => {
         perm.merge([{ name: 'Sample Permision' }])
       })

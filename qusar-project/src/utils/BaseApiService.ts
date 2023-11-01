@@ -206,6 +206,7 @@ class BaseApiService {
 }
 
 export const AdminUserApi = new BaseApiService('admin-users', 'User');
+export const userApi = new BaseApiService('users', 'User');
 export const RoleApi = new BaseApiService('roles', 'Role');
 export const PermissionApi = new BaseApiService('permissions', 'Permission');
 export const BlogApi = new BaseApiService('blogs', 'Blog');

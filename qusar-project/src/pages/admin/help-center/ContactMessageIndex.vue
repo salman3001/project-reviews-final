@@ -1,10 +1,12 @@
 <script setup lang="ts">
-import { QTableProps } from 'quasar';
+import { QTableProps, date } from 'quasar';
 import { useGetTableData } from 'src/composables/useGetTableData';
 import { exportCSV } from 'src/utils/exportCSV';
-import useModalStore from 'src/stores/useModalStore';
+import modalStore from 'src/stores/modalStore';
 
-const modal = useModalStore();
+const modal = modalStore();
+const { formatDate } = date
+
 
 const { data, loading, onRequest, pagination, tableRef } = useGetTableData(
   '/help-center/contact-message'
@@ -30,12 +32,14 @@ const colomns: QTableProps['columns'] = [
     field: 'message',
     label: 'Message',
     align: 'left',
+    style: 'min-width:250px'
   },
   {
     name: 'created_at',
-    field: 'created_at',
+    field: (row: any) => formatDate(row?.created_at, 'DD-MM-YYYY HH:mm'),
     label: 'Date',
     align: 'center',
+    style: 'min-width:150px'
   },
   {
     name: 'option',
@@ -53,37 +57,20 @@ const colomns: QTableProps['columns'] = [
         <div></div>
 
         <div class="row q-gutter-sm">
-          <q-btn-dropdown
-            outline
-            label="Export"
-            style="border: 1px solid lightgray"
-          >
+          <q-btn-dropdown outline label="Export" style="border: 1px solid lightgray">
             <q-list dense>
               <q-item clickable v-close-popup @click="exportCSV(colomns, data)">
                 <q-item-section>
                   <q-item-label>
-                    <q-icon name="receipt_long" /> Export CSV</q-item-label
-                  >
+                    <q-icon name="receipt_long" /> Export CSV</q-item-label>
                 </q-item-section>
               </q-item>
             </q-list>
           </q-btn-dropdown>
         </div>
       </div>
-      <q-table
-        ref="tableRef"
-        flat
-        bordered
-        title="Contact Messages"
-        :loading="loading"
-        :rows="data"
-        :columns="colomns"
-        class="zebra-table"
-        v-model:pagination="pagination"
-        @request="onRequest"
-        row-key="id"
-        wrap-cells
-      >
+      <q-table ref="tableRef" flat bordered title="Contact Messages" :loading="loading" :rows="data" :columns="colomns"
+        class="zebra-table" v-model:pagination="pagination" @request="onRequest" row-key="id" wrap-cells>
         <template v-slot:body-cell-option="props">
           <q-td :props="props">
             <div class="">
@@ -123,21 +110,16 @@ const colomns: QTableProps['columns'] = [
                       <q-item-label> <q-icon name="edit" /> Edit </q-item-label>
                     </q-item-section>
                   </q-item> -->
-                  <q-item
-                    clickable
-                    v-close-popup
-                    @click="
-                      modal.togel('deleteRecord', {
-                        url: '/help-center/contact-message/' + props.row.id,
-                        tableRef,
-                        title: 'Delete Contact Message?',
-                      })
-                    "
-                  >
+                  <q-item clickable v-close-popup @click="
+                    modal.togel('deleteRecord', {
+                      url: '/help-center/contact-message/' + props.row.id,
+                      tableRef,
+                      title: 'Delete Contact Message?',
+                    })
+                    ">
                     <q-item-section>
                       <q-item-label>
-                        <q-icon name="delete" /> Delete</q-item-label
-                      >
+                        <q-icon name="delete" /> Delete</q-item-label>
                     </q-item-section>
                   </q-item>
                 </q-list>

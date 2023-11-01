@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { Notify } from 'quasar';
 import { api } from 'src/boot/axios';
-import useModalStore from 'src/stores/useModalStore';
+import modalStore from 'src/stores/modalStore';
 import { ref } from 'vue';
 
-const modal = useModalStore()
+const modal = modalStore()
 const selectRole = ref(modal?.meta?.selectedRole)
 const loading = ref(false)
 const update = async () => {

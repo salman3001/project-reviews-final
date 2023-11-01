@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { Notify } from 'quasar';
 import { api } from 'src/boot/axios';
-import useModalStore from 'src/stores/useModalStore';
+import modalStore from 'src/stores/modalStore';
 import { ref } from 'vue';
 
-const modal = useModalStore();
+const modal = modalStore();
 const loading = ref(false);
 
 const handeler = async () => {
@@ -35,11 +35,9 @@ const handeler = async () => {
 <template>
   <q-card style="width: 100%">
     <q-toolbar style="background-color: #ebeae4">
-      <q-toolbar-title
-        ><span class="text-weight-bold">{{
-          modal.meta.title
-        }}</span></q-toolbar-title
-      >
+      <q-toolbar-title><span class="text-weight-bold">{{
+        modal.meta.title
+      }}</span></q-toolbar-title>
       <q-btn flat dense icon="close" v-close-popup />
     </q-toolbar>
 
@@ -49,25 +47,12 @@ const handeler = async () => {
     </q-card-section>
     <q-card-section class="row justify-end">
       <div class="q-gutter-sm">
-        <q-btn
-          flat
-          style="background-color: #f2f0dc"
-          @click="modal.show = !modal.show"
-          >Cancle</q-btn
-        >
+        <q-btn flat style="background-color: #f2f0dc" @click="modal.show = !modal.show">Cancle</q-btn>
         <q-btn color="primary" v-if="loading">
-          <q-circular-progress
-            indeterminate
-            size="20px"
-            class="q-px-10"
-            :thickness="1"
-            color="grey-8"
-            track-color="orange-2"
-          />
+          <q-circular-progress indeterminate size="20px" class="q-px-10" :thickness="1" color="grey-8"
+            track-color="orange-2" />
         </q-btn>
-        <q-btn color="primary" @click="handeler" :disable="loading" v-else
-          >Delete</q-btn
-        >
+        <q-btn color="primary" @click="handeler" :disable="loading" v-else>Delete</q-btn>
       </div>
     </q-card-section>
   </q-card>

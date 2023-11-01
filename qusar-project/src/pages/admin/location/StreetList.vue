@@ -8,6 +8,7 @@ import { onMounted, reactive, ref } from 'vue';
 import modalStore from 'src/stores/modalStore';
 import useAddressStore from 'src/stores/addressStore';
 
+
 const modal = modalStore();
 const address = useAddressStore();
 
@@ -19,34 +20,58 @@ const filter = reactive<AdditionalParams>({
     is_active: null,
   },
   relationFilter: {
-    country: {
+    city: {
       field: 'id',
       value: '',
       filter: {
-        continent: {
+        state: {
           field: 'id',
           value: '',
+          filter: {
+            country: {
+              field: 'id',
+              value: '',
+              filter: {
+                continent: {
+                  field: 'id',
+                  value: '',
+                },
+              },
+            },
+          },
         },
-      },
-    },
+      }
+    }
   },
 });
 
 
+
 const { data, loading, onRequest, pagination, tableRef } = useGetTableData(
-  'address/states',
+  'address/streets',
   {
     populate: {
-      country: {
-        fields: ['name', 'id', 'continent_id'],
+      city: {
+        fields: ['name', 'id', 'state_id'],
         populate: {
-          continent: {
-            fields: ['name', 'id'],
-          },
-        },
-      },
+          state: {
+            fields: ['name', 'id', 'country_id'],
+            populate: {
+              country: {
+                fields: ['name', 'id', 'continent_id'],
+                populate: {
+                  continent: {
+                    fields: ['name', 'id'],
+                  },
+                },
+              },
+            }
+          }
+        }
+      }
+
     },
-  }
+  },
 );
 
 const colomns: QTableProps['columns'] = [
@@ -60,15 +85,29 @@ const colomns: QTableProps['columns'] = [
   },
   {
     name: 'continent',
-    field: (row: any) => row?.country?.continent?.name,
+    field: (row: any) => row?.city?.state?.country?.continent?.name,
     label: 'Continent',
     align: 'left',
     style: 'height:auto;',
   },
   {
     name: 'country',
-    field: (row: any) => row?.country?.name,
+    field: (row: any) => row?.city?.state?.country?.name,
     label: 'Country',
+    align: 'left',
+    style: 'height:auto;',
+  },
+  {
+    name: 'state',
+    field: (row: any) => row?.city?.state?.name,
+    label: 'state',
+    align: 'left',
+    style: 'height:auto;',
+  },
+  {
+    name: 'city',
+    field: (row: any) => row?.city?.name,
+    label: 'City',
     align: 'left',
     style: 'height:auto;',
   },
@@ -103,14 +142,31 @@ onMounted(() => {
           " />
         <div class="row q-gutter-sm">
           <q-select outlined dense options-dense emit-value map-options
-            v-model="filter.relationFilter.country.filter.continent.value"
+            v-model="filter.relationFilter.city.filter.state.filter.country.filter.continent.value"
             :options="[{ label: 'All', value: null }, ...address.selectContinents]" @update:model-value="(value) => {
-              filter.relationFilter.country.value = null;
+              filter.relationFilter.city.filter.state.filter.country.value = null;
+              filter.relationFilter.city.filter.state.value = null;
+              filter.relationFilter.city.value
               address.getCountries(value);
             }
               " label="Continent" class="col-auto" style="min-width: 8rem" />
-          <q-select outlined dense options-dense emit-value map-options v-model="filter.relationFilter.country.value"
-            :options="[{ label: 'All', value: '' }, ...address.selectContries]" label="Country" class="col-auto"
+          <q-select outlined dense options-dense emit-value map-options
+            v-model="filter.relationFilter.city.filter.state.filter.country.value"
+            :options="[{ label: 'All', value: null }, ...address.selectContries]" label="Country" class="col-auto"
+            style="min-width: 8rem" @update:model-value="(value) => {
+              filter.relationFilter.city.filter.state.value = null;
+              filter.relationFilter.city.value
+              address.getstates(value);
+            }" />
+          <q-select outlined dense options-dense emit-value map-options
+            v-model="filter.relationFilter.city.filter.state.value"
+            :options="[{ label: 'All', value: null }, ...address.selectStates]" label="state" class="col-auto"
+            style="min-width: 8rem" @update:model-value="(value) => {
+              filter.relationFilter.city.value = null;
+              address.getCities(value);
+            }" />
+          <q-select outlined dense options-dense emit-value map-options v-model="filter.relationFilter.city.value"
+            :options="[{ label: 'All', value: null }, ...address.selectCities]" label="City" class="col-auto"
             style="min-width: 8rem" />
           <q-select outlined dense options-dense emit-value map-options v-model="filter.filter.is_active" :options="[
             { label: 'All', value: null },
@@ -128,13 +184,13 @@ onMounted(() => {
             </q-list>
           </q-btn-dropdown>
           <q-btn color="primary" @click="() => {
-            modal.togel('addState', { tableRef });
+            modal.togel('addStreet', { tableRef });
           }
-            ">+ Add State</q-btn>
+            ">+ Add Street</q-btn>
         </div>
       </div>
 
-      <q-table ref="tableRef" flat bordered title="States" :loading="loading" :rows="data" :columns="colomns"
+      <q-table ref="tableRef" flat bordered title="Streets" :loading="loading" :rows="data" :columns="colomns"
         class="zebra-table" v-model:pagination="pagination" :filter="filter" @request="onRequest" row-key="id">
         <template v-slot:body-cell-is_active="props">
           <q-td :props="props">
@@ -150,7 +206,7 @@ onMounted(() => {
               <q-btn-dropdown size="sm" color="primary" label="Options">
                 <q-list dense>
                   <q-item clickable v-close-popup @click="
-                    modal.togel('editState', {
+                    modal.togel('editStreet', {
                       id: props.row?.id,
                       tableRef,
                     })
@@ -161,9 +217,9 @@ onMounted(() => {
                   </q-item>
                   <q-item clickable v-close-popup @click="
                     modal.togel('deleteRecord', {
-                      url: '/address/states/' + props.row.id,
+                      url: '/address/streets/' + props.row.id,
                       tableRef,
-                      title: 'Delete State?',
+                      title: 'Delete Steet?',
                     })
                     ">
                     <q-item-section>

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import useModalStore from '../../stores/modalStore';
+import modalStore from '../../stores/modalStore';
 import ChangeRoleModal from './ChangeRoleModal.vue';
 import DeleteRecordModal from './DeleteRecordModal.vue';
 import BanAdminUser from './BanAdminUser.vue';
@@ -12,8 +12,10 @@ import StateEditModal from './address/StateEditModal.vue';
 import CityEditModal from './address/CityEditModal.vue';
 import CityAddModal from './address/CityAddModal.vue';
 import StreetEditModal from './address/StreetEditModal.vue';
+import StreetAddModal from './address/StreetAddModal.vue';
+import AddRoleModal from './AddRoleModal.vue';
 
-const modal = useModalStore();
+const modal = modalStore();
 </script>
 
 <template>
@@ -29,7 +31,9 @@ const modal = useModalStore();
     <StateEditModal v-if="modal.content === 'editState'" />
     <CityEditModal v-if="modal.content === 'editCity'" />
     <CityAddModal v-if="modal.content === 'addCity'" />
+    <StreetAddModal v-if="modal.content === 'addStreet'" />
     <StreetEditModal v-if="modal.content === 'editStreet'" />
+    <AddRoleModal v-if="modal.content === 'addRole'" />
     <!-- <ModalContactMessage v-if="modal.content === 'contactMessage'" />
     <ModalAddressContinentAdd v-if="modal.content === 'addContinent'" />
     <ModalAddressContinentEdit v-if="modal.content === 'editContinent'" />

@@ -187,6 +187,26 @@ const routes: RouteRecordRaw[] = [
         component: () => import('pages/admin/location/CityList.vue'),
         name: 'admin.location.city.index',
       },
+      {
+        path: 'location/streets',
+        component: () => import('pages/admin/location/StreetList.vue'),
+        name: 'admin.location.street.index',
+      },
+      {
+        path: 'users',
+        component: () => import('pages/admin/user/UserIndex.vue'),
+        name: 'admin.user.index',
+      },
+      {
+        path: 'users/create',
+        component: () => import('pages/admin/user/UserCreate.vue'),
+        name: 'admin.user.create',
+      },
+      {
+        path: 'users/:id/edit',
+        component: () => import('pages/admin/user/UserEdit.vue'),
+        name: 'admin.user.edit',
+      },
     ],
   },
 
