@@ -4,10 +4,13 @@ import SearchInput from 'src/components/forms/SearchInput.vue';
 import { useGetTableData } from 'src/composables/useGetTableData';
 import { AdditionalParams } from 'src/type';
 import { exportCSV } from 'src/utils/exportCSV';
-import { reactive } from 'vue';
+import { onMounted, reactive, ref } from 'vue';
 import useModalStore from 'src/stores/useModalStore';
+import useAddressStore from 'src/stores/addressStore';
+import qs from 'qs';
 
 const modal = useModalStore();
+const address = useAddressStore();
 
 const filter = reactive<AdditionalParams>({
   search: {
@@ -16,10 +19,48 @@ const filter = reactive<AdditionalParams>({
   filter: {
     is_active: null,
   },
+  relationFilter: {
+    state: {
+      field: 'id',
+      value: '',
+      filter: {
+        country: {
+          field: 'id',
+          value: '',
+          filter: {
+            continent: {
+              field: 'id',
+              value: '',
+            },
+          },
+        },
+      },
+    },
+  },
 });
 
-const { data, loading, onRequest, pagination, tableRef } =
-  useGetTableData('address/continents');
+
+
+const { data, loading, onRequest, pagination, tableRef } = useGetTableData(
+  'address/cities',
+  {
+    populate: {
+      state: {
+        fields: ['name', 'id', 'country_id'],
+        populate: {
+          country: {
+            fields: ['name', 'id', 'continent_id'],
+            populate: {
+              continent: {
+                fields: ['name', 'id'],
+              },
+            },
+          },
+        }
+      }
+    },
+  },
+);
 
 const colomns: QTableProps['columns'] = [
   { name: 'id', field: 'id', label: 'ID', align: 'left' },
@@ -27,6 +68,27 @@ const colomns: QTableProps['columns'] = [
     name: 'name',
     field: 'name',
     label: 'Name',
+    align: 'left',
+    style: 'height:auto;',
+  },
+  {
+    name: 'continent',
+    field: (row: any) => row?.state?.country?.continent?.name,
+    label: 'Continent',
+    align: 'left',
+    style: 'height:auto;',
+  },
+  {
+    name: 'country',
+    field: (row: any) => row?.state?.country?.name,
+    label: 'Country',
+    align: 'left',
+    style: 'height:auto;',
+  },
+  {
+    name: 'state',
+    field: (row: any) => row?.state?.name,
+    label: 'state',
     align: 'left',
     style: 'height:auto;',
   },
@@ -43,6 +105,10 @@ const colomns: QTableProps['columns'] = [
     align: 'center',
   },
 ];
+
+onMounted(() => {
+  address.getCountinents();
+});
 </script>
 
 <template>
@@ -56,6 +122,24 @@ const colomns: QTableProps['columns'] = [
         }
           " />
         <div class="row q-gutter-sm">
+          <q-select outlined dense options-dense emit-value map-options
+            v-model="filter.relationFilter.state.filter.country.filter.continent.value"
+            :options="[{ label: 'All', value: null }, ...address.selectContinents]" @update:model-value="(value) => {
+              filter.relationFilter.state.filter.country.value = null;
+              filter.relationFilter.state.value = null;
+              address.getCountries(value);
+            }
+              " label="Continent" class="col-auto" style="min-width: 8rem" />
+          <q-select outlined dense options-dense emit-value map-options
+            v-model="filter.relationFilter.state.filter.country.value"
+            :options="[{ label: 'All', value: null }, ...address.selectContries]" label="Country" class="col-auto"
+            style="min-width: 8rem" @update:model-value="(value) => {
+              filter.relationFilter.state.value = null;
+              address.getstates(value);
+            }" />
+          <q-select outlined dense options-dense emit-value map-options v-model="filter.relationFilter.state.value"
+            :options="[{ label: 'All', value: null }, ...address.selectStates]" label="state" class="col-auto"
+            style="min-width: 8rem" />
           <q-select outlined dense options-dense emit-value map-options v-model="filter.filter.is_active" :options="[
             { label: 'All', value: null },
             { label: 'Active', value: 1 },
@@ -72,13 +156,13 @@ const colomns: QTableProps['columns'] = [
             </q-list>
           </q-btn-dropdown>
           <q-btn color="primary" @click="() => {
-            modal.togel('addContinent', { tableRef });
+            modal.togel('addCity', { tableRef });
           }
-            ">+ Add Continent</q-btn>
+            ">+ Add City</q-btn>
         </div>
       </div>
 
-      <q-table ref="tableRef" flat bordered title="Continents" :loading="loading" :rows="data" :columns="colomns"
+      <q-table ref="tableRef" flat bordered title="Cities" :loading="loading" :rows="data" :columns="colomns"
         class="zebra-table" v-model:pagination="pagination" :filter="filter" @request="onRequest" row-key="id">
         <template v-slot:body-cell-is_active="props">
           <q-td :props="props">
@@ -94,7 +178,7 @@ const colomns: QTableProps['columns'] = [
               <q-btn-dropdown size="sm" color="primary" label="Options">
                 <q-list dense>
                   <q-item clickable v-close-popup @click="
-                    modal.togel('editContinent', {
+                    modal.togel('editState', {
                       id: props.row?.id,
                       tableRef,
                     })
@@ -105,9 +189,9 @@ const colomns: QTableProps['columns'] = [
                   </q-item>
                   <q-item clickable v-close-popup @click="
                     modal.togel('deleteRecord', {
-                      url: '/address/continents/' + props.row.id,
+                      url: '/address/cities/' + props.row.id,
                       tableRef,
-                      title: 'Delete Continent?',
+                      title: 'Delete City?',
                     })
                     ">
                     <q-item-section>

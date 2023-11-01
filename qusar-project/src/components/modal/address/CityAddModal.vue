@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import useModalStore from '../../../stores/modalStore';
 import { onMounted, ref } from 'vue';
-import { StateApi } from '../../../utils/BaseApiService';
+import { CityApi } from '../../../utils/BaseApiService';
 import useAddressStore from 'src/stores/addressStore';
 
 const modal = useModalStore();
@@ -12,19 +12,20 @@ const form = ref({
   isActive: false,
   continentId: '',
   countryId: '',
+  stateId: '',
 });
 
 onMounted(() => {
   address.getCountinents();
 });
 
-const { execute, loading } = StateApi.post(form.value);
+const { execute, loading } = CityApi.post(form.value);
 </script>
 
 <template>
   <q-card style="width: 100%">
     <q-toolbar style="background-color: #ebeae4">
-      <q-toolbar-title><span class="text-weight-bold">Add State</span></q-toolbar-title>
+      <q-toolbar-title><span class="text-weight-bold">Add City</span></q-toolbar-title>
       <q-btn flat dense icon="close" v-close-popup />
     </q-toolbar>
 
@@ -42,7 +43,12 @@ const { execute, loading } = StateApi.post(form.value);
           }
             " :rules="[$rules.required('required')]" />
         <q-select outlined emit-value map-options v-model="form.countryId" label="Country"
-          class="col-12 col-sm-6 col-md-3" :options="address.selectContries" :rules="[$rules.required('required')]" />
+          class="col-12 col-sm-6 col-md-3" :options="address.selectContries" @update:model-value="(value) => {
+            address.getstates(value);
+          }
+            " :rules="[$rules.required('required')]" />
+        <q-select outlined emit-value map-options v-model="form.stateId" label="State" class="col-12 col-sm-6 col-md-3"
+          :options="address.selectStates" :rules="[$rules.required('required')]" />
         <q-input outlined v-model="form.name" label="Name" :rules="[$rules.required('required')]" />
         <q-toggle v-model="form.isActive" label="Activate" class="col-12 col-sm-6 col-md-3" />
         <div class="row q-gutter-sm justify-end q-pt-lg">

@@ -25,6 +25,14 @@ const addressStore = defineStore('addressStore', () => {
   };
 
   const getCountries = async (continentId: string) => {
+    if (continentId === null) {
+      countries.value = [];
+      states.value = [];
+      cities.value = [];
+      streets.value = [];
+      return;
+    }
+
     const { data } = await CountriesApi.index({
       relationFilter: {
         continent: {
@@ -40,6 +48,13 @@ const addressStore = defineStore('addressStore', () => {
   };
 
   const getstates = async (countryId: string) => {
+    if (countryId === null) {
+      states.value = [];
+      cities.value = [];
+      streets.value = [];
+      return;
+    }
+
     const { data } = await StateApi.index({
       relationFilter: {
         country: {
@@ -54,6 +69,12 @@ const addressStore = defineStore('addressStore', () => {
   };
 
   const getCities = async (stateId: string) => {
+    if (stateId === null) {
+      cities.value = [];
+      streets.value = [];
+      return;
+    }
+
     const { data } = await CityApi.index({
       relationFilter: {
         state: {
@@ -67,6 +88,11 @@ const addressStore = defineStore('addressStore', () => {
   };
 
   const getStreets = async (cityId: string) => {
+    if (cityId === null) {
+      streets.value = [];
+      return;
+    }
+
     const { data } = await StreetApi.index({
       relationFilter: {
         city: {
@@ -134,11 +160,6 @@ const addressStore = defineStore('addressStore', () => {
     selectStates,
     selectCities,
     selectStreets,
-    continents,
-    countries,
-    states,
-    cities,
-    streets,
   };
 });
 

@@ -182,6 +182,11 @@ const routes: RouteRecordRaw[] = [
         component: () => import('pages/admin/location/StateList.vue'),
         name: 'admin.location.state.index',
       },
+      {
+        path: 'location/cities',
+        component: () => import('pages/admin/location/CityList.vue'),
+        name: 'admin.location.city.index',
+      },
     ],
   },
 

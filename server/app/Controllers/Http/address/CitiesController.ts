@@ -1,11 +1,15 @@
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import { schema } from '@ioc:Adonis/Core/Validator'
+import qs from 'qs'
+
 import CityService from 'App/services/address/CityService'
 
 export default class CitiesController {
   public async index({ request, response }: HttpContextContract) {
-    const qs = request.qs() as any
-    const records = await CityService.index(qs)
+    const query = request.qs() as any
+    const q = qs.parse(query, { depth: 10 })
+    console.log(q?.relationFilter?.state?.filter?.country)
+    const records = await CityService.index(q)
     return response.json(records)
   }
 

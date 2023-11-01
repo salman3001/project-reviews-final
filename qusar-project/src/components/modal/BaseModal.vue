@@ -10,6 +10,7 @@ import CountryEditModal from './address/CountryEditModal.vue';
 import StateAddModal from './address/StateAddModal.vue';
 import StateEditModal from './address/StateEditModal.vue';
 import CityEditModal from './address/CityEditModal.vue';
+import CityAddModal from './address/CityAddModal.vue';
 import StreetEditModal from './address/StreetEditModal.vue';
 
 const modal = useModalStore();
@@ -27,6 +28,7 @@ const modal = useModalStore();
     <StateAddModal v-if="modal.content === 'addState'" />
     <StateEditModal v-if="modal.content === 'editState'" />
     <CityEditModal v-if="modal.content === 'editCity'" />
+    <CityAddModal v-if="modal.content === 'addCity'" />
     <StreetEditModal v-if="modal.content === 'editStreet'" />
     <!-- <ModalContactMessage v-if="modal.content === 'contactMessage'" />
     <ModalAddressContinentAdd v-if="modal.content === 'addContinent'" />

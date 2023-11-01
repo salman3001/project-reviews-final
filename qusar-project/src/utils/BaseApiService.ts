@@ -1,4 +1,5 @@
 import { AxiosRequestConfig } from 'axios';
+import qs from 'qs';
 import { Notify } from 'quasar';
 import { api } from 'src/boot/axios';
 import { AdditionalParams } from 'src/type';
@@ -24,6 +25,7 @@ class BaseApiService {
         params: {
           ...query,
         },
+        headers: { 'content-type': 'application/x-www-form-urlencoded' },
         ...config,
       });
       if (res?.data) {
