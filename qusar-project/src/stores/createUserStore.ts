@@ -1,5 +1,10 @@
 import { defineStore } from 'pinia';
-import { userApi } from 'src/utils/BaseApiService';
+import {
+  JobDepartmentApi,
+  JobIndustryApi,
+  LanguageApi,
+  userApi,
+} from 'src/utils/BaseApiService';
 import { ref } from 'vue';
 
 const createUserStore = defineStore('createUser', () => {
@@ -49,6 +54,7 @@ const createUserStore = defineStore('createUser', () => {
         cityId: '',
         stateId: '',
         countryId: '',
+        zip: '',
         startDate: '',
         endDate: '',
         desc: '',
@@ -70,7 +76,12 @@ const createUserStore = defineStore('createUser', () => {
         language_id: '',
       },
     ],
-    skills: [],
+    skills: [
+      {
+        name: '',
+        desc: '',
+      },
+    ],
     NotificationSettings: {
       onMessageRecieve: true,
       onCommentReply: true,
@@ -79,12 +90,18 @@ const createUserStore = defineStore('createUser', () => {
     },
   });
 
-  const { execute: submit, loading: posting } = userApi.post(form.value);
+  const jobDepartments = ref([]);
+  const jobIndustry = ref([]);
+  const languages = ref([]);
 
   const addNewFavoriteLinks = () => {
     form.value.favoriteLinks.push({
       link: '',
     });
+  };
+
+  const popFavoriteLinks = () => {
+    form.value.favoriteLinks.pop();
   };
 
   const addNewWorkExperience = () => {
@@ -98,11 +115,16 @@ const createUserStore = defineStore('createUser', () => {
       cityId: '',
       stateId: '',
       countryId: '',
+      zip: '',
       startDate: '',
       endDate: '',
       desc: '',
       isCurrent: false,
     });
+  };
+
+  const popWorkExperience = () => {
+    form.value.workExperience.pop();
   };
 
   const addNewEducation = () => {
@@ -116,6 +138,60 @@ const createUserStore = defineStore('createUser', () => {
     });
   };
 
+  const popEducation = () => {
+    form.value.education.pop();
+  };
+
+  const addNewLangauge = () => {
+    form.value.lanuages.push({
+      language_id: '',
+    });
+  };
+
+  const popLanguage = () => {
+    form.value.lanuages.pop();
+  };
+
+  const addNewSkill = () => {
+    form.value.skills.push({
+      name: '',
+      desc: '',
+    });
+  };
+
+  const popSkill = () => {
+    form.value.skills.pop();
+  };
+
+  const getJobDepartments = async () => {
+    await JobDepartmentApi.index().then(({ data }) => {
+      jobDepartments.value = (data.value as any).map((d: any) => ({
+        label: d.name,
+        value: d.id,
+      }));
+    });
+  };
+
+  const getJobIndustry = async () => {
+    await JobIndustryApi.index().then(({ data }) => {
+      jobIndustry.value = (data.value as any).map((d: any) => ({
+        label: d.name,
+        value: d.id,
+      }));
+    });
+  };
+
+  const getLangauges = async () => {
+    await LanguageApi.index().then(({ data }) => {
+      languages.value = (data.value as any).map((d: any) => ({
+        label: d.name,
+        value: d.id,
+      }));
+    });
+  };
+
+  const { execute: submit, loading: posting } = userApi.post(form.value);
+
   return {
     form,
     posting,
@@ -123,6 +199,19 @@ const createUserStore = defineStore('createUser', () => {
     addNewFavoriteLinks,
     addNewWorkExperience,
     addNewEducation,
+    popEducation,
+    popFavoriteLinks,
+    popWorkExperience,
+    addNewLangauge,
+    popLanguage,
+    getJobDepartments,
+    jobDepartments,
+    getJobIndustry,
+    jobIndustry,
+    getLangauges,
+    languages,
+    addNewSkill,
+    popSkill,
   };
 });
 

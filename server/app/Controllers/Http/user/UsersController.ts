@@ -4,6 +4,7 @@ import ImageService from 'App/services/ImageService'
 import SocialService from 'App/services/SocialService'
 import UserService from 'App/services/user/UserService'
 import UserCreateValidator from 'App/Validators/user/UserCreateValidator'
+import UserUpdateeValidator from 'App/Validators/user/UserUpdateValidator copy'
 
 export default class UsersController {
   public async index({ request, response }: HttpContextContract) {
@@ -59,12 +60,14 @@ export default class UsersController {
     }
 
     if (payload.skills) {
-      await user.related('skills').attach(payload.skills)
+      await user.related('skills').createMany(payload.skills)
     }
 
     if (payload.NotificationSettings) {
       await user.related('NotificationSetting').create(payload.NotificationSettings)
     }
+
+    await user.save()
 
     return response.json(user)
   }
@@ -76,9 +79,68 @@ export default class UsersController {
   }
 
   public async update({ request, response, params }: HttpContextContract) {
-    const payload = await request.validate({} as any)
-    const record = await UserService.update(params.id, payload)
-    return response.json({ message: 'record updated', data: record })
+    const payload = await request.validate(UserUpdateeValidator)
+    const id = params.id
+    const user = await UserService.show(id)
+
+    if (payload.user) {
+      await UserService.update(id, payload.user)
+    }
+
+    if (payload.address) {
+      await user?.load('address')
+      if (user?.address) {
+        await AddressService.update(user?.address?.id, {
+          address: payload?.address?.address || '',
+          continentId: payload?.address?.continentId
+            ? Number(payload?.address?.continentId)
+            : undefined,
+          countryId: payload?.address?.countryId ? Number(payload?.address?.countryId) : undefined,
+          stateId: payload?.address?.stateId ? Number(payload?.address?.stateId) : undefined,
+          cityId: payload?.address?.cityId ? Number(payload?.address?.cityId) : undefined,
+          streetId: payload?.address?.streetId ? Number(payload?.address?.streetId) : undefined,
+          zip: payload?.address?.zip,
+        })
+      } else {
+        const address = await AddressService.store(payload.address)
+        user && user.related('address').save(address)
+      }
+    }
+
+    if (payload.social) {
+      await user?.load('social')
+      if (user?.social) {
+        await SocialService.update(user.social.id, payload.social)
+      } else {
+        const social = await SocialService.store(payload.social)
+        user && user.related('social').save(social)
+      }
+    }
+
+    if (payload.image) {
+      await user?.load('avatar')
+
+      if (user?.avatar) {
+        await ImageService.update(user.avatar.id, payload.image)
+      } else {
+        const image = await ImageService.store(payload.image, '/users/', user?.firstName)
+        user && (await user.related('avatar').save(image))
+      }
+    }
+
+    if (payload.languages) {
+      await user?.load('languages')
+      if (user?.languages) {
+        user.related('languages').detach()
+        user && (await user.related('languages').attach(payload.languages))
+      } else {
+        user && (await user.related('languages').attach(payload.languages))
+      }
+    }
+
+    user && (await user.save())
+
+    return response.json(user)
   }
 
   public async destroy({ params, response }: HttpContextContract) {

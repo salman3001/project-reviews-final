@@ -92,13 +92,18 @@ class BaseApiService {
     return { loading, data };
   }
 
-  public post(data: any, config?: AxiosRequestConfig<any> | undefined) {
+  public post(
+    data: any,
+    config?: AxiosRequestConfig<any> | undefined,
+    cb?: { onSuccess?: () => void; onError?: () => void }
+  ) {
     const loading = ref(false);
     const execute = async () => {
       try {
         loading.value = true;
         const res = await api.post(this.url, data, config);
         loading.value = false;
+        cb?.onSuccess && cb?.onSuccess();
         Notify.create({
           message: `${this.name} created successfully`,
           color: 'positive',
@@ -106,17 +111,23 @@ class BaseApiService {
         });
       } catch (error: any) {
         if (error?.response) {
+          loading.value = false;
+          cb?.onError && cb?.onError();
           Notify.create({
             message:
               error?.response?.data?.message || `Failed to create ${this.name}`,
             color: 'negative',
           });
         } else if (error?.request) {
+          loading.value = false;
+          cb?.onError && cb?.onError();
           Notify.create({
             message: `Trying to create ${this.name}.Server Not Reachable!`,
             color: 'negative',
           });
         } else {
+          loading.value = false;
+          cb?.onError && cb?.onError();
           Notify.create({ message: error.message, color: 'negative' });
         }
       }
@@ -131,7 +142,8 @@ class BaseApiService {
   public put(
     id: string,
     data: any,
-    config?: AxiosRequestConfig<any> | undefined
+    config?: AxiosRequestConfig<any> | undefined,
+    cb?: { onSuccess?: () => void; onError?: () => void }
   ) {
     const loading = ref(false);
     const execute = async () => {
@@ -139,6 +151,7 @@ class BaseApiService {
         loading.value = true;
         const res = await api.put(this.url + `/${id}`, data, config);
         loading.value = false;
+        cb?.onSuccess && cb?.onSuccess();
         Notify.create({
           message: `${this.name} updated successfully`,
           color: 'positive',
@@ -146,17 +159,23 @@ class BaseApiService {
         });
       } catch (error: any) {
         if (error?.response) {
+          cb?.onError && cb?.onError();
+          loading.value = false;
           Notify.create({
             message:
               error?.response?.data?.message || `Failed to updtae ${this.name}`,
             color: 'negative',
           });
         } else if (error?.request) {
+          cb?.onError && cb?.onError();
+          loading.value = false;
           Notify.create({
             message: `Trying to update ${this.name}.Server Not Reachable!`,
             color: 'negative',
           });
         } else {
+          cb?.onError && cb?.onError();
+          loading.value = false;
           Notify.create({ message: error.message, color: 'negative' });
         }
       }
@@ -168,13 +187,18 @@ class BaseApiService {
     };
   }
 
-  public delete(id: string, config?: AxiosRequestConfig<any> | undefined) {
+  public delete(
+    id: string,
+    config?: AxiosRequestConfig<any> | undefined,
+    cb?: { onSuccess?: () => void; onError?: () => void }
+  ) {
     const loading = ref(false);
     const execute = async () => {
       try {
         loading.value = true;
         const res = await api.delete(this.url + `/${id}`, config);
         loading.value = false;
+        cb?.onSuccess && cb?.onSuccess();
         Notify.create({
           message: `${this.name} deleted successfully`,
           color: 'positive',
@@ -182,17 +206,23 @@ class BaseApiService {
         });
       } catch (error: any) {
         if (error?.response) {
+          cb?.onError && cb?.onError();
+          loading.value = false;
           Notify.create({
             message:
               error?.response?.data?.message || `Failed to delete ${this.name}`,
             color: 'negative',
           });
         } else if (error?.request) {
+          cb?.onError && cb?.onError();
+          loading.value = false;
           Notify.create({
             message: `Trying to delte ${this.name}.Server Not Reachable!`,
             color: 'negative',
           });
         } else {
+          cb?.onError && cb?.onError();
+          loading.value = false;
           Notify.create({ message: error.message, color: 'negative' });
         }
       }
@@ -244,3 +274,13 @@ export const StateApi = new BaseApiService('/address/states', 'State');
 export const CityApi = new BaseApiService('/address/cities', 'City');
 
 export const StreetApi = new BaseApiService('/address/streets', 'Street');
+
+export const JobIndustryApi = new BaseApiService(
+  '/job-industry',
+  'Job Industry'
+);
+
+export const JobDepartmentApi = new BaseApiService(
+  '/job-departments',
+  'Job Department'
+);

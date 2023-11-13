@@ -8,5 +8,8 @@ export default class Skill extends BaseModel {
   public name: string
 
   @column()
+  public desc: string
+
+  @column()
   public dec: string
 }

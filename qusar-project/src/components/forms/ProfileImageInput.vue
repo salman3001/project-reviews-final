@@ -7,6 +7,10 @@ defineProps<{
   url?: string
 }>()
 
+const emit = defineEmits<{
+  (e: 'image', image: File): void
+}>()
+
 const file = ref<File | null>(null)
 const previewImageRef = ref(null) as unknown as Ref<HTMLImageElement>
 
@@ -18,6 +22,8 @@ function previewSelectedImage() {
     reader.onload = function (e: any) {
       previewImageRef.value.src = e.target.result as string;
     }
+
+    emit('image', file.value)
   }
 }
 

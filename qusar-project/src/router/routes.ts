@@ -198,6 +198,11 @@ const routes: RouteRecordRaw[] = [
         name: 'admin.user.index',
       },
       {
+        path: 'users/:id/',
+        component: () => import('pages/admin/user/UserView.vue'),
+        name: 'admin.user.show',
+      },
+      {
         path: 'users/create',
         component: () => import('pages/admin/user/UserCreate.vue'),
         name: 'admin.user.create',

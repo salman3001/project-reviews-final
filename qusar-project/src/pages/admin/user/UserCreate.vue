@@ -1,26 +1,59 @@
 <script setup lang="ts">
-import ProfileImageInput from 'src/components/forms/ProfileImageInput.vue';
-import { onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
-import { rules } from '../../../utils/validationRules';
-
-import useAddressStore from 'src/stores/addressStore';
-import createUserStore from 'src/stores/createUserStore';
+import PersonalInfoForm from 'src/components/admin/user/AddUserWizard/PersonalInfoForm.vue'
+import SocialInfo from 'src/components/admin/user/AddUserWizard/SocialInfo.vue'
+import FavoriteLinkInfo from 'src/components/admin/user/AddUserWizard/FavoriteLinkInfo.vue'
+import ProfessionalInfo from 'src/components/admin/user/AddUserWizard/ProfessionalInfo.vue'
+import PrivacyForm from 'src/components/admin/user/AddUserWizard/PrivacyForm.vue'
+import NotificationForm from 'src/components/admin/user/AddUserWizard/NotificationForm.vue'
+import PasswordForm from 'src/components/admin/user/AddUserWizard/PasswordForm.vue'
+import PreviewForm from 'src/components/admin/user/AddUserWizard/PreviewForm.vue'
+import { ref } from 'vue';
 
 const router = useRouter();
-const isPwd = ref(true);
 const step = ref(1)
-const address = useAddressStore();
 
-const createUser = createUserStore()
+const editHandler = (v: string) => {
+  if (v === 'personal') {
+    step.value = 1
+  }
 
-onMounted(async () => {
-  address.getCountinents();
-});
+  if (v === 'social') {
+    step.value = 2
+  }
+
+  if (v === 'favorite') {
+    step.value = 3
+  }
+
+  if (v === 'profession') {
+    step.value = 4
+  }
+
+  if (v === 'language') {
+    step.value = 4
+  }
+
+  if (v === 'skill') {
+    step.value = 4
+  }
+
+  if (v === 'privacy') {
+    step.value = 5
+  }
+
+  if (v === 'Notifications') {
+    step.value = 6
+  }
+
+
+}
+
+
 </script>
 
 <template>
-  <div class="q-pa-lg">
+  <div class="q-pa-md">
     <div class="row items-center q-gutter-sm">
       <q-icon name="keyboard_backspace" size="30px" style="cursor: pointer" @click="() => {
         router.push({ name: 'admin.user.index' });
@@ -31,182 +64,35 @@ onMounted(async () => {
     <div>
       <q-stepper flat v-model="step" ref="stepper" color="primary" animated>
         <q-step :name="1" title="Personal" icon="settings" :done="step > 1">
-          <q-form class="column q-gutter-y-md" @submit="() => {
-            $refs.stepper.next()
-          }">
-            <div>
-              <ProfileImageInput name="image" />
-            </div>
-            <div class="q-gutter-y-md">
-              <div class="row q-col-gutter-md">
-                <q-input outlined v-model="createUser.form.user.firstName" label="First Name"
-                  class="col-12 col-sm-6 col-md-3" :rules="[$rules.required('required')]" />
-                <q-input outlined v-model="createUser.form.user.lastName" label="Last Name"
-                  class="col-12 col-sm-6 col-md-3" :rules="[$rules.required('required')]" />
-                <q-input outlined debounce="500" v-model="createUser.form.user.email" type="email" label="Email"
-                  class="col-12 col-sm-6 col-md-3" :rules="[
-                    $rules.required('required'),
-                    $rules.email('Email is not valid'),
-                    async (v) =>
-                      (await rules.unique('/users/unique-field', 'email', v)) ||
-                      'Email Already Taken',
-                  ]" />
-                <q-input outlined debounce="500" v-model="createUser.form.user.userName" label="User Name"
-                  class="col-12 col-sm-6 col-md-3" :rules="[
-                    $rules.required('required'),
-                    async (v) =>
-                      (await rules.unique('/users/unique-field', 'user_name', v)) ||
-                      'User Name Already Taken',
-                  ]" />
-                <q-input outlined v-model="createUser.form.user.password" :type="isPwd ? 'password' : 'text'"
-                  label="Password" class="col-12 col-sm-6 col-md-3" :rules="[
-                    $rules.required('required'),
-                    $rules.minLength(8, 'Minimum 9 charectors required'),
-                    $rules.alphaNum('Password Must be alpha numeric'),
-                  ]">
-                  <template v-slot:append>
-                    <q-icon :name="isPwd ? 'visibility_off' : 'visibility'" class="cursor-pointer"
-                      @click="isPwd = !isPwd" />
-                  </template>
-                </q-input>
-                <q-input outlined v-model="createUser.form.user.password_confirmaton" :type="isPwd ? 'password' : 'text'"
-                  label="Cofirm Password" class="col-12 col-sm-6 col-md-3" :rules="[
-                    $rules.required('required'),
-                    $rules.sameAs(createUser.form.user.password, 'Password doesnt match'),
-                  ]">
-                  <template v-slot:append>
-                    <q-icon :name="isPwd ? 'visibility_off' : 'visibility'" class="cursor-pointer"
-                      @click="isPwd = !isPwd" />
-                  </template>
-                </q-input>
-                <q-input outlined v-model="createUser.form.user.desc" type="textarea" class="col-12"
-                  label="Description" />
-              </div>
-
-              <div class="column q-gutter-y-md">
-                <p class="text-subtitle1">Location Information</p>
-                <div class="row q-col-gutter-md">
-                  <q-input outlined v-model="createUser.form.address.address" class="col-12 col-md-9" label="Address" />
-                  <q-select outlined emit-value map-options v-model="createUser.form.address.continentId"
-                    :options="address.selectContinents" label="Continet" class="col-12 col-sm-6 col-md-3"
-                    @update:model-value="(value) => {
-                      createUser.form.address.countryId = '';
-                      createUser.form.address.stateId = '';
-                      createUser.form.address.cityId = '';
-                      createUser.form.address.streetId = '';
-                      address.getCountries(value);
-                    }
-                      " />
-                  <q-select outlined emit-value map-options v-model="createUser.form.address.countryId" label="Country"
-                    class="col-12 col-sm-6 col-md-3" :options="address.selectContries" @update:model-value="(value) => {
-                      createUser.form.address.stateId = '';
-                      createUser.form.address.cityId = '';
-                      createUser.form.address.streetId = '';
-                      address.getstates(value);
-                    }
-                      " />
-                  <q-select outlined emit-value map-options v-model="createUser.form.address.stateId" label="State"
-                    class="col-12 col-sm-6 col-md-3" :options="address.selectStates" @update:model-value="(value) => {
-                      createUser.form.address.cityId = '';
-                      createUser.form.address.streetId = '';
-                      address.getCities(value);
-                    }
-                      " />
-                  <q-select outlined emit-value map-options v-model="createUser.form.address.cityId" label="City"
-                    class="col-12 col-sm-6 col-md-3" :options="address.selectCities" @update:model-value="(value) => {
-                      createUser.form.address.streetId = '';
-                      address.getStreets(value);
-                    }
-                      " />
-                  <q-select outlined emit-value map-options v-model="createUser.form.address.streetId" label="Street"
-                    class="col-12 col-sm-6 col-md-3" :options="address.selectStreets" />
-                  <q-input outlined v-model="createUser.form.address.zip" class="col-12 col-sm-6 col-md-3"
-                    label="Post Code" />
-                </div>
-              </div>
-            </div>
-            <div class="row justify-end q-gutter-md">
-              <q-btn v-if="step > 1" style="background-color: #e6e4d9; color: #aeaca1; min-width: 8rem" type="submit"
-                label="Back" class="q-ml-sm" />
-              <q-btn color="primary" type="submit" style="min-width: 8rem">Next</q-btn>
-            </div>
-          </q-form>
+          <PersonalInfoForm :step="step" @next="$refs.stepper.next()" />
         </q-step>
 
         <q-step :name="2" title="Social Links" icon="create_new_folder" :done="step > 2">
-          <q-form class="column q-gutter-y-md" @submit="() => {
-            $refs.stepper.next()
-          }">
-            <div class="column q-gutter-y-md">
-              <div class="row q-col-gutter-md">
-                <q-input outlined v-model="createUser.form.social.website" class="col-12 col-sm-6 col-md-3"
-                  label="Website URL" />
-                <q-input outlined v-model="createUser.form.social.facebook" label="Facebook URL"
-                  class="col-12 col-sm-6 col-md-3" />
-                <q-input outlined v-model="createUser.form.social.twitter" label="Twitter URL"
-                  class="col-12 col-sm-6 col-md-3" />
-                <q-input outlined v-model="createUser.form.social.instagram" label="Instagram URL"
-                  class="col-12 col-sm-6 col-md-3" />
-                <q-input outlined v-model="createUser.form.social.pintrest" label="Pintrest URL"
-                  class="col-12 col-sm-6 col-md-3" />
-                <q-input outlined v-model="createUser.form.social.linkedin" label="Linkedin URL"
-                  class="col-12 col-sm-6 col-md-3" />
-                <q-input outlined v-model="createUser.form.social.vk" class="col-12 col-sm-6 col-md-3" label="VK URL" />
-                <q-input outlined v-model="createUser.form.social.whatsapp" class="col-12 col-sm-6 col-md-3"
-                  label="Whatsapp URL" />
-                <q-input outlined v-model="createUser.form.social.telegram" class="col-12 col-sm-6 col-md-3"
-                  label="Telegram URL" />
-              </div>
-            </div>
-            <div class="row justify-end q-gutter-md">
-              <q-btn v-if="step > 1" style="background-color: #e6e4d9; color: #aeaca1; min-width: 8rem" type="submit"
-                label="Back" class="q-ml-sm" @click="() => {
-                  $refs.stepper.previous()
-                }" />
-              <!--
-              <q-btn color="primary">
-                <q-circular-progress indeterminate size="20px" class="q-px-10" :thickness="1" color="grey-8"
-                  track-color="orange-2" style="min-width: 8rem" />
-              </q-btn> -->
-              <q-btn color="primary" type="submit" style="min-width: 8rem">Next</q-btn>
-            </div>
-          </q-form>
+          <SocialInfo :step="step" @next="$refs.stepper.next()" @prev="$refs.stepper.previous()" />
         </q-step>
 
-        <q-step :name="3" title="Favorite Links" icon="assignment">
-          <q-form class="column q-gutter-y-md" @submit="() => {
-            $refs.stepper.next()
-          }">
-            <div class="column q-gutter-y-md">
-              <div class="row q-col-gutter-md">
-
-                <q-input outlined v-for="(f, i) in createUser.form.favoriteLinks" :key="i" v-model="f.link"
-                  class="col-12 col-sm-6 col-md-3" :label="'Link' + ' ' + i + 1" />
-              </div>
-              <q-btn color="primary" style="max-width: 8rem" @click="createUser.addNewFavoriteLinks">+Add
-                New</q-btn>
-            </div>
-            <div class="row justify-end q-gutter-md">
-              <q-btn v-if="step > 1" style="background-color: #e6e4d9; color: #aeaca1; min-width: 8rem" type="submit"
-                label="Back" class="q-ml-sm" @click="() => {
-                  $refs.stepper.previous()
-                }" />
-              <!--
-              <q-btn color="primary">
-                <q-circular-progress indeterminate size="20px" class="q-px-10" :thickness="1" color="grey-8"
-                  track-color="orange-2" style="min-width: 8rem" />
-              </q-btn> -->
-              <q-btn color="primary" type="submit" style="min-width: 8rem">Next</q-btn>
-            </div>
-          </q-form>
+        <q-step :name="3" title="Favorite Links" icon="assignment" :done="step > 3">
+          <FavoriteLinkInfo :step="step" @next="$refs.stepper.next()" @prev="$refs.stepper.previous()" />
         </q-step>
 
-        <q-step :name="4" title="Create an ad" icon="add_comment">
-          Try out different ad text to see what brings in the most customers, and learn how to
-          enhance your ads using features like ad extensions. If you run into any problems with
-          your ads, find out how to tell if they're running and how to resolve approval issues.
+        <q-step :name="4" title="Profession" icon="add_comment" :done="step > 4">
+          <ProfessionalInfo :step="step" @next="$refs.stepper.next()" @prev="$refs.stepper.previous()" />
         </q-step>
+        <q-step :name="5" title="Privacy" icon="assignment" :done="step > 5">
+          <PrivacyForm :step="step" @next="$refs.stepper.next()" @prev="$refs.stepper.previous()" />
+        </q-step>
+        <q-step :name="6" title="Notifications" icon="assignment" :done="step > 6">
+          <NotificationForm :step="step" @next="$refs.stepper.next()" @prev="$refs.stepper.previous()" />
 
+        </q-step>
+        <q-step :name="7" title="Set Password" icon="assignment" :done="step > 7">
+          <PasswordForm :step="step" @next="$refs.stepper.next()" @prev="$refs.stepper.previous()" />
+
+        </q-step>
+        <q-step :name="8" title="Preview" icon="assignment" :done="step > 8">
+          <PreviewForm :step="step" @next="$refs.stepper.next()" @prev="$refs.stepper.previous()" @edit="editHandler" />
+
+        </q-step>
         <template v-slot:navigation>
 
           <!-- <q-stepper-navigation>
@@ -227,3 +113,5 @@ onMounted(async () => {
     </div>
   </div>
 </template>
+
+
