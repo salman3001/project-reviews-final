@@ -5,6 +5,7 @@ import ProductCategoryFactory from './ProductCategoryFactory'
 import ProductSubcategoryFactory from './ProductSubcategoryFactory'
 import SeoFactory from '../SeoFactory'
 import ProductTagFactory from './ProductTagFactory'
+import SocialFactory from '../SocialFactory'
 
 export default Factory.define(Product, ({ faker }) => {
   return {
@@ -18,5 +19,6 @@ export default Factory.define(Product, ({ faker }) => {
   .relation('productCategory', () => ProductCategoryFactory)
   .relation('productSubcategory', () => ProductSubcategoryFactory)
   .relation('seo', () => SeoFactory)
+  .relation('social', () => SocialFactory)
   .relation('tags', () => ProductTagFactory)
   .build()

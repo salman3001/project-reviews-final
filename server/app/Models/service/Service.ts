@@ -19,6 +19,7 @@ import Seo from '../Seo'
 import ServiceTag from './ServiceTag'
 import Faq from '../Faq'
 import Image from '../Image'
+import Social from '../Social'
 
 export default class Service extends BaseModel {
   @column({ isPrimary: true })
@@ -56,6 +57,9 @@ export default class Service extends BaseModel {
 
   @hasOne(() => Seo)
   public seo: HasOne<typeof Seo>
+
+  @hasOne(() => Social)
+  public social: HasOne<typeof Social>
 
   @hasMany(() => Faq)
   public faqs: HasMany<typeof Faq>

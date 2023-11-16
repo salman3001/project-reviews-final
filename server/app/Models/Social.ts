@@ -37,4 +37,10 @@ export default class Social extends BaseModel {
 
   @column()
   public userId: number
+
+  @column()
+  public productId: number
+
+  @column()
+  public serviceId: number
 }

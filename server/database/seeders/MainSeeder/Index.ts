@@ -87,13 +87,13 @@ export default class extends BaseSeeder {
     await ProductCategoryFactory.with('subCategory', 3, (sub) => {
       sub
         .with('products', 3, (p) => {
-          p.with('faq', 3).with('seo').with('tags', 3)
+          p.with('faq', 3).with('seo').with('social').with('tags', 3)
         })
         .with('faqs', 3)
         .with('seo')
     })
       .with('products', 2, (p) => {
-        p.with('faq', 3).with('seo').with('tags', 3)
+        p.with('faq', 3).with('seo').with('social').with('tags', 3)
       })
       .with('faqs', 3)
       .with('seo')
@@ -103,13 +103,13 @@ export default class extends BaseSeeder {
     await ServiceCategoryFactory.with('subCategory', 3, (sub) => {
       sub
         .with('Services', 3, (s) => {
-          s.with('tags', 3).with('faqs', 3).with('seo')
+          s.with('tags', 3).with('faqs', 3).with('seo').with('social')
         })
         .with('faqs', 3)
         .with('seo')
     })
-      .with('services', 2, (p) => {
-        p.with('tags', 3).with('faqs', 3).with('seo')
+      .with('services', 2, (s) => {
+        s.with('tags', 3).with('faqs', 3).with('seo').with('social')
       })
       .with('faqs', 3)
       .with('seo')

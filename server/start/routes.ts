@@ -25,6 +25,9 @@ import '../routes/addressRoutes'
 import '../routes/helpcenterRoutes'
 import '../routes/blogRoutes'
 import '../routes/userRoutes'
+import '../routes/productRoutes'
+import '../routes/serviceRoutes'
+import '../routes/emailRoutes'
 
 Route.get('api', async ({ response }) => {
   return response.json('welcome to backend api')

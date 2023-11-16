@@ -19,6 +19,7 @@ import ProductTag from './ProductTag'
 import Seo from '../Seo'
 import Image from '../Image'
 import Faq from '../Faq'
+import Social from '../Social'
 
 export default class Product extends BaseModel {
   @column({ isPrimary: true })
@@ -56,6 +57,9 @@ export default class Product extends BaseModel {
 
   @hasOne(() => Seo)
   public seo: HasOne<typeof Seo>
+
+  @hasOne(() => Social)
+  public social: HasOne<typeof Social>
 
   @hasMany(() => Faq)
   public faq: HasMany<typeof Faq>

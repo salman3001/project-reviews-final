@@ -358,3 +358,11 @@ export const serviceSubCategoryApi = new BaseApiService(
   'Service Subcategory'
 );
 export const serviceTagApi = new BaseApiService('/service-tags', 'Service Tag');
+export const templateApi = new BaseApiService('/template', 'Template');
+export const campaignApi = new BaseApiService('/campaign', 'Campaign');
+export const campaignTypeApi = new BaseApiService(
+  '/campaign-type',
+  'Campaign Type'
+);
+export const interestApi = new BaseApiService('/interest', 'Interest');
+export const subscriberApi = new BaseApiService('/subscriber', 'Subscriber');

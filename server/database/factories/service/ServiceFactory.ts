@@ -5,6 +5,7 @@ import ServiceCategoryFactory from './ServiceCategoryFactory'
 import ServiceSubcategoryFactory from './ServiceSubcategoryFactory'
 import SeoFactory from '../SeoFactory'
 import ServiceTagFactory from './ServiceTagFactory'
+import SocialFactory from '../SocialFactory'
 
 export default Factory.define(Service, ({ faker }) => {
   return {
@@ -18,5 +19,6 @@ export default Factory.define(Service, ({ faker }) => {
   .relation('serviceCategory', () => ServiceCategoryFactory)
   .relation('serviceSubcategory', () => ServiceSubcategoryFactory)
   .relation('seo', () => SeoFactory)
+  .relation('social', () => SocialFactory)
   .relation('tags', () => ServiceTagFactory)
   .build()
