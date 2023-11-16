@@ -1,14 +1,22 @@
 <script setup lang="ts">
 import EditPersonalInfo from 'src/components/admin/user/editUserForm/EditPersonalInfo.vue'
-import { ref } from 'vue';
-import { useRoute, useRouter } from 'vue-router';
+import EditSocialInfo from 'src/components/admin/user/editUserForm/EditSocialInfo.vue'
+import EditAddressInfo from 'src/components/admin/user/editUserForm/EditAddressInfo.vue'
+import EditFavoriteLinkInfo from 'src/components/admin/user/editUserForm/EditFavoriteLinkInfo.vue'
+import EditExperienceInfo from 'src/components/admin/user/editUserForm/EditExperienceInfo.vue'
+import { onMounted, ref } from 'vue';
+import { useRouter, useRoute } from 'vue-router';
+import editUserStore from 'src/stores/editUserStore'
 
 
 const router = useRouter();
 const route = useRoute();
 const tab = ref('personal')
+const editUser = editUserStore()
 
-
+onMounted(() => {
+  editUser.getInitialValues(route.params.id as string)
+})
 </script>
 
 <template>
@@ -25,6 +33,7 @@ const tab = ref('personal')
         <q-tabs v-model="tab" dense class="text-grey" active-color="primary" indicator-color="primary" align="start"
           narrow-indicator>
           <q-tab name="personal" label="Personal" />
+          <q-tab name="address" label="Address" />
           <q-tab name="social" label="Social Links" />
           <q-tab name="favoritLinks" label="Favorite Links" />
           <q-tab name="experience" label="Experience" />
@@ -43,18 +52,23 @@ const tab = ref('personal')
             <EditPersonalInfo />
           </q-tab-panel>
 
+          <q-tab-panel name="address">
+            <div class="text-h6">Edit Address</div>
+            <EditAddressInfo />
+          </q-tab-panel>
+
           <q-tab-panel name="social">
             <div class="text-h6">Edit Social Links</div>
-            Lorem ipsum dolor sit amet consectetur adipisicing elit.
+            <EditSocialInfo />
           </q-tab-panel>
 
           <q-tab-panel name="favoritLinks">
             <div class="text-h6">Edit Favorite Links</div>
-            Lorem ipsum dolor sit amet consectetur adipisicing elit.
+            <EditFavoriteLinkInfo />
           </q-tab-panel>
           <q-tab-panel name="experience">
             <div class="text-h6">Edit Work Experience</div>
-            Lorem ipsum dolor sit amet consectetur adipisicing elit.
+            <EditExperienceInfo />
           </q-tab-panel>
           <q-tab-panel name="language">
             <div class="text-h6">Edit Languages</div>

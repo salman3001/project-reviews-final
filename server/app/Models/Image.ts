@@ -1,6 +1,7 @@
 import { DateTime } from 'luxon'
 import { BaseModel, afterDelete, column } from '@ioc:Adonis/Lucid/Orm'
 import Drive from '@ioc:Adonis/Core/Drive'
+import { ImageTypes } from 'App/Helpers/enums'
 
 export default class Image extends BaseModel {
   @column({ isPrimary: true })
@@ -13,6 +14,9 @@ export default class Image extends BaseModel {
   public url_sm: string
 
   @column()
+  public type: ImageTypes
+
+  @column()
   public userId: number
 
   @column()
@@ -20,6 +24,30 @@ export default class Image extends BaseModel {
 
   @column()
   public blogId: number
+
+  @column()
+  public productId: number
+
+  @column()
+  public productCategoryId: number
+
+  @column()
+  public productSubcategoryId: number
+
+  @column()
+  public productTagId: number
+
+  @column()
+  public serviceId: number
+
+  @column()
+  public serviceCategoryId: number
+
+  @column()
+  public serviceSubcategoryId: number
+
+  @column()
+  public serviceTagId: number
 
   @column.dateTime({ autoCreate: true })
   public createdAt: DateTime

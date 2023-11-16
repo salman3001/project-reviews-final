@@ -10,6 +10,9 @@ import UserFactory from 'Database/factories/user/UserFactory'
 import SupportTicketFactory from 'Database/factories/helpcenter/SupportTicketFactory'
 import PermissionFactory from 'Database/factories/adminUser/PermissionFactory'
 import { TicketStatus } from 'App/Helpers/enums'
+import ProductCategoryFactory from 'Database/factories/product/ProductCategoryFactory'
+import ServiceCategoryFactory from 'Database/factories/service/ServiceCategoryFactory'
+import CampaignTypeFactory from 'Database/factories/email/CampaignTypeFactory'
 
 export default class extends BaseSeeder {
   private async runSeeder(Seeder: { default: typeof BaseSeeder }) {
@@ -79,5 +82,44 @@ export default class extends BaseSeeder {
       { status: TicketStatus.RESPONDED },
       { status: TicketStatus.RESPONDED },
     ]).createMany(9)
+
+    // product
+    await ProductCategoryFactory.with('subCategory', 3, (sub) => {
+      sub
+        .with('products', 3, (p) => {
+          p.with('faq', 3).with('seo').with('tags', 3)
+        })
+        .with('faqs', 3)
+        .with('seo')
+    })
+      .with('products', 2, (p) => {
+        p.with('faq', 3).with('seo').with('tags', 3)
+      })
+      .with('faqs', 3)
+      .with('seo')
+      .createMany(3)
+
+    // services
+    await ServiceCategoryFactory.with('subCategory', 3, (sub) => {
+      sub
+        .with('Services', 3, (s) => {
+          s.with('tags', 3).with('faqs', 3).with('seo')
+        })
+        .with('faqs', 3)
+        .with('seo')
+    })
+      .with('services', 2, (p) => {
+        p.with('tags', 3).with('faqs', 3).with('seo')
+      })
+      .with('faqs', 3)
+      .with('seo')
+      .createMany(3)
+
+    // campaign
+    await CampaignTypeFactory.with('campaign', 3, (c) => {
+      c.with('interests', 3, (i) => {
+        i.with('subscribers', 3)
+      }).with('template')
+    }).createMany(3)
   }
 }

@@ -50,7 +50,7 @@ export default class User extends BaseModel {
   public desc: string
 
   @column()
-  public isActive: number
+  public isActive: boolean
 
   @column()
   public isPublic: number

@@ -5,7 +5,7 @@ import { api } from 'src/boot/axios';
 import { AdditionalParams } from 'src/type';
 import { ref } from 'vue';
 
-class BaseApiService {
+export class BaseApiService {
   url: string;
   name: string;
 
@@ -236,10 +236,61 @@ class BaseApiService {
 }
 
 export const AdminUserApi = new BaseApiService('admin-users', 'User');
-export const userApi = new BaseApiService('users', 'User');
+
+class UserApiService extends BaseApiService {
+  public updatePassword(
+    data: any,
+    config?: AxiosRequestConfig<any> | undefined,
+    cb?: { onSuccess?: () => void; onError?: () => void }
+  ) {
+    const loading = ref(false);
+    const execute = async () => {
+      try {
+        loading.value = true;
+        const res = await api.post(this.url + '/update-password', data, config);
+        loading.value = false;
+        cb?.onSuccess && cb?.onSuccess();
+        Notify.create({
+          message: 'Password updated successfully',
+          color: 'positive',
+          icon: 'done',
+        });
+      } catch (error: any) {
+        if (error?.response) {
+          loading.value = false;
+          cb?.onError && cb?.onError();
+          Notify.create({
+            message:
+              error?.response?.data?.message || 'Failed to update password',
+            color: 'negative',
+          });
+        } else if (error?.request) {
+          loading.value = false;
+          cb?.onError && cb?.onError();
+          Notify.create({
+            message: 'Trying to update password .Server Not Reachable!',
+            color: 'negative',
+          });
+        } else {
+          loading.value = false;
+          cb?.onError && cb?.onError();
+          Notify.create({ message: error.message, color: 'negative' });
+        }
+      }
+    };
+
+    return {
+      loading,
+      execute,
+    };
+  }
+}
+export const userApi = new UserApiService('users', 'User');
+
 export const RoleApi = new BaseApiService('roles', 'Role');
 export const PermissionApi = new BaseApiService('permissions', 'Permission');
 export const BlogApi = new BaseApiService('blogs', 'Blog');
+
 export const blogCategoryApi = new BaseApiService(
   'blog-categories',
   'Blog Category'
@@ -284,3 +335,26 @@ export const JobDepartmentApi = new BaseApiService(
   '/job-departments',
   'Job Department'
 );
+
+export const SocialApi = new BaseApiService('/social', 'Social Data');
+export const productApi = new BaseApiService('/product', 'Product');
+export const productCategoryApi = new BaseApiService(
+  '/product-category',
+  'Product Category'
+);
+export const productSubCategoryApi = new BaseApiService(
+  '/product-subcategory',
+  'Product Subcategory'
+);
+export const productTagApi = new BaseApiService('/product-tags', 'Product Tag');
+
+export const serviceApi = new BaseApiService('/service', 'Service');
+export const serviceCategoryApi = new BaseApiService(
+  '/service-category',
+  'Service Category'
+);
+export const serviceSubCategoryApi = new BaseApiService(
+  '/service-subcategory',
+  'Service Subcategory'
+);
+export const serviceTagApi = new BaseApiService('/service-tags', 'Service Tag');

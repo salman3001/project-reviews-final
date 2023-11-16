@@ -16,7 +16,7 @@ export default Factory.define(Experience, ({ faker }) => {
     cityId: faker.number.int({ min: 1, max: 5 }),
     stateId: faker.number.int({ min: 1, max: 3 }),
     companySize: faker.lorem.word(),
-    isCurrent: 0,
+    isCurrent: true,
     desc: faker.lorem.sentence(),
     startDate: DateTime.now(),
     endDate: DateTime.now(),

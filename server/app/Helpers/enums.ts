@@ -3,3 +3,16 @@ export enum TicketStatus {
   CLOSED = 'Closed',
   RESPONDED = 'Responded',
 }
+
+export enum ImageTypes {
+  IMG = 'Image',
+  THUMB = 'Thumbnail',
+  AVATAR = 'Avatar',
+  COVER = 'Cover',
+  BROCHER = 'Brocher',
+}
+
+export enum ServiceLocationType {
+  SPECIFIC = 'Specific',
+  PHYSICAL = 'Physical',
+}

@@ -3,6 +3,7 @@ import modalStore from '../../stores/modalStore';
 import ChangeRoleModal from './ChangeRoleModal.vue';
 import DeleteRecordModal from './DeleteRecordModal.vue';
 import BanAdminUser from './BanAdminUser.vue';
+import BanUser from './BanUser.vue';
 import ContinentAddModal from './address/ContinentAddModal.vue';
 import ContinentEditModal from './address/ContinentEditModal.vue';
 import CountryAddModal from './address/CountryAddModal.vue';
@@ -34,6 +35,7 @@ const modal = modalStore();
     <StreetAddModal v-if="modal.content === 'addStreet'" />
     <StreetEditModal v-if="modal.content === 'editStreet'" />
     <AddRoleModal v-if="modal.content === 'addRole'" />
+    <BanUser v-if="modal.content === 'changeUserStatus'" />
     <!-- <ModalContactMessage v-if="modal.content === 'contactMessage'" />
     <ModalAddressContinentAdd v-if="modal.content === 'addContinent'" />
     <ModalAddressContinentEdit v-if="modal.content === 'editContinent'" />

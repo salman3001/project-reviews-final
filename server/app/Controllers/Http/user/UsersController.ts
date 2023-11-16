@@ -4,7 +4,10 @@ import ImageService from 'App/services/ImageService'
 import SocialService from 'App/services/SocialService'
 import UserService from 'App/services/user/UserService'
 import UserCreateValidator from 'App/Validators/user/UserCreateValidator'
-import UserUpdateeValidator from 'App/Validators/user/UserUpdateValidator copy'
+import UserUpdateeValidator from 'App/Validators/user/UserUpdateValidator'
+import { schema, rules } from '@ioc:Adonis/Core/Validator'
+import User from 'App/Models/user/User'
+import Hash from '@ioc:Adonis/Core/Hash'
 
 export default class UsersController {
   public async index({ request, response }: HttpContextContract) {
@@ -117,6 +120,29 @@ export default class UsersController {
       }
     }
 
+    if (payload.favoriteLinks) {
+      await user?.load('favoriteLinks')
+
+      if (user?.favoriteLinks) {
+        user.favoriteLinks.forEach((l) => {
+          l.delete()
+        })
+      }
+
+      user && (await user.related('favoriteLinks').createMany(payload.favoriteLinks))
+    }
+
+    if (payload.workExperience) {
+      await user?.load('experiences')
+
+      if (user?.experiences) {
+        user.experiences.forEach((l) => {
+          l.delete()
+        })
+      }
+      user && (await user.related('experiences').createMany(payload.workExperience))
+    }
+
     if (payload.image) {
       await user?.load('avatar')
 
@@ -138,6 +164,26 @@ export default class UsersController {
       }
     }
 
+    if (payload.skills) {
+      await user?.load('skills')
+      if (user?.skills) {
+        user.related('skills').detach()
+        user && (await user.related('skills').createMany(payload.skills))
+      } else {
+        user && (await user.related('skills').createMany(payload.skills))
+      }
+    }
+
+    if (payload.NotificationSettings) {
+      await user?.load('NotificationSetting')
+      if (user?.NotificationSetting) {
+        user.NotificationSetting.delete()
+        user && (await user.related('NotificationSetting').create(payload.NotificationSettings))
+      } else {
+        user && (await user.related('NotificationSetting').create(payload.NotificationSettings))
+      }
+    }
+
     user && (await user.save())
 
     return response.json(user)
@@ -156,5 +202,32 @@ export default class UsersController {
     } else {
       return response.ok({ message: 'Field available' })
     }
+  }
+
+  public async banUser({ params, response }: HttpContextContract) {
+    const user = await UserService.show(+params.id)
+    if (user) {
+      user.isActive = false
+      await user.save()
+      return response.json({ message: 'User Baned Successfully' })
+    } else {
+      return response.badRequest({ message: 'User not Fund' })
+    }
+  }
+
+  public async updateUserPassword({ params, response, request }: HttpContextContract) {
+    const validationSchema = schema.create({
+      password: schema.string({ trim: true }, [rules.minLength(8)]),
+      password_confirmation: schema.string({ trim: true }, [rules.confirmed('password')]),
+    })
+
+    const payload = await request.validate({
+      schema: validationSchema,
+    })
+    const user = await User.findOrFail(+params.id)
+    const newPassword = await Hash.make(payload.password)
+    user.password = newPassword
+    await user.save()
+    return response.json({ message: 'Password Changed' })
   }
 }

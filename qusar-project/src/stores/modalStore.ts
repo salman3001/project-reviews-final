@@ -6,6 +6,7 @@ type IModalContent =
   | 'deleteRecord'
   | 'changeRole'
   | 'changeAdminStatus'
+  | 'changeUserStatus'
   | 'delete'
   | 'contactMessage'
   | 'addContinent'

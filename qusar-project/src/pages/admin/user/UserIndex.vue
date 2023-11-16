@@ -198,7 +198,7 @@ onMounted(() => {
                     </q-item-section>
                   </q-item>
                   <q-item clickable v-close-popup @click="
-                    modal.togel('changeAdminStatus', {
+                    modal.togel('changeUserStatus', {
                       id: props.row.id,
                       tableRef,
                     })
