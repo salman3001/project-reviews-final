@@ -9,7 +9,7 @@ export default class extends BaseSchema {
       table.increments('id').primary()
       table.string('url', 2083)
       table.string('url_sm', 2083)
-      table.enum('status', Object.values(ImageTypes)).defaultTo('Image').notNullable()
+      table.enum('type', Object.values(ImageTypes)).defaultTo('Image').notNullable()
 
       table
         .integer('admin_user_id')
@@ -69,11 +69,6 @@ export default class extends BaseSchema {
         .references('id')
         .inTable('services')
         .onDelete('SET NULL')
-      /**
-       * Uses timestamptz for PostgreSQL and DATETIME2 for MSSQL
-       */
-      table.timestamp('created_at', { useTz: true })
-      table.timestamp('updated_at', { useTz: true })
     })
   }
 

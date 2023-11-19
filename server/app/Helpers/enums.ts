@@ -12,6 +12,10 @@ export enum ImageTypes {
   BROCHER = 'Brocher',
 }
 
+export enum VideoType {
+  VIDEO = 'Video',
+}
+
 export enum ServiceLocationType {
   SPECIFIC = 'Specific',
   PHYSICAL = 'Physical',

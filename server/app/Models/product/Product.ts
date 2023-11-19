@@ -20,6 +20,7 @@ import Seo from '../Seo'
 import Image from '../Image'
 import Faq from '../Faq'
 import Social from '../Social'
+import Video from '../Video'
 
 export default class Product extends BaseModel {
   @column({ isPrimary: true })
@@ -29,13 +30,25 @@ export default class Product extends BaseModel {
   public name: string
 
   @column()
-  public short_desc: string
+  public companyName: string
 
   @column()
-  public long_desc: string
+  public phone: string
+
+  @column()
+  public email: string
+
+  @column()
+  public shortDesc: string
+
+  @column()
+  public longDesc: string
 
   @column()
   public status: boolean
+
+  @column()
+  public specificLocation: boolean
 
   @column()
   public userId: number
@@ -58,6 +71,9 @@ export default class Product extends BaseModel {
   @hasOne(() => Seo)
   public seo: HasOne<typeof Seo>
 
+  @hasOne(() => Video)
+  public video: HasOne<typeof Video>
+
   @hasOne(() => Social)
   public social: HasOne<typeof Social>
 
@@ -74,15 +90,17 @@ export default class Product extends BaseModel {
 
   @computed()
   public get logo() {
-    const logo = this.images.filter((i) => {
-      if (i.type === 'Thumbnail') {
-        return true
-      } else {
-        return false
-      }
-    })
+    const logo = this.images
+      ? this.images.filter((i) => {
+          if (i.type === 'Thumbnail') {
+            return true
+          } else {
+            return false
+          }
+        })
+      : null
 
-    if (logo.length > 0) {
+    if (logo && logo.length > 0) {
       return logo[0]
     } else {
       return null
@@ -91,15 +109,17 @@ export default class Product extends BaseModel {
 
   @computed()
   public get coverImage() {
-    const cover = this.images.filter((i) => {
-      if (i.type === 'Cover') {
-        return true
-      } else {
-        return false
-      }
-    })
+    const cover = this.images
+      ? this.images.filter((i) => {
+          if (i.type === 'Cover') {
+            return true
+          } else {
+            return false
+          }
+        })
+      : null
 
-    if (cover.length > 0) {
+    if (cover && cover.length > 0) {
       return cover[0]
     } else {
       return null
@@ -108,16 +128,37 @@ export default class Product extends BaseModel {
 
   @computed()
   public get brocherImage() {
-    const Brocher = this.images.filter((i) => {
-      if (i.type === 'Brocher') {
-        return true
-      } else {
-        return false
-      }
-    })
+    const Brocher = this.images
+      ? this.images.filter((i) => {
+          if (i.type === 'Brocher') {
+            return true
+          } else {
+            return false
+          }
+        })
+      : null
 
-    if (Brocher.length > 0) {
+    if (Brocher && Brocher.length > 0) {
       return Brocher[0]
+    } else {
+      return null
+    }
+  }
+
+  @computed()
+  public get screenShots() {
+    const images = this.images
+      ? this.images.filter((i) => {
+          if (i.type === 'Image') {
+            return true
+          } else {
+            return false
+          }
+        })
+      : null
+
+    if (images && images.length > 0) {
+      return images
     } else {
       return null
     }

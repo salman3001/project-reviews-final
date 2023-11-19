@@ -7,6 +7,10 @@ defineProps<{
   url?: string
 }>()
 
+const emit = defineEmits<{
+  (e: 'image', image: File): void
+}>()
+
 const file = ref<File | null>(null)
 const previewImageRef = ref(null) as unknown as Ref<HTMLImageElement>
 
@@ -18,6 +22,8 @@ function previewSelectedImage() {
     reader.onload = function (e: any) {
       previewImageRef.value.src = e.target.result as string;
     }
+
+    emit('image', file.value)
   }
 }
 </script>
@@ -26,7 +32,7 @@ function previewSelectedImage() {
   <div class="column justify-center items-center"
     style=" border: 1px solid lightgray;border-radius: 10px;overflow: hidden;">
     <label>
-      <img ref="previewImageRef" alt="Preview" style="max-width: 100%;" :src="url
+      <img ref="previewImageRef" alt="Preview" style="width: 15rem;height: 13rem;" :src="url
         ?? '/images/dummy-thumb.jpg'">
     </label>
     <div>

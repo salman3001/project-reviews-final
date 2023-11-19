@@ -1,4 +1,3 @@
-import { DateTime } from 'luxon'
 import { BaseModel, afterDelete, column } from '@ioc:Adonis/Lucid/Orm'
 import Drive from '@ioc:Adonis/Core/Drive'
 import { ImageTypes } from 'App/Helpers/enums'
@@ -14,7 +13,7 @@ export default class Image extends BaseModel {
   public url_sm: string
 
   @column()
-  public type: ImageTypes
+  public type: ImageTypes = ImageTypes.IMG
 
   @column()
   public userId: number
@@ -48,12 +47,6 @@ export default class Image extends BaseModel {
 
   @column()
   public serviceTagId: number
-
-  @column.dateTime({ autoCreate: true })
-  public createdAt: DateTime
-
-  @column.dateTime({ autoCreate: true, autoUpdate: true })
-  public updatedAt: DateTime
 
   @afterDelete()
   public static async deleteImage(image: Image) {

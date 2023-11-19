@@ -12,10 +12,13 @@ export default class ProductTag extends BaseModel {
   public name: string
 
   @column()
-  public short_desc: string
+  public shortDesc: string
 
   @column()
-  public long_desc: string
+  public longDesc: string
+
+  @column()
+  public status: boolean
 
   @hasOne(() => Image)
   public thumbnail: HasOne<typeof Image>

@@ -141,7 +141,6 @@ function toggleLeftDrawer() {
               </q-item-section>
             </q-item>
           </NavMenu>
-
           <router-link :to="{
             name: 'admin.user.index',
           }" class="text-black" style="text-decoration: none;text-transform: uppercase; font-weight: 500;">
@@ -151,6 +150,36 @@ function toggleLeftDrawer() {
               Users
             </q-btn>
           </router-link>
+          <NavMenu title="Products">
+            <q-item clickable v-close-popup>
+              <q-item-section>
+                <router-link :to="{
+                  name: 'admin.product.index',
+                }" class="text-black" style="text-decoration: none">Product List</router-link>
+              </q-item-section>
+            </q-item>
+            <q-item clickable v-close-popup>
+              <q-item-section>
+                <router-link :to="{
+                  name: 'admin.productCategory.index',
+                }" class="text-black" style="text-decoration: none">Product Category</router-link>
+              </q-item-section>
+            </q-item>
+            <q-item clickable v-close-popup>
+              <q-item-section>
+                <router-link :to="{
+                  name: 'admin.productSubcategory.index',
+                }" class="text-black" style="text-decoration: none">Product Subcategory</router-link>
+              </q-item-section>
+            </q-item>
+            <q-item clickable v-close-popup>
+              <q-item-section>
+                <router-link :to="{
+                  name: 'admin.productTag.index',
+                }" class="text-black" style="text-decoration: none">Product Tags</router-link>
+              </q-item-section>
+            </q-item>
+          </NavMenu>
         </div>
       </q-toolbar>
     </q-header>

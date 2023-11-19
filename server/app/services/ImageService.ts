@@ -1,15 +1,22 @@
 import BaseService from './BaseService'
 import Image from 'App/Models/Image'
 import Drive from '@ioc:Adonis/Core/Drive'
+import { ImageTypes } from 'App/Helpers/enums'
+import { v4 as uuidv4 } from 'uuid'
 
 class ImageService extends BaseService<typeof Image> {
-  public override async store(image: any, path: string = '', prefix: string = ''): Promise<Image> {
+  public override async store(
+    image: any,
+    path: string = '',
+    prefix: string = '',
+    type: ImageTypes = ImageTypes.IMG
+  ): Promise<Image> {
     await image.moveToDisk(path, {
-      name: prefix + Date.now() + '.' + image.extname,
+      name: prefix + uuidv4() + '.' + image.extname,
     })
     const imageName = image?.fileName
 
-    const createdImage = await Image.create({ url: path + imageName })
+    const createdImage = await Image.create({ url: path + imageName, type })
 
     return createdImage
   }

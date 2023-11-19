@@ -13,7 +13,7 @@ const handeler = async () => {
     await api.delete(modal?.meta?.url, {});
     loading.value = false;
     Notify.create({ message: 'Record Deleted!', color: 'positive' });
-    modal.meta.tableRef.setPagination({}, true);
+    modal.meta.tableRef && modal.meta.tableRef.setPagination({}, true);
     modal.show = !modal.show;
   } catch (error: any) {
     loading.value = false;

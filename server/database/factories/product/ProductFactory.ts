@@ -10,9 +10,13 @@ import SocialFactory from '../SocialFactory'
 export default Factory.define(Product, ({ faker }) => {
   return {
     name: faker.commerce.productName(),
-    short_desc: faker.commerce.productDescription(),
-    long_desc: faker.lorem.paragraphs(),
+    phone: faker.phone.number(),
+    email: faker.internet.email(),
+    shortDesc: faker.commerce.productDescription(),
+    longDesc: faker.lorem.paragraphs(),
+    companyName: faker.company.name(),
     status: false,
+    specificLocation: false,
   }
 })
   .relation('faq', () => FaqFactory)

@@ -212,6 +212,114 @@ const routes: RouteRecordRaw[] = [
         component: () => import('pages/admin/user/UserEdit.vue'),
         name: 'admin.user.edit',
       },
+      {
+        path: 'products',
+        component: () => import('pages/admin/product/ProductIndex.vue'),
+        name: 'admin.product.index',
+      },
+      {
+        path: 'products/:id/',
+        component: () => import('pages/admin/product/ProductShow.vue'),
+        name: 'admin.product.show',
+      },
+      {
+        path: 'products/create',
+        component: () => import('pages/admin/product/ProductCreate.vue'),
+        name: 'admin.product.create',
+      },
+      {
+        path: 'products/:id/edit',
+        component: () => import('pages/admin/product/ProductEdit.vue'),
+        name: 'admin.product.edit',
+      },
+      {
+        path: 'product-category',
+        component: () =>
+          import(
+            'pages/admin/product/product-category/ProductCategoryIndex.vue'
+          ),
+        name: 'admin.productCategory.index',
+      },
+      {
+        path: 'product-category/:id/',
+        component: () =>
+          import(
+            'pages/admin/product/product-category/ProductCategoryShow.vue'
+          ),
+        name: 'admin.productCategory.show',
+      },
+      {
+        path: 'product-category/create',
+        component: () =>
+          import(
+            'pages/admin/product/product-category/ProductCategoryCreate.vue'
+          ),
+        name: 'admin.productCategory.create',
+      },
+      {
+        path: 'product-category/:id/edit',
+        component: () =>
+          import(
+            'pages/admin/product/product-category/ProductCategoryEdit.vue'
+          ),
+        name: 'admin.productCategory.edit',
+      },
+      {
+        path: 'product-subcategory',
+        component: () =>
+          import(
+            'pages/admin/product/product-subcategory/ProductSubcategoryIndex.vue'
+          ),
+        name: 'admin.productSubcategory.index',
+      },
+      {
+        path: 'product-subcategory/:id/',
+        component: () =>
+          import(
+            'pages/admin/product/product-subcategory/ProductSubcategoryShow.vue'
+          ),
+        name: 'admin.productSubcategory.show',
+      },
+      {
+        path: 'product-subcategory/create',
+        component: () =>
+          import(
+            'pages/admin/product/product-subcategory/ProductSubcategoryCreate.vue'
+          ),
+        name: 'admin.productSubcategory.create',
+      },
+      {
+        path: 'product-subcategory/:id/edit',
+        component: () =>
+          import(
+            'pages/admin/product/product-subcategory/ProductSubCategoryEdit.vue'
+          ),
+        name: 'admin.productSubcategory.edit',
+      },
+      {
+        path: 'product-tags',
+        component: () =>
+          import('pages/admin/product/product-tag/ProductTagIndex.vue'),
+        name: 'admin.productTag.index',
+      },
+      {
+        path: 'product-tags/:id/',
+        component: () =>
+          import('pages/admin/product/product-tag/ProductTagShow.vue'),
+        name: 'admin.productTag.show',
+      },
+      {
+        path: 'product-tags/create',
+        component: () =>
+          import('pages/admin/product/product-tag/ProductTagCreate.vue'),
+        name: 'admin.productTag.create',
+      },
+      {
+        path: 'product-tags/:id/edit',
+        component: () =>
+          import('pages/admin/product/product-tag/ProductTagEdit.vue'),
+        name: 'admin.productTag.edit',
+      },
     ],
   },
 

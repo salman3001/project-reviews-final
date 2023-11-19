@@ -7,11 +7,14 @@ export default class extends BaseSchema {
     this.schema.createTable(this.tableName, (table) => {
       table.increments('id').primary()
       table.string('name').notNullable()
+      table.string('phone')
+      table.string('email')
       table.string('short_desc')
       table.text('long_desc')
-      table.integer('user_id').unsigned().references('id').inTable('users').onDelete('CASCADE')
       table.string('company_name')
+      table.integer('user_id').unsigned().references('id').inTable('users').onDelete('CASCADE')
       table.boolean('status').defaultTo(false).notNullable()
+      table.boolean('specific_location').defaultTo(false).notNullable()
       table
         .integer('product_category_id')
         .unsigned()

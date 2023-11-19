@@ -45,6 +45,7 @@
     "@japa/runner": "^2.5.1",
     "@types/proxy-addr": "^2.0.1",
     "@types/source-map-support": "^0.5.8",
+    "@types/uuid": "^9.0.7",
     "adonis-preset-ts": "^2.1.0",
     "eslint": "^8.50.0",
     "eslint-config-prettier": "^9.0.0",
@@ -68,6 +69,7 @@
     "reflect-metadata": "^0.1.13",
     "slugify": "^1.6.6",
     "source-map-support": "^0.5.21",
-    "sqlite3": "^5.1.6"
+    "sqlite3": "^5.1.6",
+    "uuid": "^9.0.1"
   }
 }

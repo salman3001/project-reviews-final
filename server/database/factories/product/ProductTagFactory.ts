@@ -6,8 +6,8 @@ import SeoFactory from '../SeoFactory'
 export default Factory.define(ProductTag, ({ faker }) => {
   return {
     name: faker.lorem.word(),
-    short_desc: faker.commerce.productDescription(),
-    long_desc: faker.lorem.paragraphs(),
+    shortDesc: faker.commerce.productDescription(),
+    longDesc: faker.lorem.paragraphs(),
   }
 })
   .relation('faqs', () => FaqFactory)
