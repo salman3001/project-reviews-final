@@ -320,6 +320,158 @@ const routes: RouteRecordRaw[] = [
           import('pages/admin/product/product-tag/ProductTagEdit.vue'),
         name: 'admin.productTag.edit',
       },
+
+      //service routes
+      {
+        path: 'services',
+        component: () => import('pages/admin/service/ServiceIndex.vue'),
+        name: 'admin.service.index',
+      },
+      {
+        path: 'services/:id/',
+        component: () => import('pages/admin/service/ServiceShow.vue'),
+        name: 'admin.service.show',
+      },
+      {
+        path: 'services/create',
+        component: () => import('pages/admin/service/ServiceCreate.vue'),
+        name: 'admin.service.create',
+      },
+      {
+        path: 'services/:id/edit',
+        component: () => import('pages/admin/service/ServiceEdit.vue'),
+        name: 'admin.service.edit',
+      },
+      {
+        path: 'service-category',
+        component: () =>
+          import(
+            'pages/admin/service/service-category/ServiceCategoryIndex.vue'
+          ),
+        name: 'admin.serviceCategory.index',
+      },
+      {
+        path: 'service-category/:id/',
+        component: () =>
+          import(
+            'pages/admin/service/service-category/ServiceCategoryShow.vue'
+          ),
+        name: 'admin.serviceCategory.show',
+      },
+      {
+        path: 'service-category/create',
+        component: () =>
+          import(
+            'pages/admin/service/service-category/ServiceCategoryCreate.vue'
+          ),
+        name: 'admin.serviceCategory.create',
+      },
+      {
+        path: 'service-category/:id/edit',
+        component: () =>
+          import(
+            'pages/admin/service/service-category/ServiceCategoryEdit.vue'
+          ),
+        name: 'admin.serviceCategory.edit',
+      },
+      {
+        path: 'service-subcategory',
+        component: () =>
+          import(
+            'pages/admin/service/service-subcategory/ServiceSubcategoryIndex.vue'
+          ),
+        name: 'admin.serviceSubcategory.index',
+      },
+      {
+        path: 'service-subcategory/:id/',
+        component: () =>
+          import(
+            'pages/admin/service/service-subcategory/ServiceSubcategoryShow.vue'
+          ),
+        name: 'admin.serviceSubcategory.show',
+      },
+      {
+        path: 'service-subcategory/create',
+        component: () =>
+          import(
+            'pages/admin/service/service-subcategory/ServiceSubcategoryCreate.vue'
+          ),
+        name: 'admin.serviceSubcategory.create',
+      },
+      {
+        path: 'service-subcategory/:id/edit',
+        component: () =>
+          import(
+            'pages/admin/service/service-subcategory/ServiceSubCategoryEdit.vue'
+          ),
+        name: 'admin.serviceSubcategory.edit',
+      },
+      {
+        path: 'service-tags',
+        component: () =>
+          import('pages/admin/service/service-tag/ServiceTagIndex.vue'),
+        name: 'admin.serviceTag.index',
+      },
+      {
+        path: 'service-tags/:id/',
+        component: () =>
+          import('pages/admin/service/service-tag/ServiceTagShow.vue'),
+        name: 'admin.serviceTag.show',
+      },
+      {
+        path: 'service-tags/create',
+        component: () =>
+          import('pages/admin/service/service-tag/ServiceTagCreate.vue'),
+        name: 'admin.serviceTag.create',
+      },
+      {
+        path: 'service-tags/:id/edit',
+        component: () =>
+          import('pages/admin/service/service-tag/ServiceTagEdit.vue'),
+        name: 'admin.serviceTag.edit',
+      },
+      {
+        path: 'subscribers',
+        component: () =>
+          import('pages/admin/news-letters/subscribers/SubscriberIndex.vue'),
+        name: 'admin.subscriber.index',
+      },
+      {
+        path: 'subscribers/create',
+        component: () =>
+          import('pages/admin/news-letters/subscribers/SubscriberCreate.vue'),
+        name: 'admin.subscriber.create',
+      },
+      {
+        path: 'subscribers/:id/edit',
+        component: () =>
+          import('pages/admin/news-letters/subscribers/SubscriberEdit.vue'),
+        name: 'admin.subscriber.edit',
+      },
+      {
+        path: 'templates',
+        component: () =>
+          import('pages/admin/news-letters/templates/TemplateIndex.vue'),
+        name: 'admin.template.index',
+      },
+      {
+        path: 'templates/create',
+        component: () =>
+          import('pages/admin/news-letters/templates/TemplateCreate.vue'),
+        name: 'admin.template.create',
+      },
+      {
+        path: 'templates/:id/',
+        component: () =>
+          import('pages/admin/news-letters/templates/TemplateShow.vue'),
+        name: 'admin.template.show',
+      },
+      {
+        path: 'templates/:id/edit',
+        component: () =>
+          import('pages/admin/news-letters/templates/TemplateEdit.vue'),
+        name: 'admin.template.edit',
+      },
     ],
   },
 

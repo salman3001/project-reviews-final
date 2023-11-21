@@ -180,6 +180,53 @@ function toggleLeftDrawer() {
               </q-item-section>
             </q-item>
           </NavMenu>
+          <NavMenu title="Services">
+            <q-item clickable v-close-popup>
+              <q-item-section>
+                <router-link :to="{
+                  name: 'admin.service.index',
+                }" class="text-black" style="text-decoration: none">Service List</router-link>
+              </q-item-section>
+            </q-item>
+            <q-item clickable v-close-popup>
+              <q-item-section>
+                <router-link :to="{
+                  name: 'admin.serviceCategory.index',
+                }" class="text-black" style="text-decoration: none">Service Category</router-link>
+              </q-item-section>
+            </q-item>
+            <q-item clickable v-close-popup>
+              <q-item-section>
+                <router-link :to="{
+                  name: 'admin.serviceSubcategory.index',
+                }" class="text-black" style="text-decoration: none">Service Subcategory</router-link>
+              </q-item-section>
+            </q-item>
+            <q-item clickable v-close-popup>
+              <q-item-section>
+                <router-link :to="{
+                  name: 'admin.serviceTag.index',
+                }" class="text-black" style="text-decoration: none">Service Tags</router-link>
+              </q-item-section>
+            </q-item>
+          </NavMenu>
+          <NavMenu title="News Letters">
+            <q-item clickable v-close-popup>
+              <q-item-section>
+                <router-link :to="{
+                  name: 'admin.subscriber.index',
+                }" class="text-black" style="text-decoration: none">Subscribers</router-link>
+              </q-item-section>
+            </q-item>
+            <q-item clickable v-close-popup>
+              <q-item-section>
+                <router-link :to="{
+                  name: 'admin.template.index',
+                }" class="text-black" style="text-decoration: none">Templates</router-link>
+              </q-item-section>
+            </q-item>
+
+          </NavMenu>
         </div>
       </q-toolbar>
     </q-header>

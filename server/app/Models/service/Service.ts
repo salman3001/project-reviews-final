@@ -20,6 +20,8 @@ import ServiceTag from './ServiceTag'
 import Faq from '../Faq'
 import Image from '../Image'
 import Social from '../Social'
+import Address from '../address/Address'
+import Video from '../Video'
 
 export default class Service extends BaseModel {
   @column({ isPrimary: true })
@@ -29,13 +31,25 @@ export default class Service extends BaseModel {
   public name: string
 
   @column()
-  public short_desc: string
+  public companyName: string
 
   @column()
-  public long_desc: string
+  public email: string
+
+  @column()
+  public phone: string
+
+  @column()
+  public shortDesc: string
+
+  @column()
+  public longDesc: string
 
   @column()
   public status: boolean
+
+  @column()
+  public specificLocation: boolean
 
   @column()
   public userId: number
@@ -61,6 +75,12 @@ export default class Service extends BaseModel {
   @hasOne(() => Social)
   public social: HasOne<typeof Social>
 
+  @hasOne(() => Address)
+  public address: HasOne<typeof Address>
+
+  @hasOne(() => Video)
+  public video: HasOne<typeof Video>
+
   @hasMany(() => Faq)
   public faqs: HasMany<typeof Faq>
 
@@ -74,15 +94,17 @@ export default class Service extends BaseModel {
 
   @computed()
   public get logo() {
-    const logo = this.images.filter((i) => {
-      if (i.type === 'Thumbnail') {
-        return true
-      } else {
-        return false
-      }
-    })
+    const logo = this.images
+      ? this.images.filter((i) => {
+          if (i.type === 'Thumbnail') {
+            return true
+          } else {
+            return false
+          }
+        })
+      : null
 
-    if (logo.length > 0) {
+    if (logo && logo.length > 0) {
       return logo[0]
     } else {
       return null
@@ -91,15 +113,17 @@ export default class Service extends BaseModel {
 
   @computed()
   public get coverImage() {
-    const cover = this.images.filter((i) => {
-      if (i.type === 'Cover') {
-        return true
-      } else {
-        return false
-      }
-    })
+    const cover = this.images
+      ? this.images.filter((i) => {
+          if (i.type === 'Cover') {
+            return true
+          } else {
+            return false
+          }
+        })
+      : null
 
-    if (cover.length > 0) {
+    if (cover && cover.length > 0) {
       return cover[0]
     } else {
       return null
@@ -108,16 +132,37 @@ export default class Service extends BaseModel {
 
   @computed()
   public get brocherImage() {
-    const Brocher = this.images.filter((i) => {
-      if (i.type === 'Brocher') {
-        return true
-      } else {
-        return false
-      }
-    })
+    const Brocher = this.images
+      ? this.images.filter((i) => {
+          if (i.type === 'Brocher') {
+            return true
+          } else {
+            return false
+          }
+        })
+      : null
 
-    if (Brocher.length > 0) {
+    if (Brocher && Brocher.length > 0) {
       return Brocher[0]
+    } else {
+      return null
+    }
+  }
+
+  @computed()
+  public get screenShots() {
+    const images = this.images
+      ? this.images.filter((i) => {
+          if (i.type === 'Image') {
+            return true
+          } else {
+            return false
+          }
+        })
+      : null
+
+    if (images && images.length > 0) {
+      return images
     } else {
       return null
     }

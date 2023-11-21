@@ -48,6 +48,9 @@ export default class Image extends BaseModel {
   @column()
   public serviceTagId: number
 
+  @column()
+  public templateId: number
+
   @afterDelete()
   public static async deleteImage(image: Image) {
     await Drive.delete(image?.url)

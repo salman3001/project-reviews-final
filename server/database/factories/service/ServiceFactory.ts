@@ -10,8 +10,8 @@ import SocialFactory from '../SocialFactory'
 export default Factory.define(Service, ({ faker }) => {
   return {
     name: faker.commerce.productName(),
-    short_desc: faker.commerce.productDescription(),
-    long_desc: faker.lorem.paragraphs(),
+    shortDesc: faker.commerce.productDescription(),
+    longDesc: faker.lorem.paragraphs(),
     status: false,
   }
 })

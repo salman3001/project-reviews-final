@@ -69,6 +69,13 @@ export default class extends BaseSchema {
         .references('id')
         .inTable('services')
         .onDelete('SET NULL')
+
+      table
+        .integer('template_id')
+        .unsigned()
+        .references('id')
+        .inTable('templates')
+        .onDelete('SET NULL')
     })
   }
 

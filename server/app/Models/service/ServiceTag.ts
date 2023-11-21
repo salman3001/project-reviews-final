@@ -12,10 +12,10 @@ export default class ServiceTag extends BaseModel {
   public name: string
 
   @column()
-  public short_desc: string
+  public shortDesc: string
 
   @column()
-  public long_desc: string
+  public longDesc: string
 
   @hasOne(() => Image)
   public thumbnail: HasOne<typeof Image>

@@ -1,5 +1,6 @@
-import { BaseModel, BelongsTo, belongsTo, column } from '@ioc:Adonis/Lucid/Orm'
+import { BaseModel, BelongsTo, HasOne, belongsTo, column, hasOne } from '@ioc:Adonis/Lucid/Orm'
 import Campaign from './Campaign'
+import Image from '../Image'
 
 export default class Template extends BaseModel {
   @column({ isPrimary: true })
@@ -16,6 +17,9 @@ export default class Template extends BaseModel {
 
   @column()
   public campaignId: number
+
+  @hasOne(() => Image)
+  public thumbnail: HasOne<typeof Image>
 
   @belongsTo(() => Campaign)
   public campaign: BelongsTo<typeof Campaign>

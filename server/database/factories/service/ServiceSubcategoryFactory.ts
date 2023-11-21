@@ -8,8 +8,8 @@ import ServiceFactory from './ServiceFactory'
 export default Factory.define(ServiceSubcategory, ({ faker }) => {
   return {
     name: faker.commerce.productName(),
-    short_desc: faker.lorem.paragraph(),
-    long_desc: faker.lorem.paragraphs(),
+    shortDesc: faker.lorem.paragraph(),
+    longDesc: faker.lorem.paragraphs(),
     status: false,
   }
 })

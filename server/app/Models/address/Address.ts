@@ -19,6 +19,9 @@ export default class Address extends BaseModel {
   public userId: number
 
   @column()
+  public serviceId: number
+
+  @column()
   public continentId: number
 
   @belongsTo(() => Continent)
