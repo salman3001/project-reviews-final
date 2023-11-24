@@ -18,6 +18,12 @@ export default class Campaign extends BaseModel {
   public id: number
 
   @column()
+  public name: string
+
+  @column()
+  public subject: string
+
+  @column()
   public fromName: string
 
   @column()

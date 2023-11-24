@@ -225,7 +225,13 @@ function toggleLeftDrawer() {
                 }" class="text-black" style="text-decoration: none">Templates</router-link>
               </q-item-section>
             </q-item>
-
+            <q-item clickable v-close-popup>
+              <q-item-section>
+                <router-link :to="{
+                  name: 'admin.campaign.index',
+                }" class="text-black" style="text-decoration: none">Campaigns</router-link>
+              </q-item-section>
+            </q-item>
           </NavMenu>
         </div>
       </q-toolbar>

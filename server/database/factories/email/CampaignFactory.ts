@@ -6,6 +6,8 @@ import TemplateFactory from './TemplateFactory'
 
 export default Factory.define(Campaign, ({ faker }) => {
   return {
+    name: faker.lorem.word(),
+    subject: faker.lorem.lines(1),
     fromName: faker.internet.userName(),
     fromEmail: faker.internet.email(),
     replyTo: faker.internet.email(),

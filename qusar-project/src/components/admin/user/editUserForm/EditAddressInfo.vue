@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { srollToView } from 'src/utils/scrollToView';
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, watchEffect } from 'vue';
 import editUserStore from 'src/stores/editUserStore';
 import { CityApi, ContinentsApi, CountriesApi, StateApi, StreetApi } from 'src/utils/BaseApiService';
 
@@ -78,20 +78,25 @@ const getStreets = async (id: string) => {
 
 onMounted(async () => {
   if (editUser.addressForm.address.continentId) {
-    await getCountinents()
+    await getCountinents().then(async () => {
+      if (editUser.addressForm.address.countryId) {
+        await getCountries(editUser.addressForm.address.continentId).then(async () => {
+          if (editUser.addressForm.address.stateId) {
+            await getStates(editUser.addressForm.address.countryId).then(async () => {
+              if (editUser.addressForm.address.cityId) {
+                await getCities(editUser.addressForm.address.stateId).then(async () => {
+                  if (editUser.addressForm.address.streetId) {
+                    await getStreets(editUser.addressForm.address.cityId)
+                  }
+                })
+              }
+            })
+          }
+        })
+      }
+    })
   }
-  if (editUser.addressForm.address.countryId) {
-    await getCountries(editUser.addressForm.address.continentId)
-  }
-  if (editUser.addressForm.address.stateId) {
-    await getStates(editUser.addressForm.address.countryId)
-  }
-  if (editUser.addressForm.address.cityId) {
-    await getCities(editUser.addressForm.address.stateId)
-  }
-  if (editUser.addressForm.address.streetId) {
-    await getStreets(editUser.addressForm.address.cityId)
-  }
+
 })
 
 </script>

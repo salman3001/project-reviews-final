@@ -1,4 +1,5 @@
 import { defineStore } from 'pinia';
+import { date } from 'quasar';
 import {
   JobDepartmentApi,
   JobIndustryApi,
@@ -9,6 +10,7 @@ import { ref } from 'vue';
 
 const editUserStore = defineStore('editUser', () => {
   const user = ref<null | Record<string, any>>(null);
+  const { formatDate } = date;
   const userForm = ref({
     image: null,
     user: {
@@ -90,11 +92,7 @@ const editUserStore = defineStore('editUser', () => {
   });
 
   const languagesForm = ref({
-    lanuages: [
-      {
-        language_id: '',
-      },
-    ],
+    languages: [],
   });
 
   const skillsForm = ref({
@@ -168,13 +166,11 @@ const editUserStore = defineStore('editUser', () => {
   };
 
   const addNewLangauge = () => {
-    languagesForm.value.lanuages.push({
-      language_id: '',
-    });
+    languagesForm.value.languages.push();
   };
 
   const popLanguage = (index: number) => {
-    languagesForm.value.lanuages.splice(index, 1);
+    languagesForm.value.languages.splice(index, 1);
   };
 
   const addNewSkill = () => {
@@ -248,6 +244,9 @@ const editUserStore = defineStore('editUser', () => {
       case 'education':
         data = educationForm.value;
         break;
+      case 'languages':
+        data = languagesForm.value;
+        break;
       default:
         break;
     }
@@ -281,6 +280,15 @@ const editUserStore = defineStore('editUser', () => {
                 fields: ['name', 'id'],
               },
               industry: {
+                fields: ['name', 'id'],
+              },
+              country: {
+                fields: ['name', 'id'],
+              },
+              state: {
+                fields: ['name', 'id'],
+              },
+              city: {
                 fields: ['name', 'id'],
               },
             },
@@ -352,19 +360,29 @@ const editUserStore = defineStore('editUser', () => {
             companySize: e?.company_szie || '',
             countryId: e?.country_id || '',
             desc: e?.desc || '',
-            endDate: e?.end_date || '',
+            endDate: e?.end_date ? formatDate(e?.end_date, 'DD/MM/YYYY') : '',
             isCurrent: e?.is_current == 1 ? true : false,
             jobDepartmentId: e?.job_department_id || '',
             jobFunction: e?.job_function || '',
             jobIndustryId: e?.job_industry_id || '',
             jobTitle: e?.job_title || '',
-            startDate: e?.start_date || '',
+            startDate: e?.start_date
+              ? formatDate(e?.start_date, 'DD/MM/YYYY')
+              : '',
             stateId: e?.state_id || '',
             zip: e?.zip || '',
           })
         );
 
         workExperienceForm.value.workExperience = newExperienceData;
+
+        if ((data.value as any)?.languages) {
+          languagesForm.value.languages = (data.value as any)?.languages.map(
+            (l: any) => ({
+              language_id: l.id,
+            })
+          );
+        }
       });
   };
 

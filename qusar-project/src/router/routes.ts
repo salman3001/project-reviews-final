@@ -472,6 +472,30 @@ const routes: RouteRecordRaw[] = [
           import('pages/admin/news-letters/templates/TemplateEdit.vue'),
         name: 'admin.template.edit',
       },
+      {
+        path: 'campaign',
+        component: () =>
+          import('pages/admin/news-letters/campaign/CampainIndex.vue'),
+        name: 'admin.campaign.index',
+      },
+      {
+        path: 'campaign/create',
+        component: () =>
+          import('pages/admin/news-letters/campaign/CampaignCreate.vue'),
+        name: 'admin.campaign.create',
+      },
+      {
+        path: 'campaign/:id/',
+        component: () =>
+          import('pages/admin/news-letters/campaign/CampaignShow.vue'),
+        name: 'admin.campaign.show',
+      },
+      {
+        path: 'campaign/:id/edit',
+        component: () =>
+          import('pages/admin/news-letters/campaign/CampaignEdit.vue'),
+        name: 'admin.campaign.edit',
+      },
     ],
   },
 

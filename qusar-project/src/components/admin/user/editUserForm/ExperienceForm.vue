@@ -12,63 +12,23 @@ const stateOptions = ref<any[]>([])
 const cityOptions = ref<any[]>([])
 
 
-
-const getCountries = async () => {
-  CountriesApi.index().then(({ data }) => {
-    countiresOptions.value = (data.value as any).map((d: any) => ({
-      label: d.name,
-      value: d.id
-    }))
-  })
-}
-
-const getStates = async (id: string) => {
-  StateApi.index({
-    filter: {
-      countryId: id
-    }
-  }).then(({ data }) => {
-    stateOptions.value = (data.value as any).map((d: any) => ({
-      label: d.name,
-      value: d.id
-    }))
-  })
-}
-
-const getCities = async (id: string) => {
-  CityApi.index({
-    filter: {
-      stateId: id
-    }
-  }).then(({ data }) => {
-    cityOptions.value = (data.value as any).map((d: any) => ({
-      label: d.name,
-      value: d.id
-    }))
-  })
-}
-
 onMounted(async () => {
-  await editUser.getJobDepartments()
-  await editUser.getJobIndustry()
-  if (editUser.workExperienceForm.workExperience[prop.index].countryId) {
-    await getCountries()
-  }
-  if (editUser.workExperienceForm.workExperience[prop.index].stateId) {
-    const temp = editUser.workExperienceForm.workExperience[prop.index].stateId
-    editUser.workExperienceForm.workExperience[prop.index].stateId = ''
-    await getStates(editUser.workExperienceForm.workExperience[prop.index].countryId)
-    editUser.workExperienceForm.workExperience[prop.index].stateId = temp
-  }
-  if (editUser.workExperienceForm.workExperience[prop.index].cityId) {
-    const temp = editUser.workExperienceForm.workExperience[prop.index].cityId
-    editUser.workExperienceForm.workExperience[prop.index].cityId = ''
-    await getCities(editUser.workExperienceForm.workExperience[prop.index].cityId)
-    editUser.workExperienceForm.workExperience[prop.index].cityId = temp
+  editUser.getJobDepartments()
+  editUser.getJobIndustry()
 
+  if (editUser.user?.experiences[prop.index]?.country) {
+    countiresOptions.value = [editUser.user?.experiences[prop.index].country]
   }
+
+  if (editUser.user?.experiences[prop.index]?.state) {
+    stateOptions.value = [editUser.user?.experiences[prop.index].state]
+  }
+
+  if (editUser.user?.experiences[prop.index]?.city) {
+    cityOptions.value = [editUser.user?.experiences[prop.index].city]
+  }
+
 })
-
 
 </script>
 
@@ -91,15 +51,51 @@ onMounted(async () => {
     :options="countiresOptions" @update:model-value="v => {
       editUser.workExperienceForm.workExperience[index].stateId = ''
       editUser.workExperienceForm.workExperience[index].cityId = ''
-      getStates(v)
-    }" label="Country" class="col-12 col-sm-6 col-md-3" />
-  <q-select outlined emit-value map-options v-model="editUser.workExperienceForm.workExperience[index].stateId"
-    :options="stateOptions" @update:model-value="v => {
+    }" label="Country" option-label="name" option-value="id" class="col-12 col-sm-6 col-md-3" @filter="(v, update) => {
+  CountriesApi.index().then(({ data }) => {
+    update(() => {
+      countiresOptions = (data.value as any)
+    });
+  })
+
+}" />
+  <q-select outlined emit-value map-options option-label="name" option-value="id"
+    v-model="editUser.workExperienceForm.workExperience[index].stateId" :options="stateOptions" @update:model-value="v => {
       editUser.workExperienceForm.workExperience[index].cityId = ''
-      getCities(v)
-    }" label="State" class="col-12 col-sm-6 col-md-3" />
-  <q-select outlined emit-value map-options v-model="editUser.workExperienceForm.workExperience[index].cityId"
-    :options="cityOptions" label="City" class="col-12 col-sm-6 col-md-3" />
+    }" label="State" class="col-12 col-sm-6 col-md-3" @filter="(v, update) => {
+  if (editUser.workExperienceForm.workExperience[index].countryId) {
+    StateApi.index({
+      filter: {
+        countryId: editUser.workExperienceForm.workExperience[index].countryId
+      }
+    }).then(({ data }) => {
+      update(() => {
+        stateOptions = (data.value as any)
+      });
+    })
+  } else {
+    update(() => { });
+    return
+  }
+}" />
+  <q-select outlined emit-value map-options option-label="name" option-value="id"
+    v-model="editUser.workExperienceForm.workExperience[index].cityId" :options="cityOptions" label="City"
+    class="col-12 col-sm-6 col-md-3" @filter="(v, update) => {
+      if (editUser.workExperienceForm.workExperience[index].stateId) {
+        CityApi.index({
+          filter: {
+            stateId: editUser.workExperienceForm.workExperience[index].stateId
+          }
+        }).then(({ data }) => {
+          update(() => {
+            cityOptions = (data.value as any)
+          });
+        })
+      } else {
+        update(() => { });
+        return
+      }
+    }" />
   <q-input outlined v-model="editUser.workExperienceForm.workExperience[index].zip" label="Post Code"
     class="col-12 col-sm-6 col-md-3" />
   <q-toggle class="col-12" v-model="editUser.workExperienceForm.workExperience[index].isCurrent"
@@ -110,7 +106,7 @@ onMounted(async () => {
       <template v-slot:append>
         <q-icon name="event" class="cursor-pointer">
           <q-popup-proxy cover transition-show="scale" transition-hide="scale">
-            <q-date :model-value="editUser.workExperienceForm.workExperience[index].startDate" mask="DD/MM/YYYY">
+            <q-date v-model="editUser.workExperienceForm.workExperience[index].startDate" mask="DD/MM/YYYY">
               <div class="row items-center justify-end">
                 <q-btn v-close-popup label="Close" color="primary" flat />
               </div>
@@ -126,7 +122,7 @@ onMounted(async () => {
       <template v-slot:append>
         <q-icon name="event" class="cursor-pointer">
           <q-popup-proxy cover transition-show="scale" transition-hide="scale">
-            <q-date :model-value="editUser.workExperienceForm.workExperience[index].endDate" mask="DD/MM/YYYY">
+            <q-date v-model="editUser.workExperienceForm.workExperience[index].endDate" mask="DD/MM/YYYY">
               <div class="row items-center justify-end">
                 <q-btn v-close-popup label="Close" color="primary" flat />
               </div>

@@ -22,8 +22,18 @@ export default class extends BaseSchema {
         .onDelete('SET NULL')
       table.string('company_name', 50)
       table.string('company_size', 50)
-      table.string('city_id', 10)
-      table.string('state_id', 10)
+      table
+        .integer('city_id', 10)
+        .unsigned()
+        .references('id')
+        .inTable('cities')
+        .onDelete('SET NULL')
+      table
+        .integer('state_id', 10)
+        .unsigned()
+        .references('id')
+        .inTable('states')
+        .onDelete('SET NULL')
       table.string('zip', 50)
       table
         .integer('country_id', 50)

@@ -4,6 +4,7 @@ import EditSocialInfo from 'src/components/admin/user/editUserForm/EditSocialInf
 import EditAddressInfo from 'src/components/admin/user/editUserForm/EditAddressInfo.vue'
 import EditFavoriteLinkInfo from 'src/components/admin/user/editUserForm/EditFavoriteLinkInfo.vue'
 import EditExperienceInfo from 'src/components/admin/user/editUserForm/EditExperienceInfo.vue'
+import EditLanguageInfo from 'src/components/admin/user/editUserForm/EditLanguageInfo.vue'
 import { onMounted, ref } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import editUserStore from 'src/stores/editUserStore'
@@ -72,7 +73,7 @@ onMounted(() => {
           </q-tab-panel>
           <q-tab-panel name="language">
             <div class="text-h6">Edit Languages</div>
-            Lorem ipsum dolor sit amet consectetur adipisicing elit.
+            <EditLanguageInfo />
           </q-tab-panel>
           <q-tab-panel name="skill">
             <div class="text-h6">Edit Skills</div>
