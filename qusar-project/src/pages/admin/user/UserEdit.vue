@@ -5,9 +5,13 @@ import EditAddressInfo from 'src/components/admin/user/editUserForm/EditAddressI
 import EditFavoriteLinkInfo from 'src/components/admin/user/editUserForm/EditFavoriteLinkInfo.vue'
 import EditExperienceInfo from 'src/components/admin/user/editUserForm/EditExperienceInfo.vue'
 import EditLanguageInfo from 'src/components/admin/user/editUserForm/EditLanguageInfo.vue'
-import { onMounted, ref } from 'vue';
+import { onBeforeMount, ref } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import editUserStore from 'src/stores/editUserStore'
+import EditSkillsInfo from 'src/components/admin/user/editUserForm/EditSkillsInfo.vue'
+import EditPrivacyInfo from 'src/components/admin/user/editUserForm/EditPrivacyInfo.vue'
+import EditNotificationInfo from 'src/components/admin/user/editUserForm/EditNotificationInfo.vue'
+import EditPasswordInfo from 'src/components/admin/user/editUserForm/EditPasswordInfo.vue'
 
 
 const router = useRouter();
@@ -15,8 +19,8 @@ const route = useRoute();
 const tab = ref('personal')
 const editUser = editUserStore()
 
-onMounted(() => {
-  editUser.getInitialValues(route.params.id as string)
+onBeforeMount(async () => {
+  await editUser.getInitialValues(route.params.id as string)
 })
 </script>
 
@@ -77,19 +81,19 @@ onMounted(() => {
           </q-tab-panel>
           <q-tab-panel name="skill">
             <div class="text-h6">Edit Skills</div>
-            Lorem ipsum dolor sit amet consectetur adipisicing elit.
+            <EditSkillsInfo />
           </q-tab-panel>
           <q-tab-panel name="privacy">
             <div class="text-h6">Edit Privacy</div>
-            Lorem ipsum dolor sit amet consectetur adipisicing elit.
+            <EditPrivacyInfo />
           </q-tab-panel>
           <q-tab-panel name="notifications">
             <div class="text-h6">Edit Notifications</div>
-            Lorem ipsum dolor sit amet consectetur adipisicing elit.
+            <EditNotificationInfo />
           </q-tab-panel>
           <q-tab-panel name="passwword">
             <div class="text-h6">Reset Password</div>
-            Lorem ipsum dolor sit amet consectetur adipisicing elit.
+            <EditPasswordInfo />
           </q-tab-panel>
         </q-tab-panels>
       </q-card>

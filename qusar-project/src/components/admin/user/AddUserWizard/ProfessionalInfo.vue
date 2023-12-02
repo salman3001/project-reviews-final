@@ -80,25 +80,9 @@ onMounted(() => {
     </div>
     <div class="column q-gutter-y-md">
       <p class="text-subtitle1">Language</p>
-      <div class="row q-col-gutter-md q-pb-lg" v-for="(w, i) in createUser.form.lanuages" :key="i">
-        <div class="col-12 row q-col-gutter-sm items-center">
-          <p class="text-grey">Language {{ i + 1 }}</p>
-          <div>
-            <q-btn v-if="i > 0" flat icon="delete" @click="() => createUser.popLanguage()">Remove
-            </q-btn>
-          </div>
-        </div>
-        <q-select outlined emit-value map-options v-model="w.language_id" :options="createUser.languages" label="Language"
-          class="col-12 col-sm-6 col-md-3">
-          <template v-slot:append>
-            <q-icon v-if="i > 0" name="close" color="primary" @click="() => createUser.popLanguage()"
-              :rules="[$rules.required('required')]" />
-          </template>
-        </q-select>
-      </div>
-      <div class="row justify-end">
-        <q-btn color="primary" style="max-width: 14rem" size="small" @click="createUser.addNewLangauge">+ Add
-          language</q-btn>
+      <div class="row q-col-gutter-md q-pb-lg">
+        <q-select outlined emit-value map-options v-model="createUser.form.lanuages" :options="createUser.languages"
+          label="Language" class="col-12 col-sm-6 col-md-3" multiple use-chips />
       </div>
     </div>
     <div class="column q-gutter-y-md">

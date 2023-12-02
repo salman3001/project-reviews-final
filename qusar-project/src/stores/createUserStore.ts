@@ -71,11 +71,7 @@ const createUserStore = defineStore('createUser', () => {
         desc: '',
       },
     ],
-    lanuages: [
-      {
-        language_id: '',
-      },
-    ],
+    lanuages: [],
     skills: [
       {
         name: '',
@@ -142,16 +138,6 @@ const createUserStore = defineStore('createUser', () => {
     form.value.education.pop();
   };
 
-  const addNewLangauge = () => {
-    form.value.lanuages.push({
-      language_id: '',
-    });
-  };
-
-  const popLanguage = () => {
-    form.value.lanuages.pop();
-  };
-
   const addNewSkill = () => {
     form.value.skills.push({
       name: '',
@@ -202,8 +188,6 @@ const createUserStore = defineStore('createUser', () => {
     popEducation,
     popFavoriteLinks,
     popWorkExperience,
-    addNewLangauge,
-    popLanguage,
     getJobDepartments,
     jobDepartments,
     getJobIndustry,

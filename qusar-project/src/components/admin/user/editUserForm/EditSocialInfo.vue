@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import editUserStore from 'src/stores/editUserStore';
+import { userApi } from 'src/utils/BaseApiService';
 import { srollToView } from 'src/utils/scrollToView';
 
 const editUser = editUserStore()
 
-const { execute, loading } = editUser.submitForm('social')
-
+const { execute, loading } = userApi.put(editUser?.user?.id as string, editUser.socialForm);
 
 
 </script>
@@ -13,7 +13,7 @@ const { execute, loading } = editUser.submitForm('social')
 <template>
   <div class="q-py-lg">
     <q-form class="column q-gutter-y-md" @submit="() => {
-      execute()
+      execute(editUser.user?.id)
     }" @validation-error="srollToView">
       <div class="q-gutter-y-md">
         <div class="column q-gutter-y-md">

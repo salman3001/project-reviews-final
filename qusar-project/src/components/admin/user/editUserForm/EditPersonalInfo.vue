@@ -1,17 +1,17 @@
 <script setup lang="ts">
+import { storeToRefs } from 'pinia';
 import ProfileImageInput from 'src/components/forms/ProfileImageInput.vue';
 import editUserStore from 'src/stores/editUserStore';
+import { userApi } from 'src/utils/BaseApiService';
 import { srollToView } from 'src/utils/scrollToView';
 import { rules } from 'src/utils/validationRules';
 import { onMounted, ref } from 'vue';
 
 const editUser = editUserStore()
 
-const { execute, loading } = editUser.submitForm('user')
+const { execute, loading } = userApi.put(editUser?.user?.id as string, editUser.userForm);
 
 const uploads = ref('')
-
-
 
 onMounted(async () => {
   uploads.value = process.env.UPLOAD as string;
@@ -21,7 +21,7 @@ onMounted(async () => {
 <template>
   <div class="q-py-lg">
     <q-form class="column q-gutter-y-md" @submit="() => {
-      execute()
+      execute(editUser?.user?.id as string)
     }" @validation-error="srollToView">
       <div>
         <ProfileImageInput name="image" :url="editUser.user?.avatar?.url

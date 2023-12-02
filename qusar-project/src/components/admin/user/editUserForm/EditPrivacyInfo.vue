@@ -5,7 +5,8 @@ import { srollToView } from 'src/utils/scrollToView';
 
 const editUser = editUserStore()
 
-const { execute, loading } = userApi.put(editUser?.user?.id as string, editUser.favoriteLinksForm);
+const { execute, loading } = userApi.put(editUser?.user?.id as string, editUser.userForm);
+
 
 </script>
 
@@ -14,18 +15,16 @@ const { execute, loading } = userApi.put(editUser?.user?.id as string, editUser.
     <q-form class="column q-gutter-y-md" @submit="() => {
       execute(editUser.user?.id)
     }" @validation-error="srollToView">
-      <div class="q-gutter-y-md">
-        <div class="row q-col-gutter-md items-center">
-          <q-input outlined v-for="(f, i) in editUser.favoriteLinksForm.favoriteLinks" :key="i" v-model="f.link"
-            class="col-12 col-sm-6 col-md-3" :label="'Link' + ' ' + (i + 1)" clear-icon="close"
-            :rules="[$rules.required('required')]">
-            <template v-slot:append>
-              <q-icon v-if="i > 0" name="close" color="primary" @click="editUser.popFavoriteLinks" />
-            </template>
-          </q-input>
+      <div class="column q-gutter-y-md">
+        <div class="column q-gutter-y-md">
+          <div class=" q-col-gutter-md items-center ">
+            <q-toggle v-model="editUser.userForm.user.isPublic" :label="editUser.userForm.user.isPublic ? 'On' : 'Off'" />
+            <p style="max-width: 35rem; color: #686552;">Don’t display my personal info with my profile,
+              reviews, and ratings on
+              CurrentRelease CurrentRelease
+              will stop sharing my name, title, company name, and photo with partners in relation to my reviews.</p>
+          </div>
         </div>
-        <q-btn color="primary" style="max-width: 8rem" @click="editUser.addNewFavoriteLinks">+Add
-          New</q-btn>
         <div class="row justify-end q-gutter-md">
           <q-btn color="primary" v-if="loading">
             <q-circular-progress indeterminate size="20px" class="q-px-10" :thickness="1" color="grey-8"

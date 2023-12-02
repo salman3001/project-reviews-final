@@ -1,13 +1,12 @@
 <script setup lang="ts">
-import { srollToView } from 'src/utils/scrollToView';
-import ExperienceForm from 'src/components/admin/user/editUserForm/ExperienceForm.vue';
 import editUserStore from 'src/stores/editUserStore';
 import { userApi } from 'src/utils/BaseApiService';
-
+import { srollToView } from 'src/utils/scrollToView';
 
 const editUser = editUserStore()
 
-const { execute, loading } = userApi.put(editUser?.user?.id as string, editUser.workExperienceForm);
+const { execute, loading } = userApi.put(editUser?.user?.id as string, editUser.skillsForm);
+
 </script>
 
 <template>
@@ -16,20 +15,23 @@ const { execute, loading } = userApi.put(editUser?.user?.id as string, editUser.
       execute(editUser.user?.id)
     }" @validation-error="srollToView">
       <div class="column q-gutter-y-md">
-        <p class="text-subtitle1">Work Experience</p>
-        <div class="row q-col-gutter-md q-pb-lg" v-for="(w, i) in editUser.workExperienceForm.workExperience" :key="i">
+        <div class="row q-col-gutter-md q-pb-lg" v-for="(s, i) in editUser.skillsForm.skills" :key="i">
           <div class="col-12 row q-col-gutter-sm items-center">
-            <p class="text-grey">Work Experience {{ i + 1 }}</p>
+            <p class="text-grey">Skill {{ i + 1 }}</p>
             <div>
-              <q-btn v-if="i > 0" flat icon="delete" @click="editUser.popWorkExperience">Remove
+              <q-btn v-if="i > 0" flat icon="delete" @click="() => editUser.popSkill(i)">Remove
               </q-btn>
             </div>
           </div>
-          <ExperienceForm :index="i" />
+
+          <q-input outlined v-model="s.name" label="Skill Name" class="col-12 col-sm-6 col-md-3"
+            :rules="[$rules.required('required')]" />
+          <q-input type="textarea" outlined v-model="s.desc" label="Description" class="col-12" />
+
         </div>
         <div class="row justify-end">
-          <q-btn color="primary" style="max-width: 14rem" @click="editUser.addNewWorkExperience">+ Add
-            New Experience</q-btn>
+          <q-btn color="primary" style="max-width: 14rem" size="small" @click="editUser.addNewSkill">+ Add
+            New Skill</q-btn>
         </div>
         <div class="row justify-end q-gutter-md">
           <q-btn color="primary" v-if="loading">

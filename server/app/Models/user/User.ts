@@ -53,7 +53,7 @@ export default class User extends BaseModel {
   public isActive: boolean
 
   @column()
-  public isPublic: number
+  public isPublic: boolean
 
   @hasOne(() => Image)
   public avatar: HasOne<typeof Image>

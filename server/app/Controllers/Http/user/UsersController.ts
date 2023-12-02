@@ -84,10 +84,11 @@ export default class UsersController {
   public async update({ request, response, params }: HttpContextContract) {
     const payload = await request.validate(UserUpdateeValidator)
     const id = params.id
-    const user = await UserService.show(id)
+    const user = await User.findOrFail(id)
 
     if (payload.user) {
-      await UserService.update(id, payload.user)
+      user.merge(payload.user)
+      await user.save()
     }
 
     if (payload.address) {
@@ -167,7 +168,7 @@ export default class UsersController {
     if (payload.skills) {
       await user?.load('skills')
       if (user?.skills) {
-        user.related('skills').detach()
+        await user.related('skills').detach()
         user && (await user.related('skills').createMany(payload.skills))
       } else {
         user && (await user.related('skills').createMany(payload.skills))

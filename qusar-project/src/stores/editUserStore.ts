@@ -113,6 +113,11 @@ const editUserStore = defineStore('editUser', () => {
     },
   });
 
+  const passwordForm = ref({
+    password: '',
+    password_confirmation: '',
+  });
+
   const jobDepartments = ref([]);
   const jobIndustry = ref([]);
   const languages = ref([]);
@@ -165,14 +170,6 @@ const editUserStore = defineStore('editUser', () => {
     educationForm.value.education.splice(index, 1);
   };
 
-  const addNewLangauge = () => {
-    languagesForm.value.languages.push();
-  };
-
-  const popLanguage = (index: number) => {
-    languagesForm.value.languages.splice(index, 1);
-  };
-
   const addNewSkill = () => {
     skillsForm.value.skills.push({
       name: '',
@@ -221,7 +218,8 @@ const editUserStore = defineStore('editUser', () => {
       | 'education'
       | 'skills'
       | 'languages'
-      | 'notification'
+      | 'notification',
+    id: string
   ) => {
     let data = {};
 
@@ -250,140 +248,164 @@ const editUserStore = defineStore('editUser', () => {
       default:
         break;
     }
-    const { execute, loading } = userApi.put(user?.value?.id as string, data);
+
+    const { execute, loading } = userApi.put(id, data);
     return {
       execute,
       loading,
     };
   };
 
-  const getInitialValues = (id: string) => {
-    userApi
-      .show(id, {
-        populate: {
-          avatar: {
-            fields: ['url'],
-          },
-          address: {
-            fields: ['*'],
-          },
-          social: {
-            fields: ['*'],
-          },
-          favoriteLinks: {
-            fields: ['*'],
-          },
-          experiences: {
-            fields: ['*'],
-            populate: {
-              department: {
-                fields: ['name', 'id'],
-              },
-              industry: {
-                fields: ['name', 'id'],
-              },
-              country: {
-                fields: ['name', 'id'],
-              },
-              state: {
-                fields: ['name', 'id'],
-              },
-              city: {
-                fields: ['name', 'id'],
-              },
+  const getInitialValues = async (id: string) => {
+    const { data } = await userApi.show(id, {
+      populate: {
+        avatar: {
+          fields: ['url'],
+        },
+        address: {
+          fields: ['*'],
+        },
+        social: {
+          fields: ['*'],
+        },
+        favoriteLinks: {
+          fields: ['*'],
+        },
+        experiences: {
+          fields: ['*'],
+          populate: {
+            department: {
+              fields: ['name', 'id'],
+            },
+            industry: {
+              fields: ['name', 'id'],
+            },
+            country: {
+              fields: ['name', 'id'],
+            },
+            state: {
+              fields: ['name', 'id'],
+            },
+            city: {
+              fields: ['name', 'id'],
             },
           },
-          educations: {
-            fields: ['*'],
-          },
-          NotificationSetting: {
-            fields: ['*'],
-          },
-          skills: {
-            fields: ['*'],
-          },
-          languages: {
-            fields: ['*'],
-          },
         },
+        educations: {
+          fields: ['*'],
+        },
+        NotificationSetting: {
+          fields: ['*'],
+        },
+        skills: {
+          fields: ['*'],
+        },
+        languages: {
+          fields: ['*'],
+        },
+      },
+    });
+
+    user.value = data.value;
+    userForm.value.user.firstName = (data.value as any)?.first_name;
+    userForm.value.user.lastName = (data.value as any)?.last_name;
+    userForm.value.user.email = (data.value as any)?.email;
+    userForm.value.user.userName = (data.value as any)?.user_name;
+    userForm.value.user.phone = (data.value as any)?.phone;
+    userForm.value.user.desc = (data.value as any)?.desc;
+    userForm.value.user.isActive =
+      (data.value as any)?.is_active == 1 ? true : false;
+    userForm.value.user.isPublic =
+      (data.value as any)?.is_public == 1 ? true : false;
+
+    addressForm.value.address.address =
+      (data.value as any)?.address?.address || '';
+    addressForm.value.address.continentId =
+      (data.value as any)?.address?.continent_id || '';
+    addressForm.value.address.countryId =
+      (data.value as any)?.address?.country_id || '';
+    addressForm.value.address.stateId =
+      (data.value as any)?.address?.state_id || '';
+    addressForm.value.address.cityId =
+      (data.value as any)?.address?.city_id || '';
+    addressForm.value.address.streetId =
+      (data.value as any)?.address?.street_id || '';
+    addressForm.value.address.zip = (data.value as any)?.address?.zip || '';
+
+    socialForm.value.social.website =
+      (data.value as any)?.social?.website || '';
+    socialForm.value.social.facebook =
+      (data.value as any)?.social?.facebook || '';
+    socialForm.value.social.twitter =
+      (data.value as any)?.social?.twitter || '';
+    socialForm.value.social.instagram =
+      (data.value as any)?.social?.instagram || '';
+    socialForm.value.social.pintrest =
+      (data.value as any)?.social?.pintrest || '';
+    socialForm.value.social.linkedin =
+      (data.value as any)?.social?.linkedin || '';
+    socialForm.value.social.vk = (data.value as any)?.social?.vk || '';
+    socialForm.value.social.whatsapp =
+      (data.value as any)?.social?.whatsapp || '';
+    socialForm.value.social.telegram =
+      (data.value as any)?.social?.telegram || '';
+
+    favoriteLinksForm.value.favoriteLinks = (data.value as any)
+      ?.favoriteLinks || [{ link: '' }];
+
+    const newExperienceData = (data.value as any)?.experiences.map(
+      (e: any) => ({
+        cityId: e?.city_id || '',
+        companyName: e?.company_name || '',
+        companySize: e?.company_szie || '',
+        countryId: e?.country_id || '',
+        desc: e?.desc || '',
+        endDate: e?.end_date ? formatDate(e?.end_date, 'DD/MM/YYYY') : '',
+        isCurrent: e?.is_current == 1 ? true : false,
+        jobDepartmentId: e?.job_department_id || '',
+        jobFunction: e?.job_function || '',
+        jobIndustryId: e?.job_industry_id || '',
+        jobTitle: e?.job_title || '',
+        startDate: e?.start_date ? formatDate(e?.start_date, 'DD/MM/YYYY') : '',
+        stateId: e?.state_id || '',
+        zip: e?.zip || '',
       })
-      .then(({ data }) => {
-        user.value = data.value;
-        userForm.value.user.firstName = (data.value as any)?.first_name;
-        userForm.value.user.lastName = (data.value as any)?.last_name;
-        userForm.value.user.email = (data.value as any)?.email;
-        userForm.value.user.userName = (data.value as any)?.user_name;
-        userForm.value.user.phone = (data.value as any)?.phone;
-        userForm.value.user.desc = (data.value as any)?.desc;
-        userForm.value.user.isActive =
-          (data.value as any)?.is_active == 1 ? true : false;
+    );
 
-        addressForm.value.address.address =
-          (data.value as any)?.address?.address || '';
-        addressForm.value.address.continentId =
-          (data.value as any)?.address?.continent_id || '';
-        addressForm.value.address.countryId =
-          (data.value as any)?.address?.country_id || '';
-        addressForm.value.address.stateId =
-          (data.value as any)?.address?.state_id || '';
-        addressForm.value.address.cityId =
-          (data.value as any)?.address?.city_id || '';
-        addressForm.value.address.streetId =
-          (data.value as any)?.address?.street_id || '';
-        addressForm.value.address.zip = (data.value as any)?.address?.zip || '';
+    workExperienceForm.value.workExperience = newExperienceData;
 
-        socialForm.value.social.website =
-          (data.value as any)?.social?.website || '';
-        socialForm.value.social.facebook =
-          (data.value as any)?.social?.facebook || '';
-        socialForm.value.social.twitter =
-          (data.value as any)?.social?.twitter || '';
-        socialForm.value.social.instagram =
-          (data.value as any)?.social?.instagram || '';
-        socialForm.value.social.pintrest =
-          (data.value as any)?.social?.pintrest || '';
-        socialForm.value.social.linkedin =
-          (data.value as any)?.social?.linkedin || '';
-        socialForm.value.social.vk = (data.value as any)?.social?.vk || '';
-        socialForm.value.social.whatsapp =
-          (data.value as any)?.social?.whatsapp || '';
-        socialForm.value.social.telegram =
-          (data.value as any)?.social?.telegram || '';
+    if ((data.value as any)?.languages) {
+      languagesForm.value.languages = (data.value as any)?.languages.map(
+        (l: any) => l.id
+      );
+    }
 
-        favoriteLinksForm.value.favoriteLinks = (data.value as any)
-          ?.favoriteLinks || [{ link: '' }];
+    if ((data.value as any)?.skills) {
+      skillsForm.value.skills = (data.value as any)?.skills.map((s: any) => ({
+        name: s.name,
+        desc: s.desc,
+      }));
+    }
 
-        const newExperienceData = (data.value as any)?.experiences.map(
-          (e: any) => ({
-            cityId: e?.city_id || '',
-            companyName: e?.company_name || '',
-            companySize: e?.company_szie || '',
-            countryId: e?.country_id || '',
-            desc: e?.desc || '',
-            endDate: e?.end_date ? formatDate(e?.end_date, 'DD/MM/YYYY') : '',
-            isCurrent: e?.is_current == 1 ? true : false,
-            jobDepartmentId: e?.job_department_id || '',
-            jobFunction: e?.job_function || '',
-            jobIndustryId: e?.job_industry_id || '',
-            jobTitle: e?.job_title || '',
-            startDate: e?.start_date
-              ? formatDate(e?.start_date, 'DD/MM/YYYY')
-              : '',
-            stateId: e?.state_id || '',
-            zip: e?.zip || '',
-          })
-        );
+    if ((data.value as any)?.NotificationSetting) {
+      notificationForm.value.NotificationSettings.onCommentReply =
+        (data.value as any)?.NotificationSetting.on_comment_reply == 1
+          ? true
+          : false;
 
-        workExperienceForm.value.workExperience = newExperienceData;
+      notificationForm.value.NotificationSettings.onMessageRecieve =
+        (data.value as any)?.NotificationSetting.on_message_recieve == 1
+          ? true
+          : false;
 
-        if ((data.value as any)?.languages) {
-          languagesForm.value.languages = (data.value as any)?.languages.map(
-            (l: any) => ({
-              language_id: l.id,
-            })
-          );
-        }
-      });
+      notificationForm.value.NotificationSettings.onOffers =
+        (data.value as any)?.NotificationSetting.on_offers == 1 ? true : false;
+
+      notificationForm.value.NotificationSettings.onProductUpdate =
+        (data.value as any)?.NotificationSetting.on_product_update == 1
+          ? true
+          : false;
+    }
   };
 
   return {
@@ -397,6 +419,7 @@ const editUserStore = defineStore('editUser', () => {
     educationForm,
     languagesForm,
     notificationForm,
+    passwordForm,
     submitForm,
     addNewFavoriteLinks,
     addNewWorkExperience,
@@ -404,8 +427,6 @@ const editUserStore = defineStore('editUser', () => {
     popEducation,
     popFavoriteLinks,
     popWorkExperience,
-    addNewLangauge,
-    popLanguage,
     getJobDepartments,
     jobDepartments,
     getJobIndustry,

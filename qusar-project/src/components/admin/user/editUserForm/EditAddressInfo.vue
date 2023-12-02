@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import { srollToView } from 'src/utils/scrollToView';
-import { onMounted, ref, watchEffect } from 'vue';
+import { onMounted, ref } from 'vue';
 import editUserStore from 'src/stores/editUserStore';
-import { CityApi, ContinentsApi, CountriesApi, StateApi, StreetApi } from 'src/utils/BaseApiService';
+import { CityApi, ContinentsApi, CountriesApi, StateApi, StreetApi, userApi } from 'src/utils/BaseApiService';
 
 
 const editUser = editUserStore()
 
-const { execute, loading } = editUser.submitForm('address')
+const { execute, loading } = userApi.put(editUser?.user?.id as string, editUser.addressForm);
 
 const continentOptions = ref<any[]>([])
 const countiresOptions = ref<any[]>([])
@@ -104,7 +104,7 @@ onMounted(async () => {
 <template>
   <div class="q-py-lg">
     <q-form class="column q-gutter-y-md" @submit="() => {
-      execute()
+      execute(editUser.user?.id)
     }" @validation-error="srollToView">
       <div class="row q-col-gutter-md">
         <q-input outlined v-model="editUser.addressForm.address.address" class="col-12 col-md-9" label="Address" />

@@ -146,10 +146,14 @@ export class BaseApiService {
     cb?: { onSuccess?: () => void; onError?: () => void }
   ) {
     const loading = ref(false);
-    const execute = async () => {
+    const execute = async (idOverRide?: string) => {
       try {
         loading.value = true;
-        const res = await api.put(this.url + `/${id}`, data, config);
+        const res = await api.put(
+          this.url + `/${idOverRide ?? id}`,
+          data,
+          config
+        );
         loading.value = false;
         cb?.onSuccess && cb?.onSuccess();
         Notify.create({
@@ -193,10 +197,10 @@ export class BaseApiService {
     cb?: { onSuccess?: () => void; onError?: () => void }
   ) {
     const loading = ref(false);
-    const execute = async () => {
+    const execute = async (idOverRide?: string) => {
       try {
         loading.value = true;
-        const res = await api.delete(this.url + `/${id}`, config);
+        const res = await api.delete(this.url + `/${idOverRide ?? id}`, config);
         loading.value = false;
         cb?.onSuccess && cb?.onSuccess();
         Notify.create({
@@ -239,15 +243,20 @@ export const AdminUserApi = new BaseApiService('admin-users', 'User');
 
 class UserApiService extends BaseApiService {
   public updatePassword(
+    id: string,
     data: any,
     config?: AxiosRequestConfig<any> | undefined,
     cb?: { onSuccess?: () => void; onError?: () => void }
   ) {
     const loading = ref(false);
-    const execute = async () => {
+    const execute = async (id: string) => {
       try {
         loading.value = true;
-        const res = await api.post(this.url + '/update-password', data, config);
+        const res = await api.post(
+          this.url + '/update-password/' + id,
+          data,
+          config
+        );
         loading.value = false;
         cb?.onSuccess && cb?.onSuccess();
         Notify.create({

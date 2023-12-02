@@ -110,7 +110,7 @@ class BaseService<T extends LucidModel> {
   }
 
   public async update(id: number, payload: any) {
-    const record = await this.modal.query().where('id', id).first()
+    const record = await this.modal.findOrFail(id)
     record?.merge(payload)
     await record?.save()
     return record
