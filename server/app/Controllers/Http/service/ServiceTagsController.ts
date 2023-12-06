@@ -1,8 +1,8 @@
+import { ResponsiveAttachment } from '@ioc:Adonis/Addons/ResponsiveAttachment'
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import ServiceTag from 'App/Models/service/ServiceTag'
 import ServiceCategoryCreateValidator from 'App/Validators/service/ServiceCategoryCreateValidator'
 import ServiceCategoryUpdateValidator from 'App/Validators/service/ServiceCategoryUpdateValidator'
-import ImageService from 'App/services/ImageService'
 import ServiceTagService from 'App/services/service/ServiceTagService'
 
 export default class ServiceTagsController {
@@ -25,9 +25,9 @@ export default class ServiceTagsController {
     }
 
     if (payload.image) {
-      const img = await ImageService.store(payload.image, `/service-tags/`, 'thumb')
-      await tag.related('thumbnail').save(img)
+      tag.thumbnail = await ResponsiveAttachment.fromFile(payload.image)
     }
+    await tag.save()
 
     return response.json({ message: 'record created', data: tag })
   }
@@ -68,24 +68,14 @@ export default class ServiceTagsController {
     }
 
     if (payload.image) {
-      await tag.load('thumbnail')
-      if (tag.thumbnail) {
-        await ImageService.destroy(tag.thumbnail.id)
-      }
-      const img = await ImageService.store(payload.image, `/service-category/`, 'thumb')
-
-      await tag.related('thumbnail').save(img)
+      tag.thumbnail = await ResponsiveAttachment.fromFile(payload.image)
     }
+    await tag.save()
 
     return response.json({ message: 'record created', data: tag })
   }
 
   public async destroy({ params, response }: HttpContextContract) {
-    const tag = await ServiceTag.findOrFail(+params.id)
-    await tag.load('thumbnail')
-    if (tag.thumbnail) {
-      await ImageService.destroy(tag.thumbnail.id)
-    }
     await ServiceTagService.destroy(+params.id)
     return response.json({ message: 'record deleted' })
   }

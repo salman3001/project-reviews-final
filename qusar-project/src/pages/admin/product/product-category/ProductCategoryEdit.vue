@@ -35,9 +35,6 @@ const form = ref({
 const category = ref<null | Record<string, any>>(null)
 productCategoryApi.show(route.params.id as string, {
   populate: {
-    thumbnail: {
-      fields: ['url', 'type', 'id']
-    },
     faqs: {
       fields: ['*']
     },

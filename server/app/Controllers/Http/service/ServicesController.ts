@@ -1,5 +1,6 @@
+import { Attachment } from '@ioc:Adonis/Addons/AttachmentLite'
+import { ResponsiveAttachment } from '@ioc:Adonis/Addons/ResponsiveAttachment'
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
-import { ImageTypes } from 'App/Helpers/enums'
 import Image from 'App/Models/Image'
 import Service from 'App/Models/service/Service'
 import ServiceCreateValidator from 'App/Validators/service/ServiceCreateValidator'
@@ -35,51 +36,23 @@ export default class ServicesController {
       await service.related('faqs').createMany(payload.faq)
     }
 
-    const serviceFolderName = `Service-${service.id}`
-
     if (payload.logo) {
-      const img = await ImageService.store(
-        payload.logo,
-        `/services/${serviceFolderName}/logos/`,
-        'Service-logo',
-        ImageTypes.THUMB
-      )
-
-      await service.related('images').save(img)
+      service.logo = await ResponsiveAttachment.fromFile(payload.logo)
     }
 
     if (payload.cover) {
-      const img = await ImageService.store(
-        payload.cover,
-        `/services/${serviceFolderName}/cover/`,
-        'Service-cover',
-        ImageTypes.COVER
-      )
-
-      await service.related('images').save(img)
+      service.cover = await ResponsiveAttachment.fromFile(payload.cover)
     }
 
     if (payload.brocher) {
-      const img = await ImageService.store(
-        payload.brocher,
-        `/services/${serviceFolderName}/brocher/`,
-        'Service-brocher',
-        ImageTypes.BROCHER
-      )
-
-      await service.related('images').save(img)
+      service.brocher = await ResponsiveAttachment.fromFile(payload.brocher)
     }
 
     if (payload.images) {
       const images = await Promise.all(
         payload.images.map(async (img) => {
           try {
-            const storeImg = await ImageService.store(
-              img,
-              `/services/${serviceFolderName}/screenshots/`,
-              'Service-Screeshot',
-              ImageTypes.IMG
-            )
+            const storeImg = await ImageService.store(img)
             return storeImg
           } catch (error) {
             console.error('Error storing image:', error)
@@ -91,19 +64,17 @@ export default class ServicesController {
 
       // Filter out any null values (images that failed to store)
       const validImages = images.filter((img) => img !== null)
+      await service.save()
 
-      await service.related('images').saveMany(validImages as Image[])
+      await service.related('screenshots').saveMany(validImages as Image[])
     }
 
     if (payload.video) {
-      const video = await VideoService.store(
-        payload.video,
-        `/services/${serviceFolderName}/video/`,
-        'Service-video'
-      )
-
-      await service.related('video').save(video)
+      const video = await VideoService.store(payload.video)
+      service.related('video').save(video)
     }
+
+    await service.save()
 
     return response.json({ message: 'record created', data: service })
   }
@@ -158,62 +129,31 @@ export default class ServicesController {
       await service.related('faqs').createMany(payload.faq)
     }
 
-    const serviceFolderName = `service-${service.id}`
-
-    await service.load('images')
-
     if (payload.logo) {
-      if (service.logo) {
-        await ImageService.destroy(service?.logo?.id)
-      }
-      const img = await ImageService.store(
-        payload.logo,
-        `/services/${serviceFolderName}/logos/`,
-        'service-logo',
-        ImageTypes.THUMB
-      )
-
-      await service.related('images').save(img)
+      service.logo = await ResponsiveAttachment.fromFile(payload.logo)
     }
 
     if (payload.cover) {
-      if (service.coverImage) {
-        await ImageService.destroy(service?.coverImage?.id)
-      }
-      const img = await ImageService.store(
-        payload.cover,
-        `/services/${serviceFolderName}/cover/`,
-        'service-cover',
-        ImageTypes.COVER
-      )
-
-      await service.related('images').save(img)
+      service.cover = await ResponsiveAttachment.fromFile(payload.cover)
     }
 
     if (payload.brocher) {
-      if (service.brocherImage) {
-        await ImageService.destroy(service?.brocherImage?.id)
-      }
-      const img = await ImageService.store(
-        payload.brocher,
-        `/services/${serviceFolderName}/brocher/`,
-        'service-brocher',
-        ImageTypes.BROCHER
-      )
-
-      await service.related('images').save(img)
+      service.brocher = await ResponsiveAttachment.fromFile(payload.brocher)
     }
 
     if (payload.images) {
+      await service.load('screenshots')
+
+      await Promise.all(
+        service.screenshots.map(async (s) => {
+          await s.delete()
+        })
+      )
+
       const images = await Promise.all(
         payload.images.map(async (img) => {
           try {
-            const storeImg = await ImageService.store(
-              img,
-              `/services/${serviceFolderName}/screenshots/`,
-              'service-Screeshot',
-              ImageTypes.IMG
-            )
+            const storeImg = await ImageService.store(img)
             return storeImg
           } catch (error) {
             console.error('Error storing image:', error)
@@ -225,34 +165,31 @@ export default class ServicesController {
 
       // Filter out any null values (images that failed to store)
       const validImages = images.filter((img) => img !== null)
-
-      await service.related('images').saveMany(validImages as Image[])
+      await service.related('screenshots').saveMany(validImages as Image[])
     }
 
     if (payload.video) {
       await service.load('video')
       if (service.video) {
-        await VideoService.destroy(service?.video?.id)
+        await VideoService.destroy(service.video.id)
       }
-      const video = await VideoService.store(
-        payload.video,
-        `/services/${serviceFolderName}/video/`,
-        'service-video'
-      )
-
-      await service.related('video').save(video)
+      const video = await VideoService.store(payload.video)
+      service.related('video').save(video)
     }
+
+    await service.save()
+
     return response.json({ message: 'record updated', data: service })
   }
 
   public async destroy({ params, response }: HttpContextContract) {
     const service = await Service.findOrFail(+params.id)
-    await service.load('images')
+    await service.load('screenshots')
     await service.load('video')
 
-    if (service.images) {
+    if (service.screenshots) {
       await Promise.all(
-        service.images.map(async (img) => {
+        service.screenshots.map(async (img) => {
           await ImageService.destroy(img.id)
         })
       )
@@ -261,6 +198,7 @@ export default class ServicesController {
     if (service.video) {
       await VideoService.destroy(service.video.id)
     }
+
     await ServiceService.destroy(+params.id)
     return response.json({ message: 'record deleted' })
   }

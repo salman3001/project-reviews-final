@@ -25,7 +25,7 @@ export default class CreateTemplateValidator {
    */
   public schema = schema.create({
     thumbnail: schema.file.optional({
-      extnames: ['jpg', 'jpeg', 'png', 'webp', 'gif'],
+      extnames: ['jpg', 'JPG', 'jpeg', 'JPEG', 'png', 'PNG', 'webp', 'WEBP'],
       size: '2mb',
     }),
     template: schema.object().members({

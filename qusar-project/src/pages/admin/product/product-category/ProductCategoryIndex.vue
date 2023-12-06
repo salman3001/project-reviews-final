@@ -6,11 +6,9 @@ import { AdditionalParams } from 'src/type';
 import { exportCSV } from 'src/utils/exportCSV';
 import { onMounted, reactive, ref } from 'vue';
 import modalStore from 'src/stores/modalStore';
-import { productCategoryApi, productSubCategoryApi } from 'src/utils/BaseApiService';
 import { useRouter } from 'vue-router';
 
 const modal = modalStore();
-const { formatDate } = date
 const router = useRouter()
 const uploads = ref('');
 
@@ -32,9 +30,6 @@ const { data, loading, onRequest, pagination, tableRef } = useGetTableData(
       subCategory: {
         fields: ['name', 'id'],
       },
-      thumbnail: {
-        fields: ['url']
-      }
     },
   }
 );

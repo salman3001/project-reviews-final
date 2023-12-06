@@ -14,6 +14,7 @@ export default class extends BaseSchema {
       table.string('phone', 15)
       table.string('desc')
       table.boolean('is_active').defaultTo(false).notNullable()
+      table.json('avatar')
       table.integer('role_id').unsigned().references('roles.id').onDelete('SET NULL')
       /**
        * Uses timestamptz for PostgreSQL and DATETIME2 for MSSQL

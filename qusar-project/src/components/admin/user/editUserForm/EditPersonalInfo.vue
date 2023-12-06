@@ -9,7 +9,11 @@ import { onMounted, ref } from 'vue';
 
 const editUser = editUserStore()
 
-const { execute, loading } = userApi.put(editUser?.user?.id as string, editUser.userForm);
+const { execute, loading } = userApi.put(editUser?.user?.id as string, editUser.userForm, {
+  headers: {
+    'Content-Type': 'multipart/form-data'
+  }
+});
 
 const uploads = ref('')
 
@@ -24,7 +28,7 @@ onMounted(async () => {
       execute(editUser?.user?.id as string)
     }" @validation-error="srollToView">
       <div>
-        <ProfileImageInput name="image" :url="editUser.user?.avatar?.url
+        <ProfileImageInput name="image" :url="editUser.user?.avatar
           ? uploads + editUser.user?.avatar?.url
           : '/images/sample-dp.png'
           " @image="(v: any) => {

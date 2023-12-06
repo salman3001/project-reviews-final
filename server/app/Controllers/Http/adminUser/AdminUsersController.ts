@@ -8,7 +8,7 @@ import { IndexQs } from 'App/services/BaseService'
 import AddressService from 'App/services/address/AddressService'
 import SocialService from 'App/services/SocialService'
 import RoleService from 'App/services/admin/RoleService'
-import ImageService from 'App/services/ImageService'
+import { ResponsiveAttachment } from '@ioc:Adonis/Addons/ResponsiveAttachment'
 
 export default class AdminUsersController {
   public async index({ response, request }: HttpContextContract) {
@@ -48,9 +48,10 @@ export default class AdminUsersController {
     }
 
     if (payload.image) {
-      const image = await ImageService.store(payload.image, '/admin-users/', user.firstName)
-      await user.related('avatar').save(image)
+      user.avatar = await ResponsiveAttachment.fromFile(payload.image)
     }
+
+    await user.save()
 
     return response.json(user)
   }
@@ -108,14 +109,7 @@ export default class AdminUsersController {
       }
 
       if (payload.image) {
-        const image = await ImageService.store(payload.image, '/admin-users/', user.firstName)
-        await user.load('avatar')
-        if (user.avatar) {
-          await ImageService.destroy(user.avatar.id)
-          await user.related('avatar').save(image)
-        } else {
-          await user.related('avatar').save(image)
-        }
+        user.avatar = await ResponsiveAttachment.fromFile(payload.image)
       }
     }
 
@@ -125,13 +119,6 @@ export default class AdminUsersController {
   }
 
   public async destroy({ params, response }: HttpContextContract) {
-    const user = await AdminUserService.show(+params.id)
-    await user?.load('avatar')
-
-    if (user?.avatar) {
-      await ImageService.destroy(user.avatar.id)
-    }
-
     await AdminUserService.destroy(+params.id)
 
     return response.json({ message: 'User Deleted' })

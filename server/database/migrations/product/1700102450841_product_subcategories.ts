@@ -10,6 +10,7 @@ export default class extends BaseSchema {
       table.string('short_desc')
       table.text('long_desc')
       table.boolean('status').defaultTo(false).notNullable()
+      table.json('thumbnail')
       table
         .integer('product_category_id')
         .unsigned()

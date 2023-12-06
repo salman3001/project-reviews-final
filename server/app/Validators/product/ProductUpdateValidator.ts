@@ -25,11 +25,11 @@ export default class ProductUpdateValidator {
    */
   public schema = schema.create({
     logo: schema.file.optional({
-      extnames: ['jpg', 'jpeg', 'png', 'webp', 'gif'],
+      extnames: ['jpg', 'JPG', 'jpeg', 'JPEG', 'png', 'PNG', 'webp', 'WEBP'],
       size: '2mb',
     }),
     cover: schema.file.optional({
-      extnames: ['jpg', 'jpeg', 'png', 'webp', 'gif'],
+      extnames: ['jpg', 'JPG', 'jpeg', 'JPEG', 'png', 'PNG', 'webp', 'WEBP'],
       size: '2mb',
     }),
     video: schema.file.optional({
@@ -37,12 +37,12 @@ export default class ProductUpdateValidator {
       size: '25mb',
     }),
     brocher: schema.file.optional({
-      extnames: ['jpg', 'jpeg', 'png', 'webp', 'gif'],
+      extnames: ['jpg', 'JPG', 'jpeg', 'JPEG', 'png', 'PNG', 'webp', 'WEBP'],
       size: '2mb',
     }),
     images: schema.array.optional().members(
       schema.file({
-        extnames: ['jpg', 'jpeg', 'png', 'webp', 'gif'],
+        extnames: ['jpg', 'JPG', 'jpeg', 'JPEG', 'png', 'PNG', 'webp', 'WEBP'],
         size: '2mb',
       })
     ),

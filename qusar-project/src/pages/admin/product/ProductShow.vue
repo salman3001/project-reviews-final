@@ -32,11 +32,11 @@ productApi.show(route.params.id as string, {
     seo: {
       fields: ['*']
     },
-    images: {
-      fields: ['url', 'type']
-    },
     video: {
-      fields: ['url']
+      fields: ['*']
+    },
+    screenshots: {
+      fields: ['*']
     }
   },
 }).then(({ data }) => {
@@ -174,29 +174,29 @@ onMounted(() => {
             </div>
           </div>
         </div>
-        <div v-if="product?.screenShots" class="q-pb-lg">
+        <div v-if="product?.screenshots" class="q-pb-lg">
           <div class="colomn q-col-gutter-md">
             <p style="color: #686552;">Screenshots</p>
             <div class="q-gutter-md">
-              <q-img spinner-color="white" v-for="(s, i) in product?.screenShots" :key="i" :src="uploads + s?.url"
+              <q-img spinner-color="white" v-for="(s, i) in product?.screenshots" :key="i" :src="uploads + s?.file?.url"
                 style="height: 15rem; width: 15rem;border: 1px solid #e6e4d9;border-radius: 1rem;" />
             </div>
           </div>
         </div>
-        <div v-if="product?.coverImage" class="q-pb-lg">
+        <div v-if="product?.cover" class="q-pb-lg">
           <div class="colomn q-col-gutter-md">
             <p style="color: #686552;">Cover Photo</p>
             <div>
-              <q-img spinner-color="white" :src="uploads + product.coverImage?.url" :alt="product?.name"
+              <q-img spinner-color="white" :src="uploads + product.cover?.url" :alt="product?.name"
                 style="height: 15rem; max-width: 30rem;border: 1px solid #e6e4d9;border-radius: 1rem;" />
             </div>
           </div>
         </div>
-        <div v-if="product?.brocherImage" class="q-pb-lg">
+        <div v-if="product?.brocher" class="q-pb-lg">
           <div class="colomn q-col-gutter-md">
             <p style="color: #686552;">Brochure</p>
             <div>
-              <q-img spinner-color="white" :src="uploads + product.brocherImage?.url" :alt="product?.name"
+              <q-img spinner-color="white" :src="uploads + product.brocher?.url" :alt="product?.name"
                 style="height: 15rem; width: 15rem;border: 1px solid #e6e4d9;border-radius: 1rem;" />
 
             </div>

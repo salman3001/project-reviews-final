@@ -2,16 +2,17 @@ import { DateTime } from 'luxon'
 import {
   BaseModel,
   BelongsTo,
-  HasOne,
   ManyToMany,
   belongsTo,
   column,
-  hasOne,
   manyToMany,
 } from '@ioc:Adonis/Lucid/Orm'
 import BlogCategory from './BlogCategory'
 import Language from '../Language'
-import Image from '../Image'
+import {
+  ResponsiveAttachmentContract,
+  responsiveAttachment,
+} from '@ioc:Adonis/Addons/ResponsiveAttachment'
 
 export default class Blog extends BaseModel {
   @column({ isPrimary: true })
@@ -23,8 +24,14 @@ export default class Blog extends BaseModel {
   @column()
   public slug: string
 
-  @hasOne(() => Image)
-  public image: HasOne<typeof Image>
+  @responsiveAttachment({
+    folder: 'blogs',
+    preComputeUrls: true,
+    forceFormat: 'webp',
+    disableThumbnail: true,
+    responsiveDimensions: false,
+  })
+  public thumbnail: ResponsiveAttachmentContract
 
   @manyToMany(() => BlogCategory, {
     pivotTable: 'blog_categories_pivot',

@@ -25,13 +25,6 @@ const filter = reactive<AdditionalParams>({
 
 const { data, loading, onRequest, pagination, tableRef } = useGetTableData(
   'product-subcategory',
-  {
-    populate: {
-      thumbnail: {
-        fields: ['url']
-      }
-    },
-  }
 );
 
 

@@ -7,7 +7,6 @@ import {
   ManyToMany,
   belongsTo,
   column,
-  computed,
   hasMany,
   hasOne,
   manyToMany,
@@ -18,9 +17,14 @@ import ServiceSubcategory from './ServiceSubcategory'
 import Seo from '../Seo'
 import ServiceTag from './ServiceTag'
 import Faq from '../Faq'
-import Image from '../Image'
 import Social from '../Social'
 import Address from '../address/Address'
+import {
+  ResponsiveAttachmentContract,
+  responsiveAttachment,
+} from '@ioc:Adonis/Addons/ResponsiveAttachment'
+import { attachment, AttachmentContract } from '@ioc:Adonis/Addons/AttachmentLite'
+import Image from '../Image'
 import Video from '../Video'
 
 export default class Service extends BaseModel {
@@ -78,9 +82,6 @@ export default class Service extends BaseModel {
   @hasOne(() => Address)
   public address: HasOne<typeof Address>
 
-  @hasOne(() => Video)
-  public video: HasOne<typeof Video>
-
   @hasMany(() => Faq)
   public faqs: HasMany<typeof Faq>
 
@@ -89,84 +90,38 @@ export default class Service extends BaseModel {
   })
   public tags: ManyToMany<typeof ServiceTag>
 
+  @responsiveAttachment({
+    folder: 'service/logo',
+    preComputeUrls: true,
+    forceFormat: 'webp',
+    disableThumbnail: true,
+    responsiveDimensions: false,
+  })
+  public logo: ResponsiveAttachmentContract
+
   @hasMany(() => Image)
-  public images: HasMany<typeof Image>
+  public screenshots: HasMany<typeof Image>
 
-  @computed()
-  public get logo() {
-    const logo = this.images
-      ? this.images.filter((i) => {
-          if (i.type === 'Thumbnail') {
-            return true
-          } else {
-            return false
-          }
-        })
-      : null
+  @responsiveAttachment({
+    folder: 'service/cover',
+    preComputeUrls: true,
+    forceFormat: 'webp',
+    disableThumbnail: true,
+    responsiveDimensions: false,
+  })
+  public cover: ResponsiveAttachmentContract
 
-    if (logo && logo.length > 0) {
-      return logo[0]
-    } else {
-      return null
-    }
-  }
+  @hasOne(() => Video)
+  public video: HasOne<typeof Video>
 
-  @computed()
-  public get coverImage() {
-    const cover = this.images
-      ? this.images.filter((i) => {
-          if (i.type === 'Cover') {
-            return true
-          } else {
-            return false
-          }
-        })
-      : null
-
-    if (cover && cover.length > 0) {
-      return cover[0]
-    } else {
-      return null
-    }
-  }
-
-  @computed()
-  public get brocherImage() {
-    const Brocher = this.images
-      ? this.images.filter((i) => {
-          if (i.type === 'Brocher') {
-            return true
-          } else {
-            return false
-          }
-        })
-      : null
-
-    if (Brocher && Brocher.length > 0) {
-      return Brocher[0]
-    } else {
-      return null
-    }
-  }
-
-  @computed()
-  public get screenShots() {
-    const images = this.images
-      ? this.images.filter((i) => {
-          if (i.type === 'Image') {
-            return true
-          } else {
-            return false
-          }
-        })
-      : null
-
-    if (images && images.length > 0) {
-      return images
-    } else {
-      return null
-    }
-  }
+  @responsiveAttachment({
+    folder: 'service/brocher',
+    preComputeUrls: true,
+    forceFormat: 'webp',
+    disableThumbnail: true,
+    responsiveDimensions: false,
+  })
+  public brocher: ResponsiveAttachmentContract
 
   @column.dateTime({ autoCreate: true })
   public createdAt: DateTime

@@ -9,13 +9,7 @@ const uploads = ref('');
 
 
 const template = ref<null | Record<string, any>>(null);
-templateApi.show(route.params.id as string, {
-  populate: {
-    thumbnail: {
-      fields: ['url', 'type']
-    },
-  },
-}).then(({ data }) => {
+templateApi.show(route.params.id as string).then(({ data }) => {
   template.value = data.value;
 });
 

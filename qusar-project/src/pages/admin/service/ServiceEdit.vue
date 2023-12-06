@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { useRoute, useRouter } from 'vue-router';
-import { rules } from '../../../utils/validationRules';
 import {
   serviceApi,
   serviceCategoryApi,
@@ -65,11 +64,8 @@ const form = ref({
 const service = ref<null | Record<string, any>>(null)
 serviceApi.show(route.params.id as string, {
   populate: {
-    images: {
-      fields: ['url', 'type', 'id']
-    },
     video: {
-      fields: ['url', 'type']
+      fields: ['*']
     },
     tags: {
       fields: ['name', 'id']
@@ -81,6 +77,9 @@ serviceApi.show(route.params.id as string, {
       fields: ['*']
     },
     seo: {
+      fields: ['*']
+    },
+    screenshots: {
       fields: ['*']
     }
   }
@@ -153,6 +152,10 @@ const { execute: serviceProduct, loading: posting } =
   serviceApi.put(route.params.id as string, form.value, {
     headers: {
       'Content-Type': 'multipart/form-data'
+    }
+  }, {
+    onSuccess: () => {
+      router.push({ name: 'admin.service.index' });
     }
   });
 
@@ -279,19 +282,19 @@ onMounted(() => {
         <div class="col-12 q-mb-xl">
           <div class=" q-py-xs" style="font-weight: 500;">Service cover</div>
           <ImageInput name="logo" @image="(f) => { form.cover = f as unknown as null }" style="max-width: 15rem;"
-            :url="service?.coverImage?.url && uploads + service?.coverImage?.url" />
+            :url="service?.cover?.url && uploads + service?.cover?.url" />
         </div>
         <div class="col-12 q-mb-xl">
           <div class=" q-py-xs" style="font-weight: 500;">Service Brochure</div>
           <ImageInput name="logo" @image="(f) => { form.brocher = f as unknown as null }" style="max-width: 15rem;"
-            :url="service?.brocherImage?.url && uploads + service?.brocherImage?.url" />
+            :url="service?.brocher?.url && uploads + service?.brocher?.url" />
         </div>
         <div class="col-12 q-mb-xl">
           <div class="q-py-md" style="font-weight: 500;">Service Screenshots (Max 5 images)</div>
           <div class="row q-my-md q-col-gutter-md">
-            <div v-for="(s, i) in service?.screenShots" :key="i" class="relative-position">
+            <div v-for="(s, i) in service?.screenshots" :key="i" class="relative-position">
               <q-img alt="Preview" style="height: 15rem; width: 15rem;border: 1px solid #e6e4d9;border-radius: 1rem;"
-                :src="uploads + s?.url" />
+                :src="uploads + s?.file.url" />
               <q-badge floating color="red" style="cursor: pointer;" @click="() => deleteSavedScreenshot(s?.id, i)">
                 <q-icon name="close" />
               </q-badge>
@@ -307,7 +310,7 @@ onMounted(() => {
               </label>
               <q-file for="multiple-image" dense filled multiple v-model="form.images"
                 accept="image/jpeg,image/png,image/webp" max-file-size="3000000" label="Upload Image"
-                style="display: none;" append :max-files="service?.screenShots ? 5 - service.screenShots.length : 5" />
+                style="display: none;" append :max-files="service?.screenshots ? 5 - service.screenshots.length : 5" />
               Upload Screenshots
             </div>
           </MultiImageInput>
@@ -315,7 +318,7 @@ onMounted(() => {
         <div class="col-12 q-mb-xl" style="max-width: 25rem;">
           <div class=" q-py-xs" style="font-weight: 500;">Product Video (Mp4/Mpeg)</div>
           <VideoInput name="video" @video="(v) => { form.video = v as unknown as null }"
-            :url="service?.video?.url && uploads + service?.video?.url" />
+            :url="service?.video && uploads + service?.video?.file?.url" />
         </div>
         <div class="col-12 q-mb-xl">
           <div class="q-py-md" style="font-weight: 500;">Social Information</div>

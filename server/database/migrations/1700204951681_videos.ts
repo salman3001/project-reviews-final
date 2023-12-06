@@ -7,8 +7,7 @@ export default class extends BaseSchema {
   public async up() {
     this.schema.createTable(this.tableName, (table) => {
       table.increments('id')
-      table.string('url', 2083)
-      table.enum('type', Object.values(VideoType)).defaultTo('Video').notNullable()
+      table.json('file')
       table
         .integer('product_id')
         .unsigned()

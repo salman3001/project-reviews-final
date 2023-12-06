@@ -19,7 +19,10 @@ import Social from '../Social'
 import FavoriteLink from '../FavoriteLink'
 import Experience from './Experience'
 import Skill from './Skill'
-import Image from '../Image'
+import {
+  ResponsiveAttachmentContract,
+  responsiveAttachment,
+} from '@ioc:Adonis/Addons/ResponsiveAttachment'
 
 export default class User extends BaseModel {
   @column({ isPrimary: true })
@@ -55,8 +58,14 @@ export default class User extends BaseModel {
   @column()
   public isPublic: boolean
 
-  @hasOne(() => Image)
-  public avatar: HasOne<typeof Image>
+  @responsiveAttachment({
+    folder: 'user',
+    preComputeUrls: true,
+    forceFormat: 'webp',
+    disableThumbnail: true,
+    responsiveDimensions: false,
+  })
+  public avatar: ResponsiveAttachmentContract
 
   @hasOne(() => Social)
   public social: HasOne<typeof Social>

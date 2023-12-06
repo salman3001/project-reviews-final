@@ -259,9 +259,6 @@ const editUserStore = defineStore('editUser', () => {
   const getInitialValues = async (id: string) => {
     const { data } = await userApi.show(id, {
       populate: {
-        avatar: {
-          fields: ['url'],
-        },
         address: {
           fields: ['*'],
         },

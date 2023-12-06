@@ -30,9 +30,6 @@ const { data, loading, onRequest, pagination, tableRef } = useGetTableData(
       subCategory: {
         fields: ['name', 'id'],
       },
-      thumbnail: {
-        fields: ['url']
-      }
     },
   }
 );

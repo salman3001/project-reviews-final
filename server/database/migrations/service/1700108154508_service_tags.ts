@@ -10,6 +10,7 @@ export default class extends BaseSchema {
       table.string('short_desc')
       table.text('long_desc')
       table.boolean('status').defaultTo(false).notNullable()
+      table.json('thumbnail')
       /**
        * Uses timestamptz for PostgreSQL and DATETIME2 for MSSQL
        */

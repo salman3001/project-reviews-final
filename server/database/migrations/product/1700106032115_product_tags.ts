@@ -9,7 +9,7 @@ export default class extends BaseSchema {
       table.string('name').notNullable()
       table.string('short_desc')
       table.text('long_desc')
-
+      table.json('thumbnail')
       /**
        * Uses timestamptz for PostgreSQL and DATETIME2 for MSSQL
        */

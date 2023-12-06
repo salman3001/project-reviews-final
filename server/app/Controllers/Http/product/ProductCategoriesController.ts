@@ -1,8 +1,8 @@
+import { ResponsiveAttachment } from '@ioc:Adonis/Addons/ResponsiveAttachment'
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import ProductCategory from 'App/Models/product/ProductCategory'
 import CategoryCreateValidator from 'App/Validators/product/CategoryCreateValidator'
 import CategoryUpdateValidator from 'App/Validators/product/CategoryUpdateValidator'
-import ImageService from 'App/services/ImageService'
 import ProductCategoryService from 'App/services/product/ProductCategoryService'
 
 export default class ProductCategoriesController {
@@ -25,10 +25,10 @@ export default class ProductCategoriesController {
     }
 
     if (payload.image) {
-      const img = await ImageService.store(payload.image, `/product-category/`, 'thumb')
-      await category.related('thumbnail').save(img)
+      category.thumbnail = await ResponsiveAttachment.fromFile(payload.image)
     }
 
+    await category.save()
     return response.json({ message: 'record created', data: category })
   }
 
@@ -68,24 +68,14 @@ export default class ProductCategoriesController {
     }
 
     if (payload.image) {
-      await category.load('thumbnail')
-      if (category.thumbnail) {
-        await ImageService.destroy(category.thumbnail.id)
-      }
-      const img = await ImageService.store(payload.image, `/product-category/`, 'thumb')
-
-      await category.related('thumbnail').save(img)
+      category.thumbnail = await ResponsiveAttachment.fromFile(payload.image)
     }
+    await category.save()
 
     return response.json({ message: 'record created', data: category })
   }
 
   public async destroy({ params, response }: HttpContextContract) {
-    const category = await ProductCategory.findOrFail(+params.id)
-    await category.load('thumbnail')
-    if (category.thumbnail) {
-      await ImageService.destroy(category.thumbnail.id)
-    }
     await ProductCategoryService.destroy(+params.id)
     return response.json({ message: 'record deleted' })
   }

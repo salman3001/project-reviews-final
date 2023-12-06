@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { useRoute, useRouter } from 'vue-router';
-import { rules } from '../../../utils/validationRules';
 import {
   productApi,
   productCategoryApi,
@@ -65,12 +64,6 @@ const form = ref({
 const product = ref<null | Record<string, any>>(null)
 productApi.show(route.params.id as string, {
   populate: {
-    images: {
-      fields: ['url', 'type', 'id']
-    },
-    video: {
-      fields: ['url', 'type']
-    },
     tags: {
       fields: ['name', 'id']
     },
@@ -81,6 +74,12 @@ productApi.show(route.params.id as string, {
       fields: ['*']
     },
     seo: {
+      fields: ['*']
+    },
+    screenshots: {
+      fields: ['*']
+    },
+    video: {
       fields: ['*']
     }
   }
@@ -154,6 +153,10 @@ const { execute: updateProduct, loading: posting } =
     headers: {
       'Content-Type': 'multipart/form-data'
     }
+  }, {
+    onSuccess: () => {
+      router.push({ name: 'admin.product.index' });
+    }
   });
 
 const submit = () => {
@@ -168,7 +171,7 @@ const deleteSavedScreenshot = (id: string, index: number) => {
   if (confirm('Are you sure you want to delete the saved screenshot')) {
     productApi.deleteScreenShot(id, {}, {
       onSuccess: () => {
-        product.value?.screenShots?.splice(index, 1)
+        product.value?.screenshots?.splice(index, 1)
       }
     })
   }
@@ -215,7 +218,7 @@ onMounted(() => {
           <div class="col-12 q-mb-xl">
             <div class="q-py-xs" style="font-weight: 500;">Product Log</div>
             <ImageInput name="logo" @image="(f) => { form.logo = f as unknown as null }" style="max-width: 15rem;"
-              :url="product?.logo?.url && uploads + product?.logo?.url" />
+              :url="product?.logo && uploads + product?.logo?.url" />
           </div>
           <q-input outlined v-model="form.product.name" label="ProductName" class="col-12 col-sm-6 col-md-3" :rules="[
             $rules.required('Product name is required'),
@@ -279,19 +282,19 @@ onMounted(() => {
         <div class="col-12 q-mb-xl">
           <div class=" q-py-xs" style="font-weight: 500;">Product cover</div>
           <ImageInput name="logo" @image="(f) => { form.cover = f as unknown as null }" style="max-width: 15rem;"
-            :url="product?.coverImage?.url && uploads + product?.coverImage?.url" />
+            :url="product?.cover && uploads + product?.cover?.url" />
         </div>
         <div class="col-12 q-mb-xl">
           <div class=" q-py-xs" style="font-weight: 500;">Product Brochure</div>
           <ImageInput name="logo" @image="(f) => { form.brocher = f as unknown as null }" style="max-width: 15rem;"
-            :url="product?.brocherImage?.url && uploads + product?.brocherImage?.url" />
+            :url="product?.brocher && uploads + product?.brocher?.url" />
         </div>
         <div class="col-12 q-mb-xl">
           <div class="q-py-md" style="font-weight: 500;">Product Screenshots (Max 5 images)</div>
           <div class="row q-my-md q-col-gutter-md">
-            <div v-for="(s, i) in product?.screenShots" :key="i" class="relative-position">
+            <div v-for="(s, i) in product?.screenshots" :key="i" class="relative-position">
               <q-img alt="Preview" style="height: 15rem; width: 15rem;border: 1px solid #e6e4d9;border-radius: 1rem;"
-                :src="uploads + s?.url" />
+                :src="uploads + s?.file?.url" />
               <q-badge floating color="red" style="cursor: pointer;" @click="() => deleteSavedScreenshot(s?.id, i)">
                 <q-icon name="close" />
               </q-badge>
@@ -307,7 +310,7 @@ onMounted(() => {
               </label>
               <q-file for="multiple-image" dense filled multiple v-model="form.images"
                 accept="image/jpeg,image/png,image/webp" max-file-size="3000000" label="Upload Image"
-                style="display: none;" append :max-files="product?.screenShots ? 5 - product.screenShots.length : 5" />
+                style="display: none;" append :max-files="product?.screenshots ? 5 - product.screenshots.length : 5" />
               Upload Screenshots
             </div>
           </MultiImageInput>
@@ -315,7 +318,7 @@ onMounted(() => {
         <div class="col-12 q-mb-xl" style="max-width: 25rem;">
           <div class=" q-py-xs" style="font-weight: 500;">Product Video (Mp4/Mpeg)</div>
           <VideoInput name="video" @video="(v) => { form.video = v as unknown as null }"
-            :url="product?.video?.url && uploads + product?.video?.url" />
+            :url="product?.video && uploads + product?.video?.file?.url" />
         </div>
         <div class="col-12 q-mb-xl">
           <div class="q-py-md" style="font-weight: 500;">Social Information</div>

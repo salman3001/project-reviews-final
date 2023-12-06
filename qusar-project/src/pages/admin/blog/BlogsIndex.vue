@@ -80,9 +80,6 @@ const { data, loading, onRequest, pagination, tableRef } = useGetTableData(
       language: {
         fields: ['name', 'id'],
       },
-      image: {
-        fields: ['url'],
-      },
     },
   }
 );
@@ -133,10 +130,10 @@ onMounted(() => {
     <div class="colomn q-gutter-y-lg" style="width: 100%">
       <div class="row justify-between q-gutter-y-sm">
         <SearchInput @search="(val) => {
-            //@ts-ignore
-            filter.search.title = val;
-            //@ts-ignore
-          }
+          //@ts-ignore
+          filter.search.title = val;
+          //@ts-ignore
+        }
           " />
 
         <div class="row q-gutter-sm">
@@ -164,8 +161,8 @@ onMounted(() => {
             </q-list>
           </q-btn-dropdown>
           <q-btn color="primary" @click="() => {
-              router.push({ name: 'admin.blogs.create' });
-            }
+            router.push({ name: 'admin.blogs.create' });
+          }
             ">+ Add blog</q-btn>
         </div>
       </div>
@@ -181,9 +178,9 @@ onMounted(() => {
                   display: flex;
                   padding: 5px;
                 ">
-                <img :src="props.row?.image?.url
-                    ? uploads + props.row?.image?.url
-                    : '/images/dummy-thumb.jpg'
+                <img :src="props.row?.thumbnail
+                  ? uploads + props.row?.thumbnail?.url
+                  : '/images/dummy-thumb.jpg'
                   " style="width: 100%; object-fit: cover" />
               </div>
               <div class="ellipsis-2-lines" style="text-overflow: ellipsis">
@@ -206,11 +203,11 @@ onMounted(() => {
               <q-btn-dropdown size="sm" color="primary" label="Options">
                 <q-list dense>
                   <q-item clickable v-close-popup @click="() => {
-                      router.push({
-                        name: 'admin.blogs.show',
-                        params: { id: props.row.id },
-                      });
-                    }
+                    router.push({
+                      name: 'admin.blogs.show',
+                      params: { id: props.row.id },
+                    });
+                  }
                     ">
                     <q-item-section>
                       <q-item-label>
@@ -218,11 +215,11 @@ onMounted(() => {
                     </q-item-section>
                   </q-item>
                   <q-item clickable v-close-popup @click="() => {
-                      router.push({
-                        name: 'admin.blogs.edit',
-                        params: { id: props.row.id },
-                      });
-                    }
+                    router.push({
+                      name: 'admin.blogs.edit',
+                      params: { id: props.row.id },
+                    });
+                  }
                     ">
                     <q-item-section>
                       <q-item-label>

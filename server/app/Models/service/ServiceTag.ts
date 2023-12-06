@@ -1,8 +1,11 @@
 import { DateTime } from 'luxon'
 import { BaseModel, HasMany, HasOne, column, hasMany, hasOne } from '@ioc:Adonis/Lucid/Orm'
-import Image from '../Image'
 import Faq from '../Faq'
 import Seo from '../Seo'
+import {
+  ResponsiveAttachmentContract,
+  responsiveAttachment,
+} from '@ioc:Adonis/Addons/ResponsiveAttachment'
 
 export default class ServiceTag extends BaseModel {
   @column({ isPrimary: true })
@@ -17,8 +20,14 @@ export default class ServiceTag extends BaseModel {
   @column()
   public longDesc: string
 
-  @hasOne(() => Image)
-  public thumbnail: HasOne<typeof Image>
+  @responsiveAttachment({
+    folder: 'service-tag',
+    preComputeUrls: true,
+    forceFormat: 'webp',
+    disableThumbnail: true,
+    responsiveDimensions: false,
+  })
+  public thumbnail: ResponsiveAttachmentContract
 
   @hasMany(() => Faq)
   public faqs: HasMany<typeof Faq>

@@ -3,7 +3,7 @@ import Blog from 'App/Models/blogs/Blog'
 import BlogValidator from 'App/Validators/blogs/BlogValidator'
 import slugify from 'slugify'
 import BlogService from 'App/services/blogs/BlogService'
-import ImageService from 'App/services/ImageService'
+import { ResponsiveAttachment } from '@ioc:Adonis/Addons/ResponsiveAttachment'
 
 export default class BlogsController {
   public async index({ request, response }: HttpContextContract) {
@@ -13,8 +13,6 @@ export default class BlogsController {
   }
 
   public async store({ request, response }: HttpContextContract) {
-    console.log(request.file('image'))
-
     const { image, blogCategoryId, slug, ...payload } = await request.validate(BlogValidator)
 
     let blog: null | Blog = null
@@ -30,10 +28,10 @@ export default class BlogsController {
     }
 
     if (image) {
-      const createdImage = await ImageService.store(image, '/blogs/', 'blog')
-      await blog.related('image').save(createdImage)
+      blog.thumbnail = await ResponsiveAttachment.fromFile(image)
     }
 
+    await blog.save()
     return response.json({ message: 'Blog Created' })
   }
 
@@ -60,27 +58,15 @@ export default class BlogsController {
     }
 
     if (image) {
-      await blog?.load('image')
-      if (blog?.image) {
-        await ImageService.destroy(blog.image.id)
-        await blog.image.delete()
-      }
-      const createdImage = await ImageService.store(image, '/blogs/', 'blog')
-      blog && (await blog.related('image').save(createdImage))
+      blog.thumbnail = await ResponsiveAttachment.fromFile(image)
     }
 
+    await blog.save()
     return response.json({ message: 'Blog Updated' })
   }
 
   public async destroy({ params, response }: HttpContextContract) {
-    const blog = await BlogService.show(+params.id)
-    if (blog) {
-      await blog.load('image')
-      if (blog.image) {
-        await blog.image.delete()
-      }
-      await blog.delete()
-    }
+    await BlogService.destroy(+params.id)
     return response.json({ message: 'record deleted' })
   }
 

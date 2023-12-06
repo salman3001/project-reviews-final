@@ -17,9 +17,6 @@ serviceSubCategoryApi.show(route.params.id as string, {
     seo: {
       fields: ['*']
     },
-    thumbnail: {
-      fields: ['url', 'type']
-    },
   },
 }).then(({ data }) => {
   subcategory.value = data.value;

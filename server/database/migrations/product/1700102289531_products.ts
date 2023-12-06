@@ -15,6 +15,10 @@ export default class extends BaseSchema {
       table.integer('user_id').unsigned().references('id').inTable('users').onDelete('CASCADE')
       table.boolean('status').defaultTo(false).notNullable()
       table.boolean('specific_location').defaultTo(false).notNullable()
+      table.json('logo')
+      table.json('cover')
+      table.json('video')
+      table.json('brocher')
       table
         .integer('product_category_id')
         .unsigned()

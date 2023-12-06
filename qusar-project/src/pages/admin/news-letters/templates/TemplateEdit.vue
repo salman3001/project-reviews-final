@@ -22,13 +22,7 @@ const form = ref({
 });
 
 const template = ref<Record<string, any> | null>(null)
-templateApi.show(route.params.id as string, {
-  populate: {
-    thumbnail: {
-      fields: ['url']
-    }
-  }
-}).then(({ data }) => {
+templateApi.show(route.params.id as string).then(({ data }) => {
   template.value = data.value
 
   form.value.template.name = (data.value as any)?.name || ''

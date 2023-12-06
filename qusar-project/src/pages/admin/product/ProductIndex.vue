@@ -45,9 +45,6 @@ const { data, loading, onRequest, pagination, tableRef } = useGetTableData(
       productSubcategory: {
         fields: ['name', 'id'],
       },
-      images: {
-        fields: ['url', 'type']
-      }
     },
   }
 );
@@ -186,7 +183,7 @@ onMounted(() => {
                   display: flex;
                   padding: 5px;
                 ">
-                <img :src="props.row?.logo?.url
+                <img :src="props.row?.logo
                   ? uploads + props.row?.logo?.url
                   : '/images/dummy-thumb.jpg'
                   " style="width: 100%; object-fit: cover" />

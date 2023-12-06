@@ -30,7 +30,7 @@ export default class BlogValidator {
     blogCategoryId: schema.number.optional(),
     languageId: schema.number.optional(),
     image: schema.file.optional({
-      extnames: ['JPG', 'jpg', 'jpeg', 'png', 'gif', 'webp'],
+      extnames: ['jpg', 'JPG', 'jpeg', 'JPEG', 'png', 'PNG', 'webp', 'WEBP'],
       size: '3mb',
     }),
     shortDesc: schema.string.optional(),

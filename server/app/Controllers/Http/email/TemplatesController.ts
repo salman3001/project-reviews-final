@@ -1,7 +1,7 @@
+import { ResponsiveAttachment } from '@ioc:Adonis/Addons/ResponsiveAttachment'
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import Template from 'App/Models/email/Template'
 import CreateTemplateValidator from 'App/Validators/news-letter/CreateTemplateValidator'
-import ImageService from 'App/services/ImageService'
 import TemplateService from 'App/services/email/TemplateService'
 
 export default class TemplatesController {
@@ -16,10 +16,10 @@ export default class TemplatesController {
     const template = await Template.create(payload.template)
 
     if (payload.thumbnail) {
-      const img = await ImageService.store(payload.thumbnail, '/template/', 'template-thumb-')
-
-      template.related('thumbnail').save(img)
+      template.thumbnail = await ResponsiveAttachment.fromFile(payload.thumbnail)
     }
+
+    await template.save()
     return response.json({ message: 'record created', data: template })
   }
 
@@ -37,23 +37,14 @@ export default class TemplatesController {
     await template.save()
 
     if (payload.thumbnail) {
-      await template.load('thumbnail')
-      if (template.thumbnail) {
-        await ImageService.destroy(template.thumbnail.id)
-      }
-      const img = await ImageService.store(payload.thumbnail, '/template/', 'template-thumb-')
-      template.related('thumbnail').save(img)
+      template.thumbnail = await ResponsiveAttachment.fromFile(payload.thumbnail)
     }
+    await template.save()
     return response.json({ message: 'record created', data: template })
   }
 
   public async destroy({ params, response }: HttpContextContract) {
     const template = await Template.findOrFail(+params.id)
-    await template.load('thumbnail')
-    if (template.thumbnail) {
-      await ImageService.destroy(template.thumbnail.id)
-    }
-
     await template.delete()
     return response.json({ message: 'record deleted' })
   }

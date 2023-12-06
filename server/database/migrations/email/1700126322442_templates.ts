@@ -9,6 +9,7 @@ export default class extends BaseSchema {
       table.string('name', 50).notNullable
       table.string('desc')
       table.text('content')
+      table.json('thumbnail')
       table
         .integer('campaign_id')
         .unsigned()

@@ -21,14 +21,7 @@ const filter = reactive<AdditionalParams>({
 
 
 const { data, loading, onRequest, pagination, tableRef } = useGetTableData(
-  'service-tags',
-  {
-    populate: {
-      thumbnail: {
-        fields: ['url']
-      }
-    },
-  }
+  'service-tags'
 );
 
 

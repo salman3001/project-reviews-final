@@ -14,7 +14,8 @@ defineProps<{
     <div class="column q-gutter-y-md">
       <div class="row q-col-gutter-md items-center">
         <q-input outlined v-for="(f, i) in createUser.form.favoriteLinks" :key="i" v-model="f.link"
-          class="col-12 col-sm-6 col-md-3" :label="'Link' + ' ' + (i + 1)" clear-icon="close">
+          class="col-12 col-sm-6 col-md-3" :label="'Link' + ' ' + (i + 1)" clear-icon="close"
+          :rules="[$rules.required('Field is required')]">
           <template v-slot:append>
             <q-icon v-if="i > 0" name="close" color="primary" @click="() => createUser.popFavoriteLinks()" />
           </template>

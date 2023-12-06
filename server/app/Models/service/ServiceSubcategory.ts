@@ -10,10 +10,13 @@ import {
   hasOne,
 } from '@ioc:Adonis/Lucid/Orm'
 import ServiceCategory from './ServiceCategory'
-import Image from '../Image'
 import Faq from '../Faq'
 import Seo from '../Seo'
 import Service from './Service'
+import {
+  ResponsiveAttachmentContract,
+  responsiveAttachment,
+} from '@ioc:Adonis/Addons/ResponsiveAttachment'
 
 export default class ServiceSubcategory extends BaseModel {
   @column({ isPrimary: true })
@@ -37,8 +40,14 @@ export default class ServiceSubcategory extends BaseModel {
   @belongsTo(() => ServiceCategory)
   public serviceCategory: BelongsTo<typeof ServiceCategory>
 
-  @hasOne(() => Image)
-  public thumbnail: HasOne<typeof Image>
+  @responsiveAttachment({
+    folder: 'service/subcategory',
+    preComputeUrls: true,
+    forceFormat: 'webp',
+    disableThumbnail: true,
+    responsiveDimensions: false,
+  })
+  public thumbnail: ResponsiveAttachmentContract
 
   @hasMany(() => Service)
   public Services: HasMany<typeof Service>

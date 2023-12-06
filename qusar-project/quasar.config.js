@@ -65,8 +65,8 @@ module.exports = configure(function (ctx) {
       // analyze: true,
       env: {
         UPLOAD: ctx.dev
-          ? 'http://127.0.0.1:3333/uploads'
-          : 'https://project-reviews-server.onrender.com/uploads',
+          ? 'http://127.0.0.1:3333'
+          : 'https://project-reviews-server.onrender.com',
         baseApi: ctx.dev
           ? 'http://127.0.0.1:3333/api'
           : 'https://project-reviews-server.onrender.com/api',

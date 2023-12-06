@@ -1,4 +1,4 @@
-import { schema, CustomMessages, rules } from '@ioc:Adonis/Core/Validator'
+import { schema, CustomMessages } from '@ioc:Adonis/Core/Validator'
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 
 export default class CategoryCreateValidator {
@@ -25,7 +25,7 @@ export default class CategoryCreateValidator {
    */
   public schema = schema.create({
     image: schema.file.optional({
-      extnames: ['jpg', 'jpeg', 'png', 'webp', 'gif'],
+      extnames: ['jpg', 'JPG', 'jpeg', 'JPEG', 'png', 'PNG', 'webp', 'WEBP'],
       size: '2mb',
     }),
     category: schema.object().members({

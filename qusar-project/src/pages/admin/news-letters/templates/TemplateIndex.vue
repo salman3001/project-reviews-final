@@ -22,13 +22,6 @@ const filter = reactive<AdditionalParams>({
 
 const { data, loading, onRequest, pagination, tableRef } = useGetTableData(
   'template',
-  {
-    populate: {
-      thumbnail: {
-        fields: ['url']
-      }
-    },
-  }
 );
 
 

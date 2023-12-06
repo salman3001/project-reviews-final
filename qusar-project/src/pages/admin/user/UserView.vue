@@ -1,24 +1,12 @@
 <script setup lang="ts">
-import createUserStore from 'src/stores/createUserStore';
 import { onMounted, ref } from 'vue';
 import { date } from 'quasar';
 import {
-  CityApi,
-  CountriesApi,
-  StateApi,
-  JobIndustryApi,
-  JobDepartmentApi,
-  LanguageApi,
   userApi
 } from 'src/utils/BaseApiService';
 import { useRoute, useRouter } from 'vue-router';
 
 const uploads = ref('')
-
-const createUser = createUserStore()
-defineProps<{
-  step: number
-}>()
 
 
 const route = useRoute()
@@ -28,9 +16,6 @@ const { formatDate } = date
 const user = ref<Record<string, any> | null>(null)
 userApi.show(route.params.id as string, {
   populate: {
-    avatar: {
-      fields: ['url']
-    },
     social: {
       fields: ['*']
     },

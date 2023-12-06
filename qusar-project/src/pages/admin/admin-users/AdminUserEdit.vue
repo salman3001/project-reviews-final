@@ -99,9 +99,6 @@ onMounted(async () => {
           role: {
             fields: ['id'],
           },
-          avatar: {
-            fields: ['url'],
-          },
           address: {
             populate: {
               continent: {
@@ -192,7 +189,7 @@ onMounted(async () => {
     <q-form class="column q-gutter-y-md" @submit="submit">
       <p class="text-subtitle1">General Information</p>
       <div>
-        <ProfileImageInput name="image" :url="user?.avatar?.url
+        <ProfileImageInput name="image" :url="user?.avatar
           ? uploads + user?.avatar?.url
           : '/images/upload-preview.png'
           " />

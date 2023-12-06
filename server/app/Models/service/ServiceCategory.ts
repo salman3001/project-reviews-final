@@ -2,9 +2,12 @@ import { DateTime } from 'luxon'
 import { BaseModel, HasMany, HasOne, column, hasMany, hasOne } from '@ioc:Adonis/Lucid/Orm'
 import Faq from '../Faq'
 import Seo from '../Seo'
-import Image from '../Image'
 import Service from './Service'
 import ServiceSubcategory from './ServiceSubcategory'
+import {
+  ResponsiveAttachmentContract,
+  responsiveAttachment,
+} from '@ioc:Adonis/Addons/ResponsiveAttachment'
 
 export default class ServiceCategory extends BaseModel {
   @column({ isPrimary: true })
@@ -22,8 +25,14 @@ export default class ServiceCategory extends BaseModel {
   @column()
   public status: boolean
 
-  @hasOne(() => Image)
-  public thumbnail: HasOne<typeof Image>
+  @responsiveAttachment({
+    folder: 'service-category',
+    preComputeUrls: true,
+    forceFormat: 'webp',
+    disableThumbnail: true,
+    responsiveDimensions: false,
+  })
+  public thumbnail: ResponsiveAttachmentContract
 
   @hasMany(() => ServiceSubcategory)
   public subCategory: HasMany<typeof ServiceSubcategory>

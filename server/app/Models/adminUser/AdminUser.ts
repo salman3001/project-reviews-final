@@ -9,10 +9,13 @@ import {
   belongsTo,
   BelongsTo,
 } from '@ioc:Adonis/Lucid/Orm'
-import Image from '../Image'
 import Role from './Role'
 import Address from '../address/Address'
 import Social from '../Social'
+import {
+  responsiveAttachment,
+  ResponsiveAttachmentContract,
+} from '@ioc:Adonis/Addons/ResponsiveAttachment'
 
 export default class AdminUser extends BaseModel {
   @column({ isPrimary: true })
@@ -56,10 +59,14 @@ export default class AdminUser extends BaseModel {
   @hasOne(() => Social)
   public social: HasOne<typeof Social>
 
-  @hasOne(() => Image, {
-    foreignKey: 'adminUserId',
+  @responsiveAttachment({
+    folder: 'admin-user',
+    preComputeUrls: true,
+    forceFormat: 'webp',
+    disableThumbnail: true,
+    responsiveDimensions: false,
   })
-  public avatar: HasOne<typeof Image>
+  public avatar: ResponsiveAttachmentContract
 
   @column.dateTime({ autoCreate: true })
   public createdAt: DateTime

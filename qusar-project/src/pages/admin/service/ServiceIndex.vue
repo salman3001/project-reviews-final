@@ -45,9 +45,6 @@ const { data, loading, onRequest, pagination, tableRef } = useGetTableData(
       serviceSubcategory: {
         fields: ['name', 'id'],
       },
-      images: {
-        fields: ['url', 'type']
-      }
     },
   }
 );

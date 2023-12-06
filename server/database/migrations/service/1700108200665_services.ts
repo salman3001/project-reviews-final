@@ -16,7 +16,10 @@ export default class extends BaseSchema {
       table.string('company_name')
       table.boolean('status').defaultTo(false).notNullable()
       table.boolean('specific_location').defaultTo(false).notNullable()
-
+      table.json('logo')
+      table.json('cover')
+      table.json('video')
+      table.json('brocher')
       table
         .enum('location_type', Object.values(ServiceLocationType))
         .defaultTo('Physical')

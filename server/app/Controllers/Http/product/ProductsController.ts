@@ -1,5 +1,5 @@
+import { ResponsiveAttachment } from '@ioc:Adonis/Addons/ResponsiveAttachment'
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
-import { ImageTypes } from 'App/Helpers/enums'
 import Image from 'App/Models/Image'
 import Product from 'App/Models/product/Product'
 import ProductCreateValidator from 'App/Validators/product/ProductCreateValidator'
@@ -35,51 +35,23 @@ export default class ProductsController {
       await product.related('faq').createMany(payload.faq)
     }
 
-    const productFolderName = `product-${product.id}`
-
     if (payload.logo) {
-      const img = await ImageService.store(
-        payload.logo,
-        `/products/${productFolderName}/logos/`,
-        'Product-logo',
-        ImageTypes.THUMB
-      )
-
-      await product.related('images').save(img)
+      product.logo = await ResponsiveAttachment.fromFile(payload.logo)
     }
 
     if (payload.cover) {
-      const img = await ImageService.store(
-        payload.cover,
-        `/products/${productFolderName}/cover/`,
-        'Product-cover',
-        ImageTypes.COVER
-      )
-
-      await product.related('images').save(img)
+      product.cover = await ResponsiveAttachment.fromFile(payload.cover)
     }
 
     if (payload.brocher) {
-      const img = await ImageService.store(
-        payload.brocher,
-        `/products/${productFolderName}/brocher/`,
-        'Product-brocher',
-        ImageTypes.BROCHER
-      )
-
-      await product.related('images').save(img)
+      product.brocher = await ResponsiveAttachment.fromFile(payload.brocher)
     }
 
     if (payload.images) {
       const images = await Promise.all(
         payload.images.map(async (img) => {
           try {
-            const storeImg = await ImageService.store(
-              img,
-              `/products/${productFolderName}/screenshots/`,
-              'Product-Screeshot',
-              ImageTypes.IMG
-            )
+            const storeImg = await ImageService.store(img)
             return storeImg
           } catch (error) {
             console.error('Error storing image:', error)
@@ -92,18 +64,15 @@ export default class ProductsController {
       // Filter out any null values (images that failed to store)
       const validImages = images.filter((img) => img !== null)
 
-      await product.related('images').saveMany(validImages as Image[])
+      await product.related('screenshots').saveMany(validImages as Image[])
     }
 
     if (payload.video) {
-      const video = await VideoService.store(
-        payload.video,
-        `/products/${productFolderName}/video/`,
-        'Product-video'
-      )
-
-      await product.related('video').save(video)
+      const video = await VideoService.store(payload.video)
+      product.related('video').save(video)
     }
+
+    await product.save()
 
     return response.json({ message: 'record created', data: product })
   }
@@ -158,62 +127,31 @@ export default class ProductsController {
       await product.related('faq').createMany(payload.faq)
     }
 
-    const productFolderName = `product-${product.id}`
-
-    await product.load('images')
-
     if (payload.logo) {
-      if (product.logo) {
-        await ImageService.destroy(product?.logo?.id)
-      }
-      const img = await ImageService.store(
-        payload.logo,
-        `/products/${productFolderName}/logos/`,
-        'Product-logo',
-        ImageTypes.THUMB
-      )
-
-      await product.related('images').save(img)
+      product.logo = await ResponsiveAttachment.fromFile(payload.logo)
     }
 
     if (payload.cover) {
-      if (product.coverImage) {
-        await ImageService.destroy(product?.coverImage?.id)
-      }
-      const img = await ImageService.store(
-        payload.cover,
-        `/products/${productFolderName}/cover/`,
-        'Product-cover',
-        ImageTypes.COVER
-      )
-
-      await product.related('images').save(img)
+      product.cover = await ResponsiveAttachment.fromFile(payload.cover)
     }
 
     if (payload.brocher) {
-      if (product.brocherImage) {
-        await ImageService.destroy(product?.brocherImage?.id)
-      }
-      const img = await ImageService.store(
-        payload.brocher,
-        `/products/${productFolderName}/brocher/`,
-        'Product-brocher',
-        ImageTypes.BROCHER
-      )
-
-      await product.related('images').save(img)
+      product.brocher = await ResponsiveAttachment.fromFile(payload.brocher)
     }
 
     if (payload.images) {
+      await product.load('screenshots')
+
+      await Promise.all(
+        product.screenshots.map(async (s) => {
+          await s.delete()
+        })
+      )
+
       const images = await Promise.all(
         payload.images.map(async (img) => {
           try {
-            const storeImg = await ImageService.store(
-              img,
-              `/products/${productFolderName}/screenshots/`,
-              'Product-Screeshot',
-              ImageTypes.IMG
-            )
+            const storeImg = await ImageService.store(img)
             return storeImg
           } catch (error) {
             console.error('Error storing image:', error)
@@ -225,34 +163,32 @@ export default class ProductsController {
 
       // Filter out any null values (images that failed to store)
       const validImages = images.filter((img) => img !== null)
-
-      await product.related('images').saveMany(validImages as Image[])
+      await product.related('screenshots').saveMany(validImages as Image[])
     }
 
     if (payload.video) {
       await product.load('video')
-      if (product.video) {
-        await VideoService.destroy(product?.video?.id)
-      }
-      const video = await VideoService.store(
-        payload.video,
-        `/products/${productFolderName}/video/`,
-        'Product-video'
-      )
 
-      await product.related('video').save(video)
+      if (product.video) {
+        await VideoService.destroy(product.video.id)
+      }
+
+      const video = await VideoService.store(payload.video)
+      product.related('video').save(video)
     }
+
+    await product.save()
     return response.json({ message: 'record updated', data: product })
   }
 
   public async destroy({ params, response }: HttpContextContract) {
     const product = await Product.findOrFail(+params.id)
-    await product.load('images')
+    await product.load('screenshots')
     await product.load('video')
 
-    if (product.images) {
+    if (product.screenshots) {
       await Promise.all(
-        product.images.map(async (img) => {
+        product.screenshots.map(async (img) => {
           await ImageService.destroy(img.id)
         })
       )
@@ -261,7 +197,9 @@ export default class ProductsController {
     if (product.video) {
       await VideoService.destroy(product.video.id)
     }
+
     await ProductService.destroy(+params.id)
+
     return response.json({ message: 'record deleted' })
   }
 

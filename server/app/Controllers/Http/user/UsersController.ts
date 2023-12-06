@@ -1,6 +1,5 @@
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import AddressService from 'App/services/address/AddressService'
-import ImageService from 'App/services/ImageService'
 import SocialService from 'App/services/SocialService'
 import UserService from 'App/services/user/UserService'
 import UserCreateValidator from 'App/Validators/user/UserCreateValidator'
@@ -8,6 +7,7 @@ import UserUpdateeValidator from 'App/Validators/user/UserUpdateValidator'
 import { schema, rules } from '@ioc:Adonis/Core/Validator'
 import User from 'App/Models/user/User'
 import Hash from '@ioc:Adonis/Core/Hash'
+import { ResponsiveAttachment } from '@ioc:Adonis/Addons/ResponsiveAttachment'
 
 export default class UsersController {
   public async index({ request, response }: HttpContextContract) {
@@ -42,8 +42,7 @@ export default class UsersController {
     }
 
     if (payload.image) {
-      const image = await ImageService.store(payload.image, '/users/', user.firstName)
-      await user.related('avatar').save(image)
+      user.avatar = await ResponsiveAttachment.fromFile(payload.image)
     }
 
     if (payload.favoriteLinks) {
@@ -145,14 +144,7 @@ export default class UsersController {
     }
 
     if (payload.image) {
-      await user?.load('avatar')
-
-      if (user?.avatar) {
-        await ImageService.update(user.avatar.id, payload.image)
-      } else {
-        const image = await ImageService.store(payload.image, '/users/', user?.firstName)
-        user && (await user.related('avatar').save(image))
-      }
+      user.avatar = await ResponsiveAttachment.fromFile(payload.image)
     }
 
     if (payload.languages) {

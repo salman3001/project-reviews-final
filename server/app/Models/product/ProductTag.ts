@@ -1,8 +1,11 @@
 import { DateTime } from 'luxon'
 import { BaseModel, HasMany, HasOne, column, hasMany, hasOne } from '@ioc:Adonis/Lucid/Orm'
-import Image from '../Image'
 import Faq from '../Faq'
 import Seo from '../Seo'
+import {
+  ResponsiveAttachmentContract,
+  responsiveAttachment,
+} from '@ioc:Adonis/Addons/ResponsiveAttachment'
 
 export default class ProductTag extends BaseModel {
   @column({ isPrimary: true })
@@ -20,8 +23,14 @@ export default class ProductTag extends BaseModel {
   @column()
   public status: boolean
 
-  @hasOne(() => Image)
-  public thumbnail: HasOne<typeof Image>
+  @responsiveAttachment({
+    folder: 'product-tag',
+    preComputeUrls: true,
+    forceFormat: 'webp',
+    disableThumbnail: true,
+    responsiveDimensions: false,
+  })
+  public thumbnail: ResponsiveAttachmentContract
 
   @hasMany(() => Faq)
   public faqs: HasMany<typeof Faq>

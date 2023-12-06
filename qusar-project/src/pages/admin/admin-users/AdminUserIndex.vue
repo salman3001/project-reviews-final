@@ -16,7 +16,6 @@ const uploads = ref('');
 const filter = reactive<AdditionalParams>({
   populate: {
     role: {},
-    avatar: {},
   },
   search: {
     first_name: '',
@@ -68,9 +67,6 @@ const { data, loading, onRequest, pagination, tableRef } = useGetTableData(
             },
           },
         },
-      },
-      avatar: {
-        fields: ['*'],
       },
     },
   }
@@ -161,7 +157,7 @@ onMounted(() => {
         <template v-slot:body-cell-first_name="props">
           <q-td :props="props" class="row q-gutter-x-xs items-center" style="flex-wrap: nowrap;">
             <q-avatar size=" 30px">
-              <img :src="props.row?.avatar?.url
+              <img :src="props.row?.avatar
                 ? uploads + props.row?.avatar?.url
                 : '/images/sample-dp.png'
                 " :style="{

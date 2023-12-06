@@ -8,11 +8,14 @@ import {
   hasMany,
   hasOne,
 } from '@ioc:Adonis/Lucid/Orm'
-import Image from '../Image'
 import Faq from '../Faq'
 import Seo from '../Seo'
 import Product from './Product'
 import ProductSubcategory from './ProductSubcategory'
+import {
+  ResponsiveAttachmentContract,
+  responsiveAttachment,
+} from '@ioc:Adonis/Addons/ResponsiveAttachment'
 
 export default class ProductCategory extends BaseModel {
   @column({ isPrimary: true })
@@ -30,8 +33,14 @@ export default class ProductCategory extends BaseModel {
   @column()
   public status: boolean
 
-  @hasOne(() => Image)
-  public thumbnail: HasOne<typeof Image>
+  @responsiveAttachment({
+    folder: 'product-category',
+    preComputeUrls: true,
+    forceFormat: 'webp',
+    disableThumbnail: true,
+    responsiveDimensions: false,
+  })
+  public thumbnail: ResponsiveAttachmentContract
 
   @hasMany(() => ProductSubcategory)
   public subCategory: HasMany<typeof ProductSubcategory>

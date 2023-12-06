@@ -17,9 +17,6 @@ serviceTagApi.show(route.params.id as string, {
     seo: {
       fields: ['*']
     },
-    thumbnail: {
-      fields: ['url', 'type']
-    },
   },
 }).then(({ data }) => {
   category.value = data.value;

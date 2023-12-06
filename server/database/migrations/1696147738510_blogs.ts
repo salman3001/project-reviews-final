@@ -9,6 +9,7 @@ export default class extends BaseSchema {
       table.string('title').unique().notNullable()
       table.string('slug').unique().notNullable()
       table.boolean('is_published').defaultTo(0)
+      table.json('thumbnail')
       table
         .integer('language_id')
         .unsigned()
