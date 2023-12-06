@@ -51,13 +51,7 @@ templateApi.index({
 const template = ref<Record<string, any> | null>(null)
 
 const fetchTemplate = (templateId: string) => {
-  templateApi.show(templateId, {
-    populate: {
-      thumbnail: {
-        fields: ['url']
-      }
-    }
-  }).then(({ data }) => {
+  templateApi.show(templateId).then(({ data }) => {
     template.value = data.value
   })
 }
@@ -85,7 +79,7 @@ const selectedInterests = computed(() => {
   }
 })
 
-const { loading, execute } = campaignApi.put(route.params.id as string, form.value, {}, {
+const { loading, execute } = campaignApi.put({}, {
   onSuccess: () => {
     router.push({
       name: 'admin.campaign.index'
@@ -98,11 +92,6 @@ campaignApi.show(route.params.id as string, {
   populate: {
     template: {
       fields: ['*'],
-      populate: {
-        thumbnail: {
-          fields: ['url']
-        }
-      }
     },
     interests: {
       fields: ['name', 'id']
@@ -277,7 +266,7 @@ onMounted(() => {
         </q-step>
         <q-step :name="5" title="Confirm" icon="assignment" :done="step > 5">
           <q-form class="column q-gutter-y-xl" @submit="() => {
-            execute()
+            execute(route.params.id as string, form)
           }" @validation-error="srollToView">
             <div class="q-gutter-y-lg">
               <h6>Preview</h6>

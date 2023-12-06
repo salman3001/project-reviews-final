@@ -208,48 +208,8 @@ const editUserStore = defineStore('editUser', () => {
     });
   };
 
-  const submitForm = (
-    formType:
-      | 'user'
-      | 'address'
-      | 'favoriteLinks'
-      | 'social'
-      | 'experience'
-      | 'education'
-      | 'skills'
-      | 'languages'
-      | 'notification',
-    id: string
-  ) => {
-    let data = {};
-
-    switch (formType) {
-      case 'user':
-        data = userForm.value;
-        break;
-      case 'address':
-        data = addressForm.value;
-        break;
-      case 'favoriteLinks':
-        data = favoriteLinksForm.value;
-        break;
-      case 'social':
-        data = socialForm.value;
-        break;
-      case 'experience':
-        data = workExperienceForm.value;
-        break;
-      case 'education':
-        data = educationForm.value;
-        break;
-      case 'languages':
-        data = languagesForm.value;
-        break;
-      default:
-        break;
-    }
-
-    const { execute, loading } = userApi.put(id, data);
+  const submitForm = () => {
+    const { execute, loading } = userApi.put();
     return {
       execute,
       loading,

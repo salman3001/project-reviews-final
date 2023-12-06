@@ -44,7 +44,7 @@ const getImageUrl = () => {
 }
 
 
-const { execute, loading } = userApi.post(createUser.form, {
+const { execute, loading } = userApi.post({
   headers: {
     'Content-Type': 'multipart/form-data'
   }
@@ -138,7 +138,7 @@ onMounted(() => {
 
 <template>
   <q-form class="q-gutter-y-md" @submit="() => {
-    execute()
+    execute(createUser.form)
   }">
     <div class="q-col-gutter-md">
       <h5>Preview</h5>

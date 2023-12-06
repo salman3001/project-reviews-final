@@ -18,7 +18,7 @@ onMounted(() => {
   address.getCountinents();
 });
 
-const { execute, loading } = StateApi.post(form.value);
+const { execute, loading } = StateApi.post();
 </script>
 
 <template>
@@ -30,7 +30,7 @@ const { execute, loading } = StateApi.post(form.value);
 
     <q-card-section class="column q-px-md-sm">
       <q-form @submit="async () => {
-        await execute();
+        await execute(form);
         modal.show = !modal.show;
         modal.meta.tableRef.setPagination({}, true);
       }

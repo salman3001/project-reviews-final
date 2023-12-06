@@ -88,7 +88,7 @@ serviceTagApi.index({
 });
 
 const { execute: createService, loading: posting } =
-  serviceApi.post(form.value, {
+  serviceApi.post({
     headers: {
       'Content-Type': 'multipart/form-data'
     }
@@ -99,7 +99,7 @@ const { execute: createService, loading: posting } =
   });
 
 const submit = () => {
-  createService()
+  createService(form.value)
 };
 
 const screenShotUrls = computed(() => {

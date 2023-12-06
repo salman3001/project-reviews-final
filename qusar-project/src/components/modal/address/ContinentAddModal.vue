@@ -10,7 +10,7 @@ const form = ref({
   isActive: false,
 });
 
-const { execute, loading } = ContinentsApi.post(form.value);
+const { execute, loading } = ContinentsApi.post();
 </script>
 
 <template>
@@ -22,10 +22,10 @@ const { execute, loading } = ContinentsApi.post(form.value);
 
     <q-card-section class="column q-px-md-sm">
       <q-form @submit="async () => {
-          await execute();
-          modal.show = !modal.show;
-          modal.meta.tableRef.setPagination({}, true);
-        }
+        await execute(form);
+        modal.show = !modal.show;
+        modal.meta.tableRef.setPagination({}, true);
+      }
         ">
         <q-input outlined v-model="form.name" label="Name" :rules="[$rules.required('required')]" />
         <q-toggle v-model="form.isActive" label="Activate" class="col-12 col-sm-6 col-md-3" />

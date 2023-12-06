@@ -176,7 +176,7 @@ const createUserStore = defineStore('createUser', () => {
     });
   };
 
-  const { execute: submit, loading: posting } = userApi.post(form.value);
+  const { execute: submit, loading: posting } = userApi.post();
 
   return {
     form,

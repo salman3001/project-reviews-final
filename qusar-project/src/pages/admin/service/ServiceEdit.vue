@@ -149,7 +149,7 @@ serviceTagApi.index({
 });
 
 const { execute: serviceProduct, loading: posting } =
-  serviceApi.put(route.params.id as string, form.value, {
+  serviceApi.put({
     headers: {
       'Content-Type': 'multipart/form-data'
     }
@@ -160,7 +160,7 @@ const { execute: serviceProduct, loading: posting } =
   });
 
 const submit = () => {
-  serviceProduct()
+  serviceProduct(route.params.id as string, form.value)
 };
 
 const screenShotUrls = computed(() => {

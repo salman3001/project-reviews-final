@@ -21,7 +21,7 @@ onMounted(() => {
   });
 });
 
-const { execute, loading } = CountriesApi.post(form.value);
+const { execute, loading } = CountriesApi.post();
 </script>
 
 <template>
@@ -33,10 +33,10 @@ const { execute, loading } = CountriesApi.post(form.value);
 
     <q-card-section class="column q-px-md-sm">
       <q-form @submit="async () => {
-          await execute();
-          modal.show = !modal.show;
-          modal.meta.tableRef.setPagination({}, true);
-        }
+        await execute(form);
+        modal.show = !modal.show;
+        modal.meta.tableRef.setPagination({}, true);
+      }
         ">
         <q-select v-if="continents" outlined options-dense emit-value map-options v-model="form.continentId" :options="[
           { label: 'All', value: '' },

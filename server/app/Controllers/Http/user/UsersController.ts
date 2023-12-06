@@ -1,12 +1,10 @@
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
-import AddressService from 'App/services/address/AddressService'
 import SocialService from 'App/services/SocialService'
 import UserService from 'App/services/user/UserService'
 import UserCreateValidator from 'App/Validators/user/UserCreateValidator'
 import UserUpdateeValidator from 'App/Validators/user/UserUpdateValidator'
 import { schema, rules } from '@ioc:Adonis/Core/Validator'
 import User from 'App/Models/user/User'
-import Hash from '@ioc:Adonis/Core/Hash'
 import { ResponsiveAttachment } from '@ioc:Adonis/Addons/ResponsiveAttachment'
 
 export default class UsersController {
@@ -18,27 +16,17 @@ export default class UsersController {
 
   public async store({ request, response }: HttpContextContract) {
     const payload = await request.validate(UserCreateValidator)
-    const user = await UserService.store(payload.user)
+    const user = new User()
+
+    user.merge(payload.user)
+    await user.save()
 
     if (payload.address) {
-      const address = await AddressService.store({
-        address: payload?.address?.address || '',
-        continentId: payload?.address?.continentId
-          ? Number(payload?.address?.continentId)
-          : undefined,
-        countryId: payload?.address?.countryId ? Number(payload?.address?.countryId) : undefined,
-        stateId: payload?.address?.stateId ? Number(payload?.address?.stateId) : undefined,
-        cityId: payload?.address?.cityId ? Number(payload?.address?.cityId) : undefined,
-        streetId: payload?.address?.streetId ? Number(payload?.address?.streetId) : undefined,
-        zip: payload?.address?.zip,
-      })
-
-      user.related('address').save(address)
+      user.related('address').create(payload.address)
     }
 
     if (payload.social) {
-      const social = await SocialService.store(payload.social)
-      user.related('social').save(social)
+      await user.related('social').create(payload.social)
     }
 
     if (payload.image) {
@@ -92,21 +80,12 @@ export default class UsersController {
 
     if (payload.address) {
       await user?.load('address')
+
       if (user?.address) {
-        await AddressService.update(user?.address?.id, {
-          address: payload?.address?.address || '',
-          continentId: payload?.address?.continentId
-            ? Number(payload?.address?.continentId)
-            : undefined,
-          countryId: payload?.address?.countryId ? Number(payload?.address?.countryId) : undefined,
-          stateId: payload?.address?.stateId ? Number(payload?.address?.stateId) : undefined,
-          cityId: payload?.address?.cityId ? Number(payload?.address?.cityId) : undefined,
-          streetId: payload?.address?.streetId ? Number(payload?.address?.streetId) : undefined,
-          zip: payload?.address?.zip,
-        })
+        await user.address.delete()
+        await user.related('address').create(payload.address)
       } else {
-        const address = await AddressService.store(payload.address)
-        user && user.related('address').save(address)
+        await user.related('address').create(payload.address)
       }
     }
 
@@ -218,8 +197,7 @@ export default class UsersController {
       schema: validationSchema,
     })
     const user = await User.findOrFail(+params.id)
-    const newPassword = await Hash.make(payload.password)
-    user.password = newPassword
+    user.password = payload.password
     await user.save()
     return response.json({ message: 'Password Changed' })
   }

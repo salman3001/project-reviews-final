@@ -15,11 +15,6 @@ campaignApi.show(route.params.id as string, {
   populate: {
     template: {
       fields: ['*'],
-      populate: {
-        thumbnail: {
-          fields: ['url']
-        }
-      }
     },
     interests: {
       fields: ['name']

@@ -10,7 +10,7 @@ const form = ref({
   isActive: false,
 });
 
-const { execute, loading } = RoleApi.post(form.value);
+const { execute, loading } = RoleApi.post();
 </script>
 
 <template>
@@ -22,7 +22,7 @@ const { execute, loading } = RoleApi.post(form.value);
 
     <q-card-section class="column q-px-md-sm">
       <q-form @submit="async () => {
-        await execute();
+        await execute(form);
         modal.show = !modal.show;
         modal.meta.tableRef.setPagination({}, true);
       }

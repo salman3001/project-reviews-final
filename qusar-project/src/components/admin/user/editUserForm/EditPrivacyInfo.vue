@@ -5,7 +5,7 @@ import { srollToView } from 'src/utils/scrollToView';
 
 const editUser = editUserStore()
 
-const { execute, loading } = userApi.put(editUser?.user?.id as string, editUser.userForm);
+const { execute, loading } = userApi.put();
 
 
 </script>
@@ -13,7 +13,7 @@ const { execute, loading } = userApi.put(editUser?.user?.id as string, editUser.
 <template>
   <div class="q-py-lg">
     <q-form class="column q-gutter-y-md" @submit="() => {
-      execute(editUser.user?.id)
+      execute(editUser?.user?.id as string, editUser.userForm)
     }" @validation-error="srollToView">
       <div class="column q-gutter-y-md">
         <div class="column q-gutter-y-md">

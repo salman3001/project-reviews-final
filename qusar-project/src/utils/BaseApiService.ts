@@ -1,5 +1,4 @@
 import { AxiosRequestConfig } from 'axios';
-import qs from 'qs';
 import { Notify } from 'quasar';
 import { api } from 'src/boot/axios';
 import { AdditionalParams } from 'src/type';
@@ -93,12 +92,11 @@ export class BaseApiService {
   }
 
   public post(
-    data: any,
     config?: AxiosRequestConfig<any> | undefined,
     cb?: { onSuccess?: () => void; onError?: () => void }
   ) {
     const loading = ref(false);
-    const execute = async () => {
+    const execute = async (data: any) => {
       try {
         loading.value = true;
         const res = await api.post(this.url, data, config);
@@ -140,20 +138,14 @@ export class BaseApiService {
   }
 
   public put(
-    id: string,
-    data: any,
     config?: AxiosRequestConfig<any> | undefined,
     cb?: { onSuccess?: () => void; onError?: () => void }
   ) {
     const loading = ref(false);
-    const execute = async (idOverRide?: string) => {
+    const execute = async (id: string, data: any) => {
       try {
         loading.value = true;
-        const res = await api.put(
-          this.url + `/${idOverRide ?? id}`,
-          data,
-          config
-        );
+        const res = await api.put(this.url + `/${id}`, data, config);
         loading.value = false;
         cb?.onSuccess && cb?.onSuccess();
         Notify.create({
@@ -192,15 +184,14 @@ export class BaseApiService {
   }
 
   public delete(
-    id: string,
     config?: AxiosRequestConfig<any> | undefined,
     cb?: { onSuccess?: () => void; onError?: () => void }
   ) {
     const loading = ref(false);
-    const execute = async (idOverRide?: string) => {
+    const execute = async (id: string) => {
       try {
         loading.value = true;
-        const res = await api.delete(this.url + `/${idOverRide ?? id}`, config);
+        const res = await api.delete(this.url + `/${id}`, config);
         loading.value = false;
         cb?.onSuccess && cb?.onSuccess();
         Notify.create({
@@ -239,17 +230,67 @@ export class BaseApiService {
   }
 }
 
-export const AdminUserApi = new BaseApiService('admin-users', 'User');
-
-class UserApiService extends BaseApiService {
+class AdminUserApiService extends BaseApiService {
   public updatePassword(
-    id: string,
-    data: any,
     config?: AxiosRequestConfig<any> | undefined,
     cb?: { onSuccess?: () => void; onError?: () => void }
   ) {
     const loading = ref(false);
-    const execute = async (id: string) => {
+    const execute = async (id: string, data: any) => {
+      try {
+        loading.value = true;
+        const res = await api.post(
+          this.url + '/update-password/' + id,
+          data,
+          config
+        );
+        loading.value = false;
+        cb?.onSuccess && cb?.onSuccess();
+        Notify.create({
+          message: 'Password updated successfully',
+          color: 'positive',
+          icon: 'done',
+        });
+      } catch (error: any) {
+        if (error?.response) {
+          loading.value = false;
+          cb?.onError && cb?.onError();
+          Notify.create({
+            message:
+              error?.response?.data?.message || 'Failed to update password',
+            color: 'negative',
+          });
+        } else if (error?.request) {
+          loading.value = false;
+          cb?.onError && cb?.onError();
+          Notify.create({
+            message: 'Trying to update password .Server Not Reachable!',
+            color: 'negative',
+          });
+        } else {
+          loading.value = false;
+          cb?.onError && cb?.onError();
+          Notify.create({ message: error.message, color: 'negative' });
+        }
+      }
+    };
+
+    return {
+      loading,
+      execute,
+    };
+  }
+}
+
+export const AdminUserApi = new AdminUserApiService('admin-users', 'User');
+
+class UserApiService extends BaseApiService {
+  public updatePassword(
+    config?: AxiosRequestConfig<any> | undefined,
+    cb?: { onSuccess?: () => void; onError?: () => void }
+  ) {
+    const loading = ref(false);
+    const execute = async (id: string, data: any) => {
       try {
         loading.value = true;
         const res = await api.post(

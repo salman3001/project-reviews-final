@@ -30,7 +30,7 @@ const form = ref({
 
 
 const { execute: createCategory, loading: posting } =
-  serviceTagApi.post(form.value, {
+  serviceTagApi.post({
     headers: {
       'Content-Type': 'multipart/form-data'
     }
@@ -41,7 +41,7 @@ const { execute: createCategory, loading: posting } =
   });
 
 const submit = () => {
-  createCategory()
+  createCategory(form.value)
 };
 
 </script>

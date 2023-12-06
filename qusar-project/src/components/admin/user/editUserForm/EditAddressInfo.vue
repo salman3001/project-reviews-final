@@ -7,7 +7,7 @@ import { CityApi, ContinentsApi, CountriesApi, StateApi, StreetApi, userApi } fr
 
 const editUser = editUserStore()
 
-const { execute, loading } = userApi.put(editUser?.user?.id as string, editUser.addressForm);
+const { execute, loading } = userApi.put();
 
 const continentOptions = ref<any[]>([])
 const countiresOptions = ref<any[]>([])
@@ -17,86 +17,68 @@ const streetOptions = ref<any[]>([])
 
 const getCountinents = async () => {
   ContinentsApi.index().then(({ data }) => {
-    continentOptions.value = (data.value as any).map((d: any) => ({
-      label: d.name,
-      value: d.id
-    }))
+    continentOptions.value = (data.value as any)
   })
 }
 
 const getCountries = async (id: string) => {
   CountriesApi.index({
     filter: {
-      continentId: id
+      continent_id: id
     }
   }).then(({ data }) => {
-    countiresOptions.value = (data.value as any).map((d: any) => ({
-      label: d.name,
-      value: d.id
-    }))
+    countiresOptions.value = (data.value as any)
   })
 }
 
 const getStates = async (id: string) => {
   StateApi.index({
     filter: {
-      countryId: id
+      country_id: id
     }
   }).then(({ data }) => {
-    stateOptions.value = (data.value as any).map((d: any) => ({
-      label: d.name,
-      value: d.id
-    }))
+    stateOptions.value = (data.value as any)
   })
 }
 
 const getCities = async (id: string) => {
   CityApi.index({
     filter: {
-      stateId: id
+      state_id: id
     }
   }).then(({ data }) => {
-    cityOptions.value = (data.value as any).map((d: any) => ({
-      label: d.name,
-      value: d.id
-    }))
+    cityOptions.value = (data.value as any)
   })
 }
 
 const getStreets = async (id: string) => {
   StreetApi.index({
     filter: {
-      cityId: id
+      city_id: id
     }
   }).then(({ data }) => {
-    streetOptions.value = (data.value as any).map((d: any) => ({
-      label: d.name,
-      value: d.id
-    }))
+    streetOptions.value = (data.value as any)
   })
 }
 
 onMounted(async () => {
-  if (editUser.addressForm.address.continentId) {
-    await getCountinents().then(async () => {
-      if (editUser.addressForm.address.countryId) {
-        await getCountries(editUser.addressForm.address.continentId).then(async () => {
-          if (editUser.addressForm.address.stateId) {
-            await getStates(editUser.addressForm.address.countryId).then(async () => {
-              if (editUser.addressForm.address.cityId) {
-                await getCities(editUser.addressForm.address.stateId).then(async () => {
-                  if (editUser.addressForm.address.streetId) {
-                    await getStreets(editUser.addressForm.address.cityId)
-                  }
-                })
-              }
-            })
-          }
-        })
-      }
-    })
-  }
-
+  await getCountinents().then(async () => {
+    if (editUser.addressForm.address.countryId) {
+      await getCountries(editUser.addressForm.address.continentId).then(async () => {
+        if (editUser.addressForm.address.stateId) {
+          await getStates(editUser.addressForm.address.countryId).then(async () => {
+            if (editUser.addressForm.address.cityId) {
+              await getCities(editUser.addressForm.address.stateId).then(async () => {
+                if (editUser.addressForm.address.streetId) {
+                  await getStreets(editUser.addressForm.address.cityId)
+                }
+              })
+            }
+          })
+        }
+      })
+    }
+  })
 })
 
 </script>
@@ -104,12 +86,13 @@ onMounted(async () => {
 <template>
   <div class="q-py-lg">
     <q-form class="column q-gutter-y-md" @submit="() => {
-      execute(editUser.user?.id)
+      execute(editUser?.user?.id as string, editUser.addressForm)
     }" @validation-error="srollToView">
       <div class="row q-col-gutter-md">
         <q-input outlined v-model="editUser.addressForm.address.address" class="col-12 col-md-9" label="Address" />
-        <q-select outlined emit-value map-options v-model="editUser.addressForm.address.continentId"
-          :options="continentOptions" label="Continet" class="col-12 col-sm-6 col-md-3" @update:model-value="(value) => {
+        <q-select outlined emit-value map-options option-label="name" option-value="id"
+          v-model="editUser.addressForm.address.continentId" :options="continentOptions" label="Contient"
+          class="col-12 col-sm-6 col-md-3" @update:model-value="(value) => {
             editUser.addressForm.address.countryId = '';
             editUser.addressForm.address.stateId = '';
             editUser.addressForm.address.cityId = '';
@@ -117,29 +100,33 @@ onMounted(async () => {
             getCountries(value);
           }
             " />
-        <q-select outlined emit-value map-options v-model="editUser.addressForm.address.countryId" label="Country"
-          class="col-12 col-sm-6 col-md-3" :options="countiresOptions" @update:model-value="(value) => {
+        <q-select outlined emit-value map-options option-label="name" option-value="id"
+          v-model="editUser.addressForm.address.countryId" label="Country" class="col-12 col-sm-6 col-md-3"
+          :options="countiresOptions" @update:model-value="(value) => {
             editUser.addressForm.address.stateId = '';
             editUser.addressForm.address.cityId = '';
             editUser.addressForm.address.streetId = '';
             getStates(value);
           }
             " />
-        <q-select outlined emit-value map-options v-model="editUser.addressForm.address.stateId" label="State"
-          class="col-12 col-sm-6 col-md-3" :options="stateOptions" @update:model-value="(value) => {
+        <q-select outlined emit-value map-options option-label="name" option-value="id"
+          v-model="editUser.addressForm.address.stateId" label="State" class="col-12 col-sm-6 col-md-3"
+          :options="stateOptions" @update:model-value="(value) => {
             editUser.addressForm.address.cityId = '';
             editUser.addressForm.address.streetId = '';
             getCities(value);
           }
             " />
-        <q-select outlined emit-value map-options v-model="editUser.addressForm.address.cityId" label="City"
-          class="col-12 col-sm-6 col-md-3" :options="cityOptions" @update:model-value="(value) => {
+        <q-select outlined emit-value map-options option-label="name" option-value="id"
+          v-model="editUser.addressForm.address.cityId" label="City" class="col-12 col-sm-6 col-md-3"
+          :options="cityOptions" @update:model-value="(value) => {
             editUser.addressForm.address.streetId = '';
             getStreets(value);
           }
             " />
-        <q-select outlined emit-value map-options v-model="editUser.addressForm.address.streetId" label="Street"
-          class="col-12 col-sm-6 col-md-3" :options="streetOptions" />
+        <q-select outlined emit-value map-options option-label="name" option-value="id"
+          v-model="editUser.addressForm.address.streetId" label="Street" class="col-12 col-sm-6 col-md-3"
+          :options="streetOptions" />
         <q-input outlined v-model="editUser.addressForm.address.zip" class="col-12 col-sm-6 col-md-3" label="Post Code" />
       </div>
       <div class="row justify-end q-gutter-md">

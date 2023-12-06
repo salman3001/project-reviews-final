@@ -5,7 +5,7 @@ import { onMounted } from 'vue';
 import { userApi } from 'src/utils/BaseApiService';
 
 const editUser = editUserStore()
-const { execute, loading } = userApi.put(editUser?.user?.id as string, editUser.languagesForm);
+const { execute, loading } = userApi.put();
 
 
 onMounted(() => {
@@ -15,7 +15,7 @@ onMounted(() => {
 
 <template>
   <q-form @submit="() => {
-    execute(editUser.user?.id)
+    execute(editUser?.user?.id as string, editUser.languagesForm)
   }" @validation-error="srollToView">
     <div class="q-py-lg">
       <div class="row q-col-gutter-md">

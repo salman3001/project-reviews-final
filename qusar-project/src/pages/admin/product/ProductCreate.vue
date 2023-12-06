@@ -88,7 +88,7 @@ productTagApi.index({
 });
 
 const { execute: createProduct, loading: posting } =
-  productApi.post(form.value, {
+  productApi.post({
     headers: {
       'Content-Type': 'multipart/form-data'
     }
@@ -99,7 +99,7 @@ const { execute: createProduct, loading: posting } =
   });
 
 const submit = () => {
-  createProduct()
+  createProduct(form.value)
 };
 
 const screenShotUrls = computed(() => {

@@ -66,8 +66,6 @@ BlogApi.show(route.params.id as string, {
 });
 
 const { execute: createBlog, loading: posting } = BlogApi.put(
-  route.params.id as string,
-  form.value,
   {
     headers: {
       'Content-Type': 'multipart/form-data',
@@ -81,9 +79,10 @@ const submit = async (e: SubmitEvent) => {
   const image = formData.get('image');
   form.value.image = image as null;
 
-  createBlog().then(() => {
-    router.push({ name: 'admin.blogs.index' });
-  });
+  createBlog(route.params.id as string,
+    form.value,).then(() => {
+      router.push({ name: 'admin.blogs.index' });
+    });
 };
 
 onMounted(() => {

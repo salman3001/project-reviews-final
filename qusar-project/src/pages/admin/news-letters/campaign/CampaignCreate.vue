@@ -50,13 +50,7 @@ templateApi.index({
 const template = ref<Record<string, any> | null>(null)
 
 const fetchTemplate = (templateId: string) => {
-  templateApi.show(templateId, {
-    populate: {
-      thumbnail: {
-        fields: ['url']
-      }
-    }
-  }).then(({ data }) => {
+  templateApi.show(templateId).then(({ data }) => {
     template.value = data.value
   })
 }
@@ -84,7 +78,7 @@ const selectedInterests = computed(() => {
   }
 })
 
-const { loading, execute } = campaignApi.post(form.value, {}, {
+const { loading, execute } = campaignApi.post({}, {
   onSuccess: () => {
     router.push({
       name: 'admin.campaign.index'
@@ -241,7 +235,7 @@ onMounted(() => {
         </q-step>
         <q-step :name="5" title="Confirm" icon="assignment" :done="step > 5">
           <q-form class="column q-gutter-y-xl" @submit="() => {
-            execute()
+            execute(form)
           }" @validation-error="srollToView">
             <div class="q-gutter-y-lg">
               <h6>Preview</h6>
@@ -331,8 +325,8 @@ onMounted(() => {
                 <div>
                   <div>
                     <div class="q-py-md">
-                      <q-img spinner-color="white" :src="template.thumbnail?.url
-                        ? uploads + template.thumbnail?.url
+                      <q-img spinner-color="white" :src="template?.thumbnail?.url
+                        ? uploads + template?.thumbnail?.url
                         : '/images/dummy-thumb.jpg'
                         " :alt="template?.name"
                         style="height: 15rem; width: 15rem;border: 1px solid #e6e4d9;border-radius: 1rem;" />
@@ -346,7 +340,7 @@ onMounted(() => {
                       </div>
                       <div>
                         <p style="color: #686552;">Content</p>
-                        <p v-html="template.content"></p>
+                        <p v-html="template?.content"></p>
                       </div>
                     </div>
                   </div>

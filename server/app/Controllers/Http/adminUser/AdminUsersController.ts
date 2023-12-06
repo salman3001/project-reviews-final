@@ -9,6 +9,7 @@ import AddressService from 'App/services/address/AddressService'
 import SocialService from 'App/services/SocialService'
 import RoleService from 'App/services/admin/RoleService'
 import { ResponsiveAttachment } from '@ioc:Adonis/Addons/ResponsiveAttachment'
+import { schema, rules } from '@ioc:Adonis/Core/Validator'
 
 export default class AdminUsersController {
   public async index({ response, request }: HttpContextContract) {
@@ -71,26 +72,10 @@ export default class AdminUsersController {
       if (payload.address) {
         await user.load('address')
         if (user.address) {
-          await AddressService.update(user.address.id, {
-            address: payload.address.address,
-            continentId: payload?.address?.continentId,
-            countryId: payload?.address?.continentId,
-            stateId: payload?.address?.stateId,
-            cityId: payload?.address?.cityId,
-            streetId: payload?.address?.streetId,
-            zip: payload.address.zip,
-          })
+          await user.address.delete()
+          await user.related('address').create(payload.address)
         } else {
-          const address = await AddressService.store({
-            address: payload.address.address,
-            continentId: payload?.address?.continentId,
-            countryId: payload?.address?.continentId,
-            stateId: payload?.address?.stateId,
-            cityId: payload?.address?.cityId,
-            streetId: payload?.address?.streetId,
-            zip: payload.address.zip,
-          })
-          user.related('address').save(address)
+          await user.related('address').create(payload.address)
         }
       }
       if (payload.social) {
@@ -155,5 +140,21 @@ export default class AdminUsersController {
     } else {
       return response.ok({ message: 'Field available' })
     }
+  }
+
+  public async updateUserPassword({ params, response, request }: HttpContextContract) {
+    const validationSchema = schema.create({
+      password: schema.string({ trim: true }, [rules.minLength(8)]),
+      password_confirmation: schema.string({ trim: true }, [rules.confirmed('password')]),
+    })
+
+    const payload = await request.validate({
+      schema: validationSchema,
+    })
+    const user = await AdminUser.findOrFail(+params.id)
+    // const newPassword = await Hash.make(payload.password)
+    user.password = payload.password
+    await user.save()
+    return response.json({ message: 'Password Changed' })
   }
 }

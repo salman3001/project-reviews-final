@@ -5,14 +5,14 @@ import { srollToView } from 'src/utils/scrollToView';
 
 const editUser = editUserStore()
 
-const { execute, loading } = userApi.put(editUser?.user?.id as string, editUser.skillsForm);
+const { execute, loading } = userApi.put();
 
 </script>
 
 <template>
   <div class="q-py-lg">
     <q-form class="column q-gutter-y-md" @submit="() => {
-      execute(editUser.user?.id)
+      execute(editUser?.user?.id as string, editUser.skillsForm)
     }" @validation-error="srollToView">
       <div class="column q-gutter-y-md">
         <div class="row q-col-gutter-md q-pb-lg" v-for="(s, i) in editUser.skillsForm.skills" :key="i">

@@ -18,7 +18,7 @@ StreetApi.show(modal.meta?.id).then(({ data }) => {
   form.value.isActive = (data.value as any)?.is_active == 1 ? true : false;
 });
 
-const { execute, loading } = StreetApi.put(modal.meta?.id, form.value);
+const { execute, loading } = StreetApi.put();
 </script>
 
 <template>
@@ -30,7 +30,7 @@ const { execute, loading } = StreetApi.put(modal.meta?.id, form.value);
 
     <q-card-section class="column q-px-md-sm">
       <q-form @submit="async () => {
-        await execute();
+        await execute(modal.meta?.id, form);
         modal.show = !modal.show;
         modal.meta.tableRef.setPagination({}, true);
       }

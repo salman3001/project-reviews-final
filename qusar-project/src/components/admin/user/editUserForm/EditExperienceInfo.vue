@@ -7,13 +7,13 @@ import { userApi } from 'src/utils/BaseApiService';
 
 const editUser = editUserStore()
 
-const { execute, loading } = userApi.put(editUser?.user?.id as string, editUser.workExperienceForm);
+const { execute, loading } = userApi.put();
 </script>
 
 <template>
   <div class="q-py-lg">
     <q-form class="column q-gutter-y-md" @submit="() => {
-      execute(editUser.user?.id)
+      execute(editUser?.user?.id as string, editUser.workExperienceForm)
     }" @validation-error="srollToView">
       <div class="column q-gutter-y-md">
         <p class="text-subtitle1">Work Experience</p>

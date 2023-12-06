@@ -57,7 +57,7 @@ productTagApi.show(route.params.id as string, {
 
 
 const { execute: createCategory, loading: posting } =
-  productTagApi.put(route.params.id as string, form.value, {
+  productTagApi.put({
     headers: {
       'Content-Type': 'multipart/form-data'
     }
@@ -68,7 +68,7 @@ const { execute: createCategory, loading: posting } =
   });
 
 const submit = () => {
-  createCategory()
+  createCategory(route.params.id as string, form.value)
 };
 
 onMounted(() => {

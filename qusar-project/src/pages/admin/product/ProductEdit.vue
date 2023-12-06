@@ -149,7 +149,7 @@ productTagApi.index({
 });
 
 const { execute: updateProduct, loading: posting } =
-  productApi.put(route.params.id as string, form.value, {
+  productApi.put({
     headers: {
       'Content-Type': 'multipart/form-data'
     }
@@ -160,7 +160,7 @@ const { execute: updateProduct, loading: posting } =
   });
 
 const submit = () => {
-  updateProduct()
+  updateProduct(route.params.id as string, form.value)
 };
 
 const screenShotUrls = computed(() => {

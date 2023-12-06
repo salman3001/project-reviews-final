@@ -39,7 +39,7 @@ LanguageApi.index({
 });
 
 const { execute: createBlog, loading: posting } =
-  BlogApi.post(form.value, {
+  BlogApi.post({
     headers: {
       'Content-Type': 'multipart/form-data'
     }
@@ -52,7 +52,7 @@ const submit = async (e: SubmitEvent) => {
   form.value.image = image as null
 
 
-  createBlog().then(() => {
+  createBlog(form.value).then(() => {
     router.push({ name: 'admin.blogs.index' });
   });
 };
@@ -109,7 +109,7 @@ const submit = async (e: SubmitEvent) => {
             <q-input outlined v-model="form.metaTitle" label="Meta Title" class="col-12 col-sm-6" />
             <q-input outlined v-model="form.metaKeywords" label="Meta Keywords" class="col-12 col-sm-6" />
             <q-input type="textarea" outlined v-model="form.metaDesc" label="Meta Description" class="col-12" />
-            <q-toggle label="Publsih" v-model="form.isPublished" />
+            <q-toggle label="Publish" v-model="form.isPublished" />
           </div>
         </div>
       </div>

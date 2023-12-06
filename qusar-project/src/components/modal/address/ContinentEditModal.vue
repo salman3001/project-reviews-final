@@ -2,7 +2,6 @@
 import modalStore from '../../../stores/modalStore';
 import { ref } from 'vue';
 import { ContinentsApi } from '../../../utils/BaseApiService';
-import { useRouter } from 'vue-router';
 
 const modal = modalStore();
 
@@ -19,7 +18,7 @@ ContinentsApi.show(modal.meta?.id).then(({ data }) => {
   form.value.isActive = (data.value as any)?.is_active == 1 ? true : false;
 });
 
-const { execute, loading } = ContinentsApi.put(modal.meta?.id, form.value);
+const { execute, loading } = ContinentsApi.put();
 </script>
 
 <template>
@@ -31,10 +30,10 @@ const { execute, loading } = ContinentsApi.put(modal.meta?.id, form.value);
 
     <q-card-section class="column q-px-md-sm">
       <q-form @submit="async () => {
-          await execute();
-          modal.show = !modal.show;
-          modal.meta.tableRef.setPagination({}, true);
-        }
+        await execute(modal.meta?.id, form);
+        modal.show = !modal.show;
+        modal.meta.tableRef.setPagination({}, true);
+      }
         ">
         <q-input outlined v-model="form.name" label="Name" :rules="[$rules.required('required')]" />
         <q-toggle v-model="form.isActive" label="Activate" class="col-12 col-sm-6 col-md-3" />
