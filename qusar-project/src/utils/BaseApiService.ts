@@ -495,3 +495,8 @@ export const campaignTypeApi = new BaseApiService(
 );
 export const interestApi = new BaseApiService('/interest', 'Interest');
 export const subscriberApi = new BaseApiService('/subscriber', 'Subscriber');
+
+export const activityLogApi = new BaseApiService(
+  '/admin-users/activities',
+  'Activity Log'
+);

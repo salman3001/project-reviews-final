@@ -18,6 +18,10 @@ type RelationFilter = Record<
 >;
 
 export interface AdditionalParams {
+  page?: number | null;
+  rowsPerPage?: string | null;
+  sortBy?: string | null;
+  descending?: boolean | null;
   search?: Search | null;
   filter?: Filter | null;
   relationFilter?: RelationFilter | null;

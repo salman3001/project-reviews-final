@@ -185,6 +185,15 @@ onMounted(() => {
             <div class="">
               <q-btn-dropdown size="sm" color="primary" label="Options">
                 <q-list dense>
+                  <q-item clickable v-close-popup @click="() => {
+                    router.push({ name: 'admin.adminUsers.show', params: { id: props?.row?.id, } })
+                  }
+                    ">
+                    <q-item-section>
+                      <q-item-label>
+                        <q-icon name="visibility" /> View</q-item-label>
+                    </q-item-section>
+                  </q-item>
                   <q-item clickable v-close-popup @click="
                     modal.togel('changeRole', {
                       roles: roles,
@@ -209,7 +218,7 @@ onMounted(() => {
                     ">
                     <q-item-section>
                       <q-item-label>
-                        <q-icon name="highlight_off" />Ban User</q-item-label>
+                        <q-icon name="highlight_off" /> Ban User</q-item-label>
                     </q-item-section>
                   </q-item>
 
@@ -237,10 +246,16 @@ onMounted(() => {
                         <q-icon name="delete" /> Delete User</q-item-label>
                     </q-item-section>
                   </q-item>
+
                   <q-item clickable v-close-popup @click="() => {
-                    console.log('ran');
-                  }
-                    ">
+                    router.push({
+                      name: 'admin.adminUsers.show',
+                      params: { id: props.row.id },
+                      query: {
+                        activity: 'true'
+                      }
+                    });
+                  }">
                     <q-item-section>
                       <q-item-label>
                         <q-icon name="rowing" /> Activity log</q-item-label>

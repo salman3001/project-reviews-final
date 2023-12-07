@@ -8,6 +8,8 @@ import {
   HasOne,
   belongsTo,
   BelongsTo,
+  hasMany,
+  HasMany,
 } from '@ioc:Adonis/Lucid/Orm'
 import Role from './Role'
 import Address from '../address/Address'
@@ -16,6 +18,7 @@ import {
   responsiveAttachment,
   ResponsiveAttachmentContract,
 } from '@ioc:Adonis/Addons/ResponsiveAttachment'
+import Activity from '../Activity'
 
 export default class AdminUser extends BaseModel {
   @column({ isPrimary: true })
@@ -55,6 +58,9 @@ export default class AdminUser extends BaseModel {
     foreignKey: 'adminUserId',
   })
   public address: HasOne<typeof Address>
+
+  @hasMany(() => Activity)
+  public activities: HasMany<typeof Activity>
 
   @hasOne(() => Social)
   public social: HasOne<typeof Social>

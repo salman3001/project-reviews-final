@@ -44,6 +44,7 @@ export default class extends BaseSeeder {
 
     await AdminUserFactory.merge([{ email: 'admin@gmail.com', isActive: true, roleId: 1 }])
       .with('social')
+      .with('activities', 3)
       .createMany(14)
 
     await ContinentFactory.with('country', 3, (country) => {

@@ -110,7 +110,7 @@ const { data, loading, tableRef, onRequest, pagination } = useGetTableData(
                     ">
                     <q-item-section>
                       <q-item-label>
-                        <q-icon name="edit" /> Edit User</q-item-label>
+                        <q-icon name="edit" /> Edit Role</q-item-label>
                     </q-item-section>
                   </q-item>
                   <q-item clickable v-close-popup @click="

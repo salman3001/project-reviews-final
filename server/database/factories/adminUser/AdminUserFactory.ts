@@ -2,6 +2,7 @@ import AdminUser from 'App/Models/adminUser/AdminUser'
 import Factory from '@ioc:Adonis/Lucid/Factory'
 import SocialFactory from '../SocialFactory'
 import RoleFactory from './RoleFactory'
+import ActivityFactory from '../ActivityFactory'
 
 export default Factory.define(AdminUser, ({ faker }) => {
   return {
@@ -16,5 +17,6 @@ export default Factory.define(AdminUser, ({ faker }) => {
   }
 })
   .relation('social', () => SocialFactory)
+  .relation('activities', () => ActivityFactory)
   .relation('role', () => RoleFactory)
   .build()

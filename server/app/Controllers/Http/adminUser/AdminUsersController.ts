@@ -12,7 +12,8 @@ import { ResponsiveAttachment } from '@ioc:Adonis/Addons/ResponsiveAttachment'
 import { schema, rules } from '@ioc:Adonis/Core/Validator'
 
 export default class AdminUsersController {
-  public async index({ response, request }: HttpContextContract) {
+  public async index({ response, request, bouncer }: HttpContextContract) {
+    await bouncer.authorize('manageAdminUsers')
     const qs = request.qs() as IndexQs
     const users = await AdminUserService.index(qs)
     return response.json(users)
