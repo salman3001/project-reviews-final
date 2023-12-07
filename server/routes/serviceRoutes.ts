@@ -6,6 +6,4 @@ Route.group(() => {
   Route.resource('service-category', 'service/ServiceCategoriesController').apiOnly()
   Route.resource('service-subcategory', 'service/ServiceSubcategoriesController').apiOnly()
   Route.resource('service-tags', 'service/ServiceTagsController').apiOnly()
-})
-  .prefix('api')
-  .middleware('auth:adminUserApi')
+}).prefix('api')

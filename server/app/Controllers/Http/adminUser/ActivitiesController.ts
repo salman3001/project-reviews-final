@@ -2,9 +2,8 @@ import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import ActivityService from 'App/services/ActivityService'
 
 export default class ActivitiesController {
-  public async index({ request, response, auth }: HttpContextContract) {
-    await auth.user?.load('role')
-    console.log(auth.user.role)
+  public async index({ request, response, bouncer }: HttpContextContract) {
+    await bouncer.with('AdminUserPolicy').authorize('viewList')
     const qs = request.qs() as any
     const records = await ActivityService.index(qs)
     return response.json(records)

@@ -5,15 +5,16 @@ import qs from 'qs'
 import CityService from 'App/services/address/CityService'
 
 export default class CitiesController {
-  public async index({ request, response }: HttpContextContract) {
+  public async index({ request, response, bouncer }: HttpContextContract) {
+    await bouncer.with('LocationPolicy').authorize('viewList')
     const query = request.qs() as any
     const q = qs.parse(query, { depth: 10 })
-    console.log(q?.relationFilter?.state?.filter?.country)
     const records = await CityService.index(q)
     return response.json(records)
   }
 
-  public async store({ request, response }: HttpContextContract) {
+  public async store({ request, response, bouncer }: HttpContextContract) {
+    await bouncer.with('LocationPolicy').authorize('create')
     const citySchema = schema.create({
       name: schema.string({ trim: true }),
       isActive: schema.boolean.optional(),
@@ -24,13 +25,15 @@ export default class CitiesController {
     return response.json({ message: 'record created', data: record })
   }
 
-  public async show({ params, response, request }: HttpContextContract) {
+  public async show({ params, response, request, bouncer }: HttpContextContract) {
+    await bouncer.with('LocationPolicy').authorize('view')
     const qs = request.qs() as any
     const record = await CityService.show(+params.id, qs)
     response.json(record)
   }
 
-  public async update({ request, response, params }: HttpContextContract) {
+  public async update({ request, response, params, bouncer }: HttpContextContract) {
+    await bouncer.with('LocationPolicy').authorize('update')
     const citySchema = schema.create({
       name: schema.string({ trim: true }),
       isActive: schema.boolean.optional(),
@@ -41,7 +44,8 @@ export default class CitiesController {
     return response.json({ message: 'record updated', data: record })
   }
 
-  public async destroy({ params, response }: HttpContextContract) {
+  public async destroy({ params, response, bouncer }: HttpContextContract) {
+    await bouncer.with('LocationPolicy').authorize('delete')
     await CityService.destroy(+params.id)
     return response.json({ message: 'record deleted' })
   }

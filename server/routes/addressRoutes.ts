@@ -6,6 +6,4 @@ Route.group(() => {
   Route.resource('states', 'address/StatesController').apiOnly()
   Route.resource('cities', 'address/CitiesController').apiOnly()
   Route.resource('streets', 'address/StreetsController').apiOnly()
-})
-  .prefix('api/address')
-  .middleware('auth:adminUserApi')
+}).prefix('api/address')

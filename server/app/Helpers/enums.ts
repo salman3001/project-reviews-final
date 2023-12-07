@@ -4,19 +4,23 @@ export enum TicketStatus {
   RESPONDED = 'Responded',
 }
 
-export enum ImageTypes {
-  IMG = 'Image',
-  THUMB = 'Thumbnail',
-  AVATAR = 'Avatar',
-  COVER = 'Cover',
-  BROCHER = 'Brocher',
-}
-
-export enum VideoType {
-  VIDEO = 'Video',
-}
-
 export enum ServiceLocationType {
   SPECIFIC = 'Specific',
   PHYSICAL = 'Physical',
+}
+
+export enum permissions {
+  MANAGE_ADMIN_USERS = 'Manage Admin Users',
+  MANAGE_BLOGS = 'Manage Blogs',
+  MANAGE_CAMPAIGNS = 'Manage Campains',
+  MANAGE_SUBSCRIBERS = 'Manage Subscribers',
+  MANAGE_TEMPLATES = 'Manage Templates',
+  MANAGE_CONTACT_MESSAGES = 'Manage Cotact Messages',
+  MANAGE_KNOWLEDGEBASE = 'Manage Knowledgebase',
+  MANAGE_TICKETS = 'Manage Support Tickets',
+  MANAGE_PRODUCT = 'Manage Products',
+  MANAGE_SERVICE = 'Manage Services',
+  MANAGE_USER = 'Manage Users',
+  MANAGE_LOCATION = 'Manage Location',
+  MANAGE_ROLES = 'Manage Roles',
 }

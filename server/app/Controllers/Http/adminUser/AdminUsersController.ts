@@ -13,13 +13,14 @@ import { schema, rules } from '@ioc:Adonis/Core/Validator'
 
 export default class AdminUsersController {
   public async index({ response, request, bouncer }: HttpContextContract) {
-    await bouncer.authorize('manageAdminUsers')
+    await bouncer.with('AdminUserPolicy').authorize('viewList')
     const qs = request.qs() as IndexQs
     const users = await AdminUserService.index(qs)
     return response.json(users)
   }
 
-  public async store({ request, response }: HttpContextContract) {
+  public async store({ request, response, bouncer }: HttpContextContract) {
+    await bouncer.with('AdminUserPolicy').authorize('create')
     const payload = await request.validate(AdminUserValidator)
     const user = await AdminUserService.store(payload.user)
 
@@ -58,17 +59,17 @@ export default class AdminUsersController {
     return response.json(user)
   }
 
-  public async show({ response, params, request }: HttpContextContract) {
+  public async show({ response, params, request, bouncer }: HttpContextContract) {
     const qs = request.qs() as IndexQs
     const user = await AdminUserService.show(+params.id, qs)
-
+    await bouncer.with('AdminUserPolicy').authorize('view', user as AdminUser)
     return response.json(user)
   }
 
-  public async update({ request, response, params }: HttpContextContract) {
+  public async update({ request, response, params, bouncer }: HttpContextContract) {
     const payload = await request.validate(AdminUserUpdateValidator)
     let user = await AdminUserService.update(+params.id, payload.user)
-
+    await bouncer.with('AdminUserPolicy').authorize('update', user as AdminUser)
     if (user) {
       if (payload.address) {
         await user.load('address')
@@ -104,13 +105,15 @@ export default class AdminUsersController {
     return response.json(user)
   }
 
-  public async destroy({ params, response }: HttpContextContract) {
+  public async destroy({ params, response, bouncer }: HttpContextContract) {
+    await bouncer.with('AdminUserPolicy').authorize('delete')
     await AdminUserService.destroy(+params.id)
 
     return response.json({ message: 'User Deleted' })
   }
 
-  public async banUser({ params, response }: HttpContextContract) {
+  public async banUser({ params, response, bouncer }: HttpContextContract) {
+    await bouncer.with('AdminUserPolicy').authorize('delete')
     const user = await AdminUser.find(+params.id)
     if (user) {
       user.isActive = false
@@ -121,7 +124,8 @@ export default class AdminUsersController {
     }
   }
 
-  public async changeRole({ params, response, request }: HttpContextContract) {
+  public async changeRole({ params, response, request, bouncer }: HttpContextContract) {
+    await bouncer.with('AdminUserPolicy').authorize('delete')
     const roleId = request.input('roleId')
     const role = await Role.find(+roleId)
     console.log(roleId)
@@ -143,7 +147,11 @@ export default class AdminUsersController {
     }
   }
 
-  public async updateUserPassword({ params, response, request }: HttpContextContract) {
+  public async updateUserPassword({ params, response, request, bouncer }: HttpContextContract) {
+    const user = await AdminUser.findOrFail(+params.id)
+
+    await bouncer.with('AdminUserPolicy').authorize('update', user)
+
     const validationSchema = schema.create({
       password: schema.string({ trim: true }, [rules.minLength(8)]),
       password_confirmation: schema.string({ trim: true }, [rules.confirmed('password')]),
@@ -152,7 +160,6 @@ export default class AdminUsersController {
     const payload = await request.validate({
       schema: validationSchema,
     })
-    const user = await AdminUser.findOrFail(+params.id)
     // const newPassword = await Hash.make(payload.password)
     user.password = payload.password
     await user.save()

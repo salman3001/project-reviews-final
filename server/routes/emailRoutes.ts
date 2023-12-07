@@ -7,6 +7,4 @@ Route.group(() => {
   Route.resource('interest', 'email/InterestController').apiOnly()
   Route.get('subscriber/unique-field', 'email/SubscribersController.uniqueField')
   Route.resource('subscriber', 'email/SubscribersController').apiOnly()
-})
-  .prefix('api')
-  .middleware('auth:adminUserApi')
+}).prefix('api')

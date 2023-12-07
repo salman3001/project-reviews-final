@@ -9,6 +9,4 @@ Route.group(() => {
   Route.resource('admin-users', 'adminUser/AdminUsersController').apiOnly()
   Route.resource('roles', 'adminUser/RolesController').apiOnly()
   Route.resource('permissions', 'adminUser/PermissionsController').apiOnly()
-})
-  .prefix('api')
-  .middleware('auth:adminUserApi')
+}).prefix('api')
