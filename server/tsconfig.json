@@ -33,7 +33,9 @@
       "@adonisjs/auth",
       "adonis-responsive-attachment",
       "@adonisjs/attachment-lite",
-      "@adonisjs/bouncer"
+      "@adonisjs/bouncer",
+      "@adonisjs/mail",
+      "@verful/notifications"
     ]
   }
 }

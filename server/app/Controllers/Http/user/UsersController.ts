@@ -8,15 +8,18 @@ import User from 'App/Models/user/User'
 import { ResponsiveAttachment } from '@ioc:Adonis/Addons/ResponsiveAttachment'
 
 export default class UsersController {
-  public async index({ request, response }: HttpContextContract) {
+  public async index({ request, response, bouncer }: HttpContextContract) {
+    await bouncer.with('userPolicy').authorize('viewList')
+
     const qs = request.qs() as any
     const records = await UserService.index(qs)
     return response.json(records)
   }
 
-  public async store({ request, response }: HttpContextContract) {
+  public async store({ request, response, bouncer }: HttpContextContract) {
     const payload = await request.validate(UserCreateValidator)
     const user = new User()
+    await bouncer.with('userPolicy').authorize('create')
 
     user.merge(payload.user)
     await user.save()
@@ -62,16 +65,18 @@ export default class UsersController {
     return response.json(user)
   }
 
-  public async show({ params, response, request }: HttpContextContract) {
+  public async show({ params, response, request, bouncer }: HttpContextContract) {
     const qs = request.qs() as any
     const record = await UserService.show(+params.id, qs)
+    await bouncer.with('userPolicy').authorize('view', record as User)
     response.json(record)
   }
 
-  public async update({ request, response, params }: HttpContextContract) {
+  public async update({ request, response, params, bouncer }: HttpContextContract) {
     const payload = await request.validate(UserUpdateeValidator)
     const id = params.id
     const user = await User.findOrFail(id)
+    await bouncer.with('userPolicy').authorize('update', user)
 
     if (payload.user) {
       user.merge(payload.user)
@@ -161,7 +166,8 @@ export default class UsersController {
     return response.json(user)
   }
 
-  public async destroy({ params, response }: HttpContextContract) {
+  public async destroy({ params, response, bouncer }: HttpContextContract) {
+    await bouncer.with('userPolicy').authorize('delete')
     await UserService.destroy(+params.id)
     return response.json({ message: 'record deleted' })
   }
@@ -176,7 +182,9 @@ export default class UsersController {
     }
   }
 
-  public async banUser({ params, response }: HttpContextContract) {
+  public async banUser({ params, response, bouncer }: HttpContextContract) {
+    await bouncer.with('userPolicy').authorize('delete')
+
     const user = await UserService.show(+params.id)
     if (user) {
       user.isActive = false
@@ -187,7 +195,11 @@ export default class UsersController {
     }
   }
 
-  public async updateUserPassword({ params, response, request }: HttpContextContract) {
+  public async updateUserPassword({ params, response, request, bouncer }: HttpContextContract) {
+    const user = await User.findOrFail(+params.id)
+
+    await bouncer.with('userPolicy').authorize('update', user)
+
     const validationSchema = schema.create({
       password: schema.string({ trim: true }, [rules.minLength(8)]),
       password_confirmation: schema.string({ trim: true }, [rules.confirmed('password')]),
@@ -196,7 +208,6 @@ export default class UsersController {
     const payload = await request.validate({
       schema: validationSchema,
     })
-    const user = await User.findOrFail(+params.id)
     user.password = payload.password
     await user.save()
     return response.json({ message: 'Password Changed' })

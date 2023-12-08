@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia';
 import { Notify, useQuasar } from 'quasar';
 import { api } from 'src/boot/axios';
+import { permissions } from 'src/utils/enums';
 import { useRouter } from 'vue-router';
 
 const authStore = defineStore('Auth', () => {
@@ -55,22 +56,32 @@ const authStore = defineStore('Auth', () => {
     }
   };
 
-  const hasRole = (name: string) => {
+  // const hasRole = (name: string) => {
+  //   const u = user();
+  //   if (u) {
+  //     return u?.role?.name === name;
+  //   } else {
+  //     return false;
+  //   }
+  // };
+
+  const hasPermission = (name: permissions) => {
     const u = user();
-    if (u) {
-      return u?.role?.name === name;
-    } else {
+
+    if (u && u?.role?.name === 'Super Admin') {
+      return true;
+    }
+
+    if (u && u?.role?.is_active == 0) {
       return false;
     }
-  };
-
-  const hasPermission = (name: string) => {
-    const u = user();
 
     if (u) {
-      const permissions = u?.role?.permissions.map((perm: any) => perm.name);
+      const permissionValid = u?.role?.permissions?.filter(
+        (perm: any) => perm.name == name
+      );
 
-      if (permissions.includes(name)) {
+      if (permissionValid.length > 0) {
         return true;
       } else {
         return false;
@@ -83,7 +94,7 @@ const authStore = defineStore('Auth', () => {
   return {
     user,
     adminLogin,
-    hasRole,
+    // hasRole,
     hasPermission,
     adminLogout,
   };

@@ -9,7 +9,7 @@ import RoleFactory from 'Database/factories/adminUser/RoleFactory'
 import UserFactory from 'Database/factories/user/UserFactory'
 import SupportTicketFactory from 'Database/factories/helpcenter/SupportTicketFactory'
 import PermissionFactory from 'Database/factories/adminUser/PermissionFactory'
-import { TicketStatus } from 'App/Helpers/enums'
+import { TicketStatus, permissions } from 'App/Helpers/enums'
 import ProductCategoryFactory from 'Database/factories/product/ProductCategoryFactory'
 import ServiceCategoryFactory from 'Database/factories/service/ServiceCategoryFactory'
 import CampaignTypeFactory from 'Database/factories/email/CampaignTypeFactory'
@@ -27,20 +27,25 @@ export default class extends BaseSeeder {
   }
   public async run() {
     await PermissionFactory.merge([
-      { name: 'Create User' },
-      { name: 'Edit User' },
-      { name: 'Dreate User' },
-    ]).createMany(3)
+      { name: permissions.MANAGE_ADMIN_USERS },
+      { name: permissions.MANAGE_BLOGS },
+      { name: permissions.MANAGE_CAMPAIGNS },
+      { name: permissions.MANAGE_CONTACT_MESSAGES },
+      { name: permissions.MANAGE_INTERESTS },
+      { name: permissions.MANAGE_KNOWLEDGEBASE },
+      { name: permissions.MANAGE_LOCATION },
+      { name: permissions.MANAGE_PRODUCT },
+      { name: permissions.MANAGE_ROLES },
+      { name: permissions.MANAGE_SERVICE },
+      { name: permissions.MANAGE_SUBSCRIBERS },
+      { name: permissions.MANAGE_TEMPLATES },
+    ]).createMany(12)
 
     await RoleFactory.merge([
       { name: 'Super Admin', isActive: true },
       { name: 'Moderator' },
       { name: 'Vender' },
-    ])
-      .with('permissions', 1, (perm) => {
-        perm.merge([{ name: 'Sample Permision' }])
-      })
-      .createMany(3)
+    ]).createMany(3)
 
     await AdminUserFactory.merge([{ email: 'admin@gmail.com', isActive: true, roleId: 1 }])
       .with('social')

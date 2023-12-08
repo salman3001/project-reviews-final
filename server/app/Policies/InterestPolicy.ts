@@ -1,38 +1,35 @@
+import { action } from '@ioc:Adonis/Addons/Bouncer'
 import { BasePolicy } from '@ioc:Adonis/Addons/Bouncer'
 import { permissions } from 'App/Helpers/enums'
 import { hasPermission, isAdmin } from 'App/Helpers/permissionHelpers'
 
-export default class RolePolicy extends BasePolicy {
+export default class InterestPolicy extends BasePolicy {
+  @action({ allowGuest: true })
   public async viewList(user: any) {
-    if (isAdmin(user)) {
-      return true
-    } else {
-      return false
-    }
+    return true
   }
+
+  @action({ allowGuest: true })
   public async view(user: any) {
-    if (isAdmin(user) && (await hasPermission(user, permissions.MANAGE_ROLES))) {
-      return true
-    } else {
-      return false
-    }
+    return true
   }
+
   public async create(user: any) {
-    if (isAdmin(user) && (await hasPermission(user, permissions.MANAGE_ROLES))) {
+    if (isAdmin(user) && (await hasPermission(user, permissions.MANAGE_INTERESTS))) {
       return true
     } else {
       return false
     }
   }
   public async update(user: any) {
-    if (isAdmin(user) && (await hasPermission(user, permissions.MANAGE_ROLES))) {
+    if (isAdmin(user) && (await hasPermission(user, permissions.MANAGE_INTERESTS))) {
       return true
     } else {
       return false
     }
   }
   public async delete(user: any) {
-    if (isAdmin(user) && (await hasPermission(user, permissions.MANAGE_ROLES))) {
+    if (isAdmin(user) && (await hasPermission(user, permissions.MANAGE_INTERESTS))) {
       return true
     } else {
       return false

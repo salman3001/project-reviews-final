@@ -16,12 +16,20 @@ export default class AuthController {
 
     const payload = await request.validate({ schema: payloadSchema })
 
+    const user = await AdminUser.findBy('email', payload.email)
+    if (!user || user?.isActive == false) {
+      console.log('ran')
+
+      return response.unauthorized({
+        message: 'Failed to login. Account is not active or doesnt exist',
+      })
+    }
+
     try {
       const token = await auth.use('adminUserApi').attempt(payload.email, payload.password, {
         expiresIn: '1 day',
       })
 
-      const user = await AdminUser.findBy('email', payload.email)
       await user?.load('role', (role) => {
         role.preload('permissions')
       })

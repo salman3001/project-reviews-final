@@ -6,13 +6,17 @@ import CategoryUpdateValidator from 'App/Validators/product/CategoryUpdateValida
 import ProductSubcategoryService from 'App/services/product/ProductSubcategoryService'
 
 export default class ProductSubcategoriesController {
-  public async index({ request, response }: HttpContextContract) {
+  public async index({ request, response, bouncer }: HttpContextContract) {
+    await bouncer.with('ProductPolicy').authorize('viewList')
+
     const qs = request.qs() as any
     const records = await ProductSubcategoryService.index(qs)
     return response.json(records)
   }
 
-  public async store({ request, response }: HttpContextContract) {
+  public async store({ request, response, bouncer }: HttpContextContract) {
+    await bouncer.with('ProductPolicy').authorize('create')
+
     const payload = await request.validate(CategoryCreateValidator)
     const category = await ProductSubcategory.create(payload.category)
 
@@ -32,13 +36,17 @@ export default class ProductSubcategoriesController {
     return response.json({ message: 'record created', data: category })
   }
 
-  public async show({ params, response, request }: HttpContextContract) {
+  public async show({ params, response, request, bouncer }: HttpContextContract) {
+    await bouncer.with('ProductPolicy').authorize('view')
+
     const qs = request.qs() as any
     const record = await ProductSubcategoryService.show(+params.id, qs)
     response.json(record)
   }
 
-  public async update({ request, response, params }: HttpContextContract) {
+  public async update({ request, response, params, bouncer }: HttpContextContract) {
+    await bouncer.with('ProductPolicy').authorize('update')
+
     const payload = await request.validate(CategoryUpdateValidator)
     const category = await ProductSubcategory.findOrFail(+params.id)
 
@@ -75,7 +83,9 @@ export default class ProductSubcategoriesController {
     return response.json({ message: 'record created', data: category })
   }
 
-  public async destroy({ params, response }: HttpContextContract) {
+  public async destroy({ params, response, bouncer }: HttpContextContract) {
+    await bouncer.with('ProductPolicy').authorize('delete')
+
     await ProductSubcategoryService.destroy(+params.id)
     return response.json({ message: 'record deleted' })
   }

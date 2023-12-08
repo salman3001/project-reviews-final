@@ -5,13 +5,17 @@ import CreateTemplateValidator from 'App/Validators/news-letter/CreateTemplateVa
 import TemplateService from 'App/services/email/TemplateService'
 
 export default class TemplatesController {
-  public async index({ request, response }: HttpContextContract) {
+  public async index({ request, response, bouncer }: HttpContextContract) {
+    await bouncer.with('TemplatePolicy').authorize('viewList')
+
     const qs = request.qs() as any
     const records = await TemplateService.index(qs)
     return response.json(records)
   }
 
-  public async store({ request, response }: HttpContextContract) {
+  public async store({ request, response, bouncer }: HttpContextContract) {
+    await bouncer.with('TemplatePolicy').authorize('create')
+
     const payload = await request.validate(CreateTemplateValidator)
     const template = await Template.create(payload.template)
 
@@ -23,13 +27,17 @@ export default class TemplatesController {
     return response.json({ message: 'record created', data: template })
   }
 
-  public async show({ params, response, request }: HttpContextContract) {
+  public async show({ params, response, request, bouncer }: HttpContextContract) {
+    await bouncer.with('TemplatePolicy').authorize('view')
+
     const qs = request.qs() as any
     const record = await TemplateService.show(+params.id, qs)
     response.json(record)
   }
 
-  public async update({ request, response, params }: HttpContextContract) {
+  public async update({ request, response, params, bouncer }: HttpContextContract) {
+    await bouncer.with('TemplatePolicy').authorize('update')
+
     const template = await Template.findOrFail(+params.id)
     const payload = await request.validate(CreateTemplateValidator)
     template.merge(payload.template)
@@ -43,7 +51,9 @@ export default class TemplatesController {
     return response.json({ message: 'record created', data: template })
   }
 
-  public async destroy({ params, response }: HttpContextContract) {
+  public async destroy({ params, response, bouncer }: HttpContextContract) {
+    await bouncer.with('TemplatePolicy').authorize('delete')
+
     const template = await Template.findOrFail(+params.id)
     await template.delete()
     return response.json({ message: 'record deleted' })

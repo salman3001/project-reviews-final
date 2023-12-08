@@ -4,13 +4,17 @@ import KnowledgeBaseCategoryService from 'App/services/helpcenter/KnowledgeBaseC
 import slugify from 'slugify'
 
 export default class KnowledgeBaseCategoriesController {
-  public async index({ request, response }: HttpContextContract) {
+  public async index({ request, response, bouncer }: HttpContextContract) {
+    await bouncer.with('KnowledgebasePolicy').authorize('viewList')
+
     const qs = request.qs() as any
     const records = await KnowledgeBaseCategoryService.index(qs)
     return response.json(records)
   }
 
-  public async store({ request, response }: HttpContextContract) {
+  public async store({ request, response, bouncer }: HttpContextContract) {
+    await bouncer.with('KnowledgebasePolicy').authorize('create')
+
     const payload = await request.validate(HelpcenterContentCategoryValidator)
     const { slug, ...restPayload } = payload
 
@@ -26,18 +30,21 @@ export default class KnowledgeBaseCategoriesController {
       }
       return response.json({ message: 'record created', data: record })
     } catch (error) {
-      console.log(error)
       return response.abort({ message: 'Something went wrong' })
     }
   }
 
-  public async show({ params, response, request }: HttpContextContract) {
+  public async show({ params, response, request, bouncer }: HttpContextContract) {
+    await bouncer.with('KnowledgebasePolicy').authorize('view')
+
     const qs = request.qs() as any
     const record = await KnowledgeBaseCategoryService.show(+params.id, qs)
     response.json(record)
   }
 
-  public async update({ request, response, params }: HttpContextContract) {
+  public async update({ request, response, params, bouncer }: HttpContextContract) {
+    await bouncer.with('KnowledgebasePolicy').authorize('update')
+
     const payload = await request.validate(HelpcenterContentCategoryValidator)
     const { slug, ...restPayload } = payload
     let record: any = null
@@ -57,7 +64,8 @@ export default class KnowledgeBaseCategoriesController {
     }
   }
 
-  public async destroy({ params, response }: HttpContextContract) {
+  public async destroy({ params, response, bouncer }: HttpContextContract) {
+    await bouncer.with('KnowledgebasePolicy').authorize('delete')
     await KnowledgeBaseCategoryService.destroy(+params.id)
     return response.json({ message: 'record deleted' })
   }

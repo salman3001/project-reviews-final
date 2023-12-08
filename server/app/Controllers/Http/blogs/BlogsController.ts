@@ -6,13 +6,15 @@ import BlogService from 'App/services/blogs/BlogService'
 import { ResponsiveAttachment } from '@ioc:Adonis/Addons/ResponsiveAttachment'
 
 export default class BlogsController {
-  public async index({ request, response }: HttpContextContract) {
+  public async index({ request, response, bouncer }: HttpContextContract) {
+    await bouncer.with('BlogPolicy').authorize('viewList')
     const qs = request.qs() as any
     const records = await BlogService.index(qs)
     return response.json(records)
   }
 
-  public async store({ request, response }: HttpContextContract) {
+  public async store({ request, response, bouncer }: HttpContextContract) {
+    await bouncer.with('BlogPolicy').authorize('create')
     const { image, blogCategoryId, slug, ...payload } = await request.validate(BlogValidator)
 
     let blog: null | Blog = null
@@ -35,13 +37,17 @@ export default class BlogsController {
     return response.json({ message: 'Blog Created' })
   }
 
-  public async show({ params, response, request }: HttpContextContract) {
+  public async show({ params, response, request, bouncer }: HttpContextContract) {
+    await bouncer.with('BlogPolicy').authorize('view')
+
     const qs = request.qs() as any
     const record = await BlogService.show(+params.id, qs)
     response.json(record)
   }
 
-  public async update({ request, response, params }: HttpContextContract) {
+  public async update({ request, response, params, bouncer }: HttpContextContract) {
+    await bouncer.with('BlogPolicy').authorize('update')
+
     const { image, blogCategoryId, slug, ...payload } = await request.validate(BlogValidator)
 
     let blog: null | Blog = null
@@ -65,7 +71,8 @@ export default class BlogsController {
     return response.json({ message: 'Blog Updated' })
   }
 
-  public async destroy({ params, response }: HttpContextContract) {
+  public async destroy({ params, response, bouncer }: HttpContextContract) {
+    await bouncer.with('BlogPolicy').authorize('delete')
     await BlogService.destroy(+params.id)
     return response.json({ message: 'record deleted' })
   }

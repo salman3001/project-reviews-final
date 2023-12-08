@@ -90,7 +90,8 @@ const { data, loading, tableRef, onRequest, pagination } = useGetTableData(
         <template v-slot:body-cell-permissions="props">
           <q-td :props="props" class="row items-center" style="min-height: auto; min-width: 400px">
             <div class="flex q-gutter-xs">
-              <q-badge color="positive" size="30px" v-for="p in props.row.permissions" :key="p.id">
+              <q-badge v-if="props.row.name === 'Super Admin'" color="positive" size="30px">All Permissions</q-badge>
+              <q-badge v-else color="positive" size="30px" v-for="p in props.row.permissions" :key="p.id">
                 {{ p.name }}
               </q-badge>
             </div>

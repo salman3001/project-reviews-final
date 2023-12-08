@@ -5,13 +5,16 @@ import CreateCampaignValidator from 'App/Validators/news-letter/CreateCampaignVa
 import CampaignService from 'App/services/email/CampaignService'
 
 export default class CampaignsController {
-  public async index({ request, response }: HttpContextContract) {
+  public async index({ request, response, bouncer }: HttpContextContract) {
+    await bouncer.with('CampaignPolicy').authorize('viewList')
     const qs = request.qs() as any
     const records = await CampaignService.index(qs)
     return response.json(records)
   }
 
-  public async store({ request, response }: HttpContextContract) {
+  public async store({ request, response, bouncer }: HttpContextContract) {
+    await bouncer.with('CampaignPolicy').authorize('create')
+
     const payload = await request.validate(CreateCampaignValidator)
     const campaign = await Campaign.create(payload.campaign)
 
@@ -29,13 +32,17 @@ export default class CampaignsController {
     return response.json({ message: 'record created', data: campaign })
   }
 
-  public async show({ params, response, request }: HttpContextContract) {
+  public async show({ params, response, request, bouncer }: HttpContextContract) {
+    await bouncer.with('CampaignPolicy').authorize('view')
+
     const qs = request.qs() as any
     const record = await CampaignService.show(+params.id, qs)
     response.json(record)
   }
 
-  public async update({ request, response, params }: HttpContextContract) {
+  public async update({ request, response, params, bouncer }: HttpContextContract) {
+    await bouncer.with('CampaignPolicy').authorize('update')
+
     const campaign = await Campaign.findOrFail(+params.id)
     const payload = await request.validate(CreateCampaignValidator)
 
@@ -71,7 +78,9 @@ export default class CampaignsController {
     return response.json({ message: 'record created', data: campaign })
   }
 
-  public async destroy({ params, response }: HttpContextContract) {
+  public async destroy({ params, response, bouncer }: HttpContextContract) {
+    await bouncer.with('CampaignPolicy').authorize('delete')
+
     await CampaignService.destroy(+params.id)
     return response.json({ message: 'record deleted' })
   }

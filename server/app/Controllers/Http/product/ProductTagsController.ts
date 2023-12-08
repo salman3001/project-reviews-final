@@ -6,13 +6,16 @@ import CategoryUpdateValidator from 'App/Validators/product/CategoryUpdateValida
 import ProductTagService from 'App/services/product/ProductTagService'
 
 export default class ProductTagsController {
-  public async index({ request, response }: HttpContextContract) {
+  public async index({ request, response, bouncer }: HttpContextContract) {
+    await bouncer.with('ProductPolicy').authorize('viewList')
     const qs = request.qs() as any
     const records = await ProductTagService.index(qs)
     return response.json(records)
   }
 
-  public async store({ request, response }: HttpContextContract) {
+  public async store({ request, response, bouncer }: HttpContextContract) {
+    await bouncer.with('ProductPolicy').authorize('create')
+
     const payload = await request.validate(CategoryCreateValidator)
     const tag = await ProductTag.create(payload.category)
 
@@ -32,13 +35,17 @@ export default class ProductTagsController {
     return response.json({ message: 'record created', data: tag })
   }
 
-  public async show({ params, response, request }: HttpContextContract) {
+  public async show({ params, response, request, bouncer }: HttpContextContract) {
+    await bouncer.with('ProductPolicy').authorize('view')
+
     const qs = request.qs() as any
     const record = await ProductTagService.show(+params.id, qs)
     response.json(record)
   }
 
-  public async update({ request, response, params }: HttpContextContract) {
+  public async update({ request, response, params, bouncer }: HttpContextContract) {
+    await bouncer.with('ProductPolicy').authorize('update')
+
     const payload = await request.validate(CategoryUpdateValidator)
     const tag = await ProductTag.findOrFail(+params.id)
 
@@ -75,7 +82,9 @@ export default class ProductTagsController {
     return response.json({ message: 'record created', data: tag })
   }
 
-  public async destroy({ params, response }: HttpContextContract) {
+  public async destroy({ params, response, bouncer }: HttpContextContract) {
+    await bouncer.with('ProductPolicy').authorize('delete')
+
     await ProductTagService.destroy(+params.id)
     return response.json({ message: 'record deleted' })
   }

@@ -4,13 +4,17 @@ import CreateSubscriberValidator from 'App/Validators/news-letter/CreateSubscrib
 import SubscriberService from 'App/services/email/SubscriberService'
 
 export default class SubscribersController {
-  public async index({ request, response }: HttpContextContract) {
+  public async index({ request, response, bouncer }: HttpContextContract) {
+    await bouncer.with('SubscriberPolicy').authorize('viewList')
+
     const qs = request.qs() as any
     const records = await SubscriberService.index(qs)
     return response.json(records)
   }
 
-  public async store({ request, response }: HttpContextContract) {
+  public async store({ request, response, bouncer }: HttpContextContract) {
+    await bouncer.with('SubscriberPolicy').authorize('create')
+
     const payload = await request.validate(CreateSubscriberValidator)
     const subscriber = await Subscriber.create(payload.subscriber)
 
@@ -21,13 +25,17 @@ export default class SubscribersController {
     return response.json({ message: 'record created', data: subscriber })
   }
 
-  public async show({ params, response, request }: HttpContextContract) {
+  public async show({ params, response, request, bouncer }: HttpContextContract) {
+    await bouncer.with('SubscriberPolicy').authorize('view')
+
     const qs = request.qs() as any
     const record = await SubscriberService.show(+params.id, qs)
     response.json(record)
   }
 
-  public async update({ request, response, params }: HttpContextContract) {
+  public async update({ request, response, params, bouncer }: HttpContextContract) {
+    await bouncer.with('SubscriberPolicy').authorize('update')
+
     const subscriber = await Subscriber.findOrFail(+params.id)
     const payload = await request.validate(CreateSubscriberValidator)
 
@@ -42,7 +50,9 @@ export default class SubscribersController {
     return response.json({ message: 'record created', data: subscriber })
   }
 
-  public async destroy({ params, response }: HttpContextContract) {
+  public async destroy({ params, response, bouncer }: HttpContextContract) {
+    await bouncer.with('SubscriberPolicy').authorize('delete')
+
     await SubscriberService.destroy(+params.id)
     return response.json({ message: 'record deleted' })
   }

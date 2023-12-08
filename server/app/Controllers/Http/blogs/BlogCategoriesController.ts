@@ -4,13 +4,15 @@ import BlogCategoryService from 'App/services/blogs/BlogCategoryService'
 import slugify from 'slugify'
 
 export default class BlogCategoriesController {
-  public async index({ request, response }: HttpContextContract) {
+  public async index({ request, response, bouncer }: HttpContextContract) {
+    await bouncer.with('BlogPolicy').authorize('viewList')
     const qs = request.qs() as any
     const records = await BlogCategoryService.index(qs)
     return response.json(records)
   }
 
-  public async store({ request, response }: HttpContextContract) {
+  public async store({ request, response, bouncer }: HttpContextContract) {
+    await bouncer.with('RolePolicy').authorize('create')
     const { slug, ...payload } = await request.validate(BlogCategoryValidator)
 
     if (slug) {
@@ -22,13 +24,15 @@ export default class BlogCategoriesController {
     return response.json({ message: 'Blog Created' })
   }
 
-  public async show({ params, response, request }: HttpContextContract) {
+  public async show({ params, response, request, bouncer }: HttpContextContract) {
+    await bouncer.with('RolePolicy').authorize('view')
     const qs = request.qs() as any
     const record = await BlogCategoryService.show(+params.id, qs)
     response.json(record)
   }
 
-  public async update({ request, response, params }: HttpContextContract) {
+  public async update({ request, response, params, bouncer }: HttpContextContract) {
+    await bouncer.with('RolePolicy').authorize('update')
     const { slug, ...payload } = await request.validate(BlogCategoryValidator)
 
     if (slug) {
@@ -40,7 +44,8 @@ export default class BlogCategoriesController {
     return response.json({ message: 'Blog Updated' })
   }
 
-  public async destroy({ params, response }: HttpContextContract) {
+  public async destroy({ params, response, bouncer }: HttpContextContract) {
+    await bouncer.with('RolePolicy').authorize('delete')
     await BlogCategoryService.destroy(+params.id)
     return response.json({ message: 'record deleted' })
   }

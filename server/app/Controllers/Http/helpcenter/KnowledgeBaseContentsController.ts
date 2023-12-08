@@ -4,13 +4,17 @@ import KnowledgeBaseContentService from 'App/services/helpcenter/KnowledgeBaseCo
 import slugify from 'slugify'
 
 export default class KnowledgeBaseContentsController {
-  public async index({ request, response }: HttpContextContract) {
+  public async index({ request, response, bouncer }: HttpContextContract) {
+    await bouncer.with('KnowledgebasePolicy').authorize('viewList')
+
     const qs = request.qs() as any
     const records = await KnowledgeBaseContentService.index(qs)
     return response.json(records)
   }
 
-  public async store({ request, response }: HttpContextContract) {
+  public async store({ request, response, bouncer }: HttpContextContract) {
+    await bouncer.with('KnowledgebasePolicy').authorize('create')
+
     const payload = await request.validate(HelpcenterContentValidator)
     const { slug, ...restPayload } = payload
 
@@ -31,13 +35,17 @@ export default class KnowledgeBaseContentsController {
     }
   }
 
-  public async show({ params, response, request }: HttpContextContract) {
+  public async show({ params, response, request, bouncer }: HttpContextContract) {
+    await bouncer.with('KnowledgebasePolicy').authorize('view')
+
     const qs = request.qs() as any
     const record = await KnowledgeBaseContentService.show(+params.id, qs)
     response.json(record)
   }
 
-  public async update({ request, response, params }: HttpContextContract) {
+  public async update({ request, response, params, bouncer }: HttpContextContract) {
+    await bouncer.with('KnowledgebasePolicy').authorize('update')
+
     const payload = await request.validate(HelpcenterContentValidator)
     const { slug, ...restPayload } = payload
     let record: any = null
@@ -57,7 +65,9 @@ export default class KnowledgeBaseContentsController {
     }
   }
 
-  public async destroy({ params, response }: HttpContextContract) {
+  public async destroy({ params, response, bouncer }: HttpContextContract) {
+    await bouncer.with('KnowledgebasePolicy').authorize('delete')
+
     await KnowledgeBaseContentService.destroy(+params.id)
     return response.json({ message: 'record deleted' })
   }

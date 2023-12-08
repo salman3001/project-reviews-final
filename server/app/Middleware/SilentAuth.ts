@@ -15,7 +15,16 @@ export default class SilentAuthMiddleware {
      * Check if user is logged-in or not. If yes, then `ctx.auth.user` will be
      * set to the instance of the currently logged in user.
      */
-    await auth.check()
+    if (await auth.use('adminUserApi').check()) {
+      auth.defaultGuard = 'adminUserApi'
+      return next()
+    }
+
+    if (await auth.use('userApi').check()) {
+      auth.defaultGuard = 'userApi'
+      return next()
+    }
+
     await next()
   }
 }

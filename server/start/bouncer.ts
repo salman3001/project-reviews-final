@@ -6,7 +6,6 @@
  */
 
 import Bouncer from '@ioc:Adonis/Addons/Bouncer'
-import LocationPolicy from 'App/Policies/LocationPolicy'
 
 /*
 |--------------------------------------------------------------------------
@@ -57,17 +56,18 @@ export const { actions } = Bouncer
 |****************************************************************
 */
 export const { policies } = Bouncer.registerPolicies({
-  AdminUserPolicy: () => import('app/Policies/AdminUserPolicy'),
-  BlogPolicy: () => import('app/Policies/BlogPolicy'),
-  CampaignPolicy: () => import('app/Policies/CampaignPolicy'),
-  ContactMessagePolicy: () => import('app/Policies/ContactMessagePolicy'),
-  KnowledgebasePolicy: () => import('app/Policies/KnowledgebasePolicy'),
-  LocationPolicy: () => import('app/Policies/LocationPolicy'),
-  ProductPolicy: () => import('app/Policies/ProductPolicy'),
-  RolePolicy: () => import('app/Policies/RolePolicy'),
-  ServicePolicy: () => import('app/Policies/ServicePolicy'),
-  SubscriberPolicy: () => import('app/Policies/SubscriberPolicy'),
-  SupportTicketPolicy: () => import('app/Policies/SupportTicketPolicy'),
-  TemplatePolicy: () => import('app/Policies/TemplatePolicy'),
-  userPolicy: () => import('app/Policies/UserPolicy'),
+  AdminUserPolicy: () => import('App/Policies/AdminUserPolicy'),
+  BlogPolicy: () => import('App/Policies/BlogPolicy'),
+  CampaignPolicy: () => import('App/Policies/CampaignPolicy'),
+  ContactMessagePolicy: () => import('App/Policies/ContactMessagePolicy'),
+  KnowledgebasePolicy: () => import('App/Policies/KnowledgebasePolicy'),
+  LocationPolicy: () => import('App/Policies/LocationPolicy'),
+  ProductPolicy: () => import('App/Policies/ProductPolicy'),
+  RolePolicy: () => import('App/Policies/RolePolicy'),
+  ServicePolicy: () => import('App/Policies/ServicePolicy'),
+  SubscriberPolicy: () => import('App/Policies/SubscriberPolicy'),
+  SupportTicketPolicy: () => import('App/Policies/SupportTicketPolicy'),
+  TemplatePolicy: () => import('App/Policies/TemplatePolicy'),
+  userPolicy: () => import('App/Policies/UserPolicy'),
+  IntrestPolicy: () => import('App/Policies/InterestPolicy'),
 })

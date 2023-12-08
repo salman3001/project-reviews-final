@@ -6,13 +6,17 @@ import ServiceCategoryUpdateValidator from 'App/Validators/service/ServiceCatego
 import ServiceCategoryService from 'App/services/service/ServiceCategoryService'
 
 export default class ServiceCategoriesController {
-  public async index({ request, response }: HttpContextContract) {
+  public async index({ request, response, bouncer }: HttpContextContract) {
+    await bouncer.with('ServicePolicy').authorize('viewList')
+
     const qs = request.qs() as any
     const records = await ServiceCategoryService.index(qs)
     return response.json(records)
   }
 
-  public async store({ request, response }: HttpContextContract) {
+  public async store({ request, response, bouncer }: HttpContextContract) {
+    await bouncer.with('ServicePolicy').authorize('create')
+
     const payload = await request.validate(ServiceCategoryCreateValidator)
     const category = await ServiceCategory.create(payload.category)
 
@@ -32,13 +36,16 @@ export default class ServiceCategoriesController {
     return response.json({ message: 'record created', data: category })
   }
 
-  public async show({ params, response, request }: HttpContextContract) {
+  public async show({ params, response, request, bouncer }: HttpContextContract) {
+    await bouncer.with('ServicePolicy').authorize('view')
+
     const qs = request.qs() as any
     const record = await ServiceCategoryService.show(+params.id, qs)
     response.json(record)
   }
 
-  public async update({ request, response, params }: HttpContextContract) {
+  public async update({ request, response, params, bouncer }: HttpContextContract) {
+    await bouncer.with('ServicePolicy').authorize('update')
     const payload = await request.validate(ServiceCategoryUpdateValidator)
     const category = await ServiceCategory.findOrFail(+params.id)
 
@@ -75,7 +82,8 @@ export default class ServiceCategoriesController {
     return response.json({ message: 'record created', data: category })
   }
 
-  public async destroy({ params, response }: HttpContextContract) {
+  public async destroy({ params, response, bouncer }: HttpContextContract) {
+    await bouncer.with('ServicePolicy').authorize('delete')
     await ServiceCategoryService.destroy(+params.id)
     return response.json({ message: 'record deleted' })
   }

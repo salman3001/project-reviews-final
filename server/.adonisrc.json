@@ -5,7 +5,9 @@
     "@adonisjs/core/build/commands/index.js",
     "@adonisjs/repl/build/commands",
     "@adonisjs/lucid/build/commands",
-    "@adonisjs/bouncer/build/commands"
+    "@adonisjs/bouncer/build/commands",
+    "@adonisjs/mail/build/commands",
+    "@verful/notifications/build/commands"
   ],
   "exceptionHandlerNamespace": "App/Exceptions/Handler",
   "aliases": {
@@ -26,7 +28,9 @@
     "@adonisjs/auth",
     "adonis-responsive-attachment",
     "@adonisjs/attachment-lite",
-    "@adonisjs/bouncer"
+    "@adonisjs/bouncer",
+    "@adonisjs/mail",
+    "@verful/notifications"
   ],
   "aceProviders": [
     "@adonisjs/repl"

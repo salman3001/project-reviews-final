@@ -1,14 +1,3 @@
-export enum TicketStatus {
-  OPEN = 'Open',
-  CLOSED = 'Closed',
-  RESPONDED = 'Responded',
-}
-
-export enum ServiceLocationType {
-  SPECIFIC = 'Specific',
-  PHYSICAL = 'Physical',
-}
-
 export enum permissions {
   MANAGE_ADMIN_USERS = 'Manage Admin Users',
   MANAGE_BLOGS = 'Manage Blogs',

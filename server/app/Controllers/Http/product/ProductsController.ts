@@ -9,13 +9,16 @@ import VideoService from 'App/services/VideoService'
 import ProductService from 'App/services/product/ProductService'
 
 export default class ProductsController {
-  public async index({ request, response }: HttpContextContract) {
+  public async index({ request, response, bouncer }: HttpContextContract) {
+    await bouncer.with('ProductPolicy').authorize('viewList')
     const qs = request.qs() as any
     const records = await ProductService.index(qs)
     return response.json(records)
   }
 
-  public async store({ request, response }: HttpContextContract) {
+  public async store({ request, response, bouncer }: HttpContextContract) {
+    await bouncer.with('ProductPolicy').authorize('create')
+
     const payload = await request.validate(ProductCreateValidator)
     const product = await Product.create(payload.product)
 
@@ -77,13 +80,17 @@ export default class ProductsController {
     return response.json({ message: 'record created', data: product })
   }
 
-  public async show({ params, response, request }: HttpContextContract) {
+  public async show({ params, response, request, bouncer }: HttpContextContract) {
+    await bouncer.with('ProductPolicy').authorize('view')
+
     const qs = request.qs() as any
     const record = await ProductService.show(+params.id, qs)
     response.json(record)
   }
 
-  public async update({ request, response, params }: HttpContextContract) {
+  public async update({ request, response, params, bouncer }: HttpContextContract) {
+    await bouncer.with('ProductPolicy').authorize('update')
+
     const product = await Product.findOrFail(+params.id)
     const payload = await request.validate(ProductUpdateValidator)
 
@@ -181,7 +188,9 @@ export default class ProductsController {
     return response.json({ message: 'record updated', data: product })
   }
 
-  public async destroy({ params, response }: HttpContextContract) {
+  public async destroy({ params, response, bouncer }: HttpContextContract) {
+    await bouncer.with('ProductPolicy').authorize('delete')
+
     const product = await Product.findOrFail(+params.id)
     await product.load('screenshots')
     await product.load('video')

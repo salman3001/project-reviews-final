@@ -10,13 +10,17 @@ import VideoService from 'App/services/VideoService'
 import ServiceService from 'App/services/service/ServiceService'
 
 export default class ServicesController {
-  public async index({ request, response }: HttpContextContract) {
+  public async index({ request, response, bouncer }: HttpContextContract) {
+    await bouncer.with('ServicePolicy').authorize('viewList')
+
     const qs = request.qs() as any
     const records = await ServiceService.index(qs)
     return response.json(records)
   }
 
-  public async store({ request, response }: HttpContextContract) {
+  public async store({ request, response, bouncer }: HttpContextContract) {
+    await bouncer.with('ServicePolicy').authorize('create')
+
     const payload = await request.validate(ServiceCreateValidator)
     const service = await Service.create(payload.service)
 
@@ -79,13 +83,17 @@ export default class ServicesController {
     return response.json({ message: 'record created', data: service })
   }
 
-  public async show({ params, response, request }: HttpContextContract) {
+  public async show({ params, response, request, bouncer }: HttpContextContract) {
+    await bouncer.with('ServicePolicy').authorize('view')
+
     const qs = request.qs() as any
     const record = await ServiceService.show(+params.id, qs)
     response.json(record)
   }
 
-  public async update({ request, response, params }: HttpContextContract) {
+  public async update({ request, response, params, bouncer }: HttpContextContract) {
+    await bouncer.with('ServicePolicy').authorize('update')
+
     const service = await Service.findOrFail(+params.id)
     const payload = await request.validate(ServiceUpdateValidator)
 
@@ -182,7 +190,9 @@ export default class ServicesController {
     return response.json({ message: 'record updated', data: service })
   }
 
-  public async destroy({ params, response }: HttpContextContract) {
+  public async destroy({ params, response, bouncer }: HttpContextContract) {
+    await bouncer.with('ServicePolicy').authorize('delete')
+
     const service = await Service.findOrFail(+params.id)
     await service.load('screenshots')
     await service.load('video')
@@ -203,7 +213,8 @@ export default class ServicesController {
     return response.json({ message: 'record deleted' })
   }
 
-  public async deleteScreenShot({ params, response }: HttpContextContract) {
+  public async deleteScreenShot({ params, response, bouncer }: HttpContextContract) {
+    await bouncer.with('ServicePolicy').authorize('delete')
     const image = await ImageService.destroy(+params.id)
     return response.json({ message: 'Screeshot deleted', image })
   }

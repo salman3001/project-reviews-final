@@ -7,10 +7,15 @@ export const hasPermission = async (user: AdminUser, permission: string) => {
     if (user?.role?.name === 'Super Admin') {
       return true
     }
-    await user.role.load('permissions')
-    const permissions = user.role.permissions.map((p) => p.name)
 
-    if (permissions.includes(permission)) {
+    if (user?.role?.isActive == false) {
+      return false
+    }
+
+    await user.role.load('permissions')
+    const validPermission = user.role.permissions.filter((p) => p.name === permission)
+
+    if (validPermission.length > 0) {
       return true
     }
     return false
