@@ -24,16 +24,10 @@ BlogApi.show(route.params.id as string, {
 <template>
   <div class="q-pa-lg">
     <div class="row items-center q-gutter-sm q-mb-xl">
-      <q-icon
-        name="keyboard_backspace"
-        size="30px"
-        style="cursor: pointer"
-        @click="
-          () => {
-            router.push({ name: 'admin.blogs.index' });
-          }
-        "
-      />
+      <q-icon name="keyboard_backspace" size="30px" style="cursor: pointer" @click="() => {
+        router.push({ name: 'admin.blogs.index' });
+      }
+        " />
       <span class="text-h6"> View Blog </span>
     </div>
     <div v-if="blog" class="q-gutter-y-lg">
@@ -45,14 +39,10 @@ BlogApi.show(route.params.id as string, {
           <table class="full-width">
             <thead>
               <tr class="text-grey-8">
-                <th
-                  style="text-align: start; padding: 0.5rem; min-width: 10rem"
-                >
+                <th style="text-align: start; padding: 0.5rem; min-width: 10rem">
                   Title
                 </th>
-                <th
-                  style="text-align: start; padding: 0.5rem; min-width: 10rem"
-                >
+                <th style="text-align: start; padding: 0.5rem; min-width: 10rem">
                   Slug
                 </th>
                 <th style="text-align: start; padding: 0.5rem">Category</th>
@@ -77,8 +67,8 @@ BlogApi.show(route.params.id as string, {
       </div>
       <div>
         <p class="text-grey-8 text-h6" style="font-weight: 400">Content</p>
-        <div class="row q-col-gutter-md">
-          <p v-html="blog?.long_desc"></p>
+        <div class="row q-col-gutter-md full-width">
+          <p v-html="blog?.long_desc" class="full-width"></p>
         </div>
       </div>
       <div>

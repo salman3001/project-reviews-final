@@ -135,7 +135,7 @@ onMounted(() => {
               : '/images/dummy-thumb.jpg'" />
           </div>
           <div class="full-width" style="display: flex; min-height: 25rem; flex-direction: column">
-            <QuillEditor v-model:content="form.longDesc" contentType="html" theme="snow" toolbar="full" />
+            <QuillEditor v-model:content="form.longDesc" contentType="html" />
           </div>
         </div>
 
