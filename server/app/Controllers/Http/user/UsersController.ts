@@ -10,7 +10,6 @@ import { ResponsiveAttachment } from '@ioc:Adonis/Addons/ResponsiveAttachment'
 export default class UsersController {
   public async index({ request, response, bouncer }: HttpContextContract) {
     await bouncer.with('userPolicy').authorize('viewList')
-
     const qs = request.qs() as any
     const records = await UserService.index(qs)
     return response.json(records)

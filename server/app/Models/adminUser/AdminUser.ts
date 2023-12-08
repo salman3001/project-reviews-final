@@ -19,8 +19,10 @@ import {
   ResponsiveAttachmentContract,
 } from '@ioc:Adonis/Addons/ResponsiveAttachment'
 import Activity from '../Activity'
+import { compose } from '@ioc:Adonis/Core/Helpers'
+import { Notifiable } from '@ioc:Verful/Notification/Mixins'
 
-export default class AdminUser extends BaseModel {
+export default class AdminUser extends compose(BaseModel, Notifiable('admin_user_notifications')) {
   @column({ isPrimary: true })
   public id: number
 
