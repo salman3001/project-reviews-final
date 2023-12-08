@@ -28,12 +28,14 @@ import '../routes/userRoutes'
 import '../routes/productRoutes'
 import '../routes/serviceRoutes'
 import '../routes/emailRoutes'
+import '../routes/notificationRoutes'
 
 Route.get('api', async ({ response }) => {
   return response.json('welcome to backend api')
 })
 
 // other
+
 Route.group(() => {
   Route.resource('language', 'LanguageController')
 }).prefix('api')
