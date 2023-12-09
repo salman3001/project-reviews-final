@@ -25,3 +25,7 @@ export enum permissions {
   MANAGE_LOCATION = 'Manage Location',
   MANAGE_ROLES = 'Manage Roles',
 }
+
+export enum NotificationTypes {
+  NEW_SUPPORT_TICKET = 'new-support-ticket',
+}

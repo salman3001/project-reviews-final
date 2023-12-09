@@ -10,7 +10,6 @@ import SocialService from 'App/services/SocialService'
 import RoleService from 'App/services/admin/RoleService'
 import { ResponsiveAttachment } from '@ioc:Adonis/Addons/ResponsiveAttachment'
 import { schema, rules } from '@ioc:Adonis/Core/Validator'
-import ForgotPasswordOtpMail from 'App/Mailers/ForgotPasswordOtpMail'
 
 export default class AdminUsersController {
   public async index({ response, request, bouncer }: HttpContextContract) {
@@ -64,7 +63,6 @@ export default class AdminUsersController {
     const qs = request.qs() as IndexQs
     const user = await AdminUserService.show(+params.id, qs)
     await bouncer.with('AdminUserPolicy').authorize('view', user as AdminUser)
-    await new ForgotPasswordOtpMail().sendLater()
     return response.json(user)
   }
 

@@ -51,7 +51,7 @@ export default class AuthController {
   public async sendForgotPasswordOtp({ response, request }: HttpContextContract) {
     const validationSchema = schema.create({
       email: schema.string({ trim: true }, [
-        rules.email,
+        rules.email(),
         rules.normalizeEmail({ allLowercase: true }),
       ]),
     })
@@ -75,7 +75,7 @@ export default class AuthController {
   public async vaerifyOtpAndUpdatePassword({ response, request }: HttpContextContract) {
     const validationSchema = schema.create({
       email: schema.string({ trim: true }, [
-        rules.email,
+        rules.email(),
         rules.normalizeEmail({ allLowercase: true }),
       ]),
       otp: schema.string({ trim: true }),

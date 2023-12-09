@@ -1,7 +1,9 @@
+import { AxiosRequestConfig } from 'axios';
 import { defineStore } from 'pinia';
 import { Notify, useQuasar } from 'quasar';
 import { api } from 'src/boot/axios';
 import { permissions } from 'src/utils/enums';
+import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 
 const authStore = defineStore('Auth', () => {
@@ -91,10 +93,99 @@ const authStore = defineStore('Auth', () => {
     }
   };
 
+  const getOtp = (
+    config?: AxiosRequestConfig<any> | undefined,
+    cb?: { onSuccess?: () => void; onError?: () => void }
+  ) => {
+    const loading = ref(false);
+    const execute = async (data: any) => {
+      try {
+        loading.value = true;
+        const res = await api.post('/auth/get-otp', data, config);
+        loading.value = false;
+        cb?.onSuccess && cb?.onSuccess();
+        Notify.create({
+          message: 'OTP Sent',
+          color: 'positive',
+          icon: 'done',
+        });
+      } catch (error: any) {
+        if (error?.response) {
+          loading.value = false;
+          cb?.onError && cb?.onError();
+          Notify.create({
+            message: error?.response?.data?.message || 'Failed to sent OTP.',
+            color: 'negative',
+          });
+        } else if (error?.request) {
+          loading.value = false;
+          cb?.onError && cb?.onError();
+          Notify.create({
+            message: 'Server Not Reachable!',
+            color: 'negative',
+          });
+        } else {
+          loading.value = false;
+          cb?.onError && cb?.onError();
+          Notify.create({ message: error.message, color: 'negative' });
+        }
+      }
+    };
+    return { execute, loading };
+  };
+
+  const verifyOtpAndUpdatePWD = (
+    config?: AxiosRequestConfig<any> | undefined,
+    cb?: { onSuccess?: () => void; onError?: () => void }
+  ) => {
+    const loading = ref(false);
+    const execute = async (data: any) => {
+      try {
+        loading.value = true;
+        const res = await api.post(
+          '/auth/verify-otp-update-password',
+          data,
+          config
+        );
+        loading.value = false;
+        cb?.onSuccess && cb?.onSuccess();
+        Notify.create({
+          message: 'Password Updated',
+          color: 'positive',
+          icon: 'done',
+        });
+      } catch (error: any) {
+        if (error?.response) {
+          loading.value = false;
+          cb?.onError && cb?.onError();
+          Notify.create({
+            message:
+              error?.response?.data?.message || 'Failed to update password.',
+            color: 'negative',
+          });
+        } else if (error?.request) {
+          loading.value = false;
+          cb?.onError && cb?.onError();
+          Notify.create({
+            message: 'Server Not Reachable!',
+            color: 'negative',
+          });
+        } else {
+          loading.value = false;
+          cb?.onError && cb?.onError();
+          Notify.create({ message: error.message, color: 'negative' });
+        }
+      }
+    };
+    return { execute, loading };
+  };
+
   return {
     user,
     adminLogin,
     // hasRole,
+    getOtp,
+    verifyOtpAndUpdatePWD,
     hasPermission,
     adminLogout,
   };

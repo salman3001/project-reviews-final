@@ -1,20 +1,30 @@
 <script setup lang="ts">
 import authStore from 'src/stores/authStroe';
+import { onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 
 const auth = authStore()
 const router = useRouter()
+const upload = ref('')
 
 
 const logout = async () => {
   await auth.adminLogout()
   router.push({ name: 'adminLogin' })
 }
+
+onMounted(() => {
+  upload.value = process.env.UPLOAD as string;
+})
 </script>
 <template>
-  <q-btn round icon="account_circle" class="text-black" unelevated>
+  <q-btn round class="text-black" unelevated>
+    <q-avatar size="36px">
+      <img :src="auth.user()?.avatar?.url ? upload + auth.user()?.avatar?.url : '/images/sample-dp.png'">
+    </q-avatar>
+
     <q-menu anchor="bottom left">
-      <q-list style="min-width: 100px">
+      <q-list dense style="min-width: 100px">
         <q-item clickable v-close-popup>
           <q-item-section @click="logout">Sign Out</q-item-section>
         </q-item>

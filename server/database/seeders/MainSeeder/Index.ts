@@ -40,7 +40,9 @@ export default class extends BaseSeeder {
       { name: permissions.MANAGE_SERVICE },
       { name: permissions.MANAGE_SUBSCRIBERS },
       { name: permissions.MANAGE_TEMPLATES },
-    ]).createMany(12)
+      { name: permissions.MANAGE_TICKETS },
+      { name: permissions.MANAGE_USER },
+    ]).createMany(14)
 
     await RoleFactory.merge([
       { name: 'Super Admin', isActive: true },

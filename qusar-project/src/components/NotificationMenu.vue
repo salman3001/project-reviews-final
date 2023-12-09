@@ -1,31 +1,28 @@
+<script setup>
+import notificationStore from 'src/stores/notificationStore'
+import authStore from 'src/stores/authStroe'
+import { onMounted } from 'vue';
+
+const auth = authStore()
+const notify = notificationStore()
+
+onMounted(() => {
+  notify.getAllNotification();
+})
+</script>
 <template>
   <q-btn round icon="mail" class="text-black" unelevated>
     <q-menu anchor="bottom left">
-      <q-list style="min-width: 100px">
-        <q-item clickable v-close-popup>
-          <q-item-section>New tab</q-item-section>
-        </q-item>
-        <q-item clickable v-close-popup>
-          <q-item-section>New incognito tab</q-item-section>
-        </q-item>
-        <q-separator />
-        <!-- <q-item clickable v-close-popup>
-          <q-item-section>Recent tabs</q-item-section>
-        </q-item>
-        <q-item clickable v-close-popup>
-          <q-item-section>History</q-item-section>
-        </q-item>
-        <q-item clickable v-close-popup>
-          <q-item-section>Downloads</q-item-section>
+      <div class="justify-end row q-py-1" style="border-bottom: 1px solid lightgray;">
+        <q-btn flat size="small" class="text-secondary">See All</q-btn>
+      </div>
+
+      <q-list dense style="min-width: 300px;font-size: small;">
+        <q-item clickable v-close-popup v-for="(n, i)  in notify.notifcations" :key="i"
+          style="background-color: rgb(237, 233, 228);" class="q-my-xs">
+          <q-item-section>{{ n?.data?.title }}</q-item-section>
         </q-item>
         <q-separator />
-        <q-item clickable v-close-popup>
-          <q-item-section>Settings</q-item-section>
-        </q-item>
-        <q-separator />
-        <q-item clickable v-close-popup>
-          <q-item-section>Help &amp; Feedback</q-item-section>
-        </q-item> -->
       </q-list>
     </q-menu>
   </q-btn>
