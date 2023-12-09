@@ -36,7 +36,8 @@
       "@adonisjs/bouncer",
       "@adonisjs/mail",
       "@verful/notifications",
-      "@adonisjs/view"
+      "@adonisjs/view",
+      "@ruby184/adonis-socket.io"
     ]
   }
 }

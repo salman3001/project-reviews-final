@@ -66,6 +66,7 @@
     "@adonisjs/mail": "^8.2.1",
     "@adonisjs/repl": "^3.1.11",
     "@adonisjs/view": "^6.2.0",
+    "@ruby184/adonis-socket.io": "^0.2.0",
     "@verful/notifications": "^2.0.3",
     "adonis-responsive-attachment": "^1.5.10",
     "aws-sdk": "^2.1514.0",
@@ -75,6 +76,7 @@
     "qs": "^6.11.2",
     "reflect-metadata": "^0.1.13",
     "slugify": "^1.6.6",
+    "socket.io": "^4.7.2",
     "source-map-support": "^0.5.21",
     "sqlite3": "^5.1.6",
     "uuid": "^9.0.1"
