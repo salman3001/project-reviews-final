@@ -7,6 +7,7 @@ import {
   LanguageApi,
 } from '../../../../utils/BaseApiService';
 import { ref } from 'vue';
+import { ckConfig } from 'src/utils/ckConfig';
 
 const router = useRouter();
 
@@ -97,7 +98,7 @@ const submit = async () => {
                 )) || 'Order number not avaialabe. Choose another one',
             ]" />
           <div class="full-width" style="display: flex; min-height: 25rem; flex-direction: column">
-            <QuillEditor v-model:content="form.content" contentType="html" theme="snow" toolbar="full" />
+            <ckeditor v-model="form.content" :config="ckConfig"></ckeditor>
           </div>
         </div>
 

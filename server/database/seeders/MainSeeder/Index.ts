@@ -13,6 +13,7 @@ import { TicketStatus, permissions } from 'App/Helpers/enums'
 import ProductCategoryFactory from 'Database/factories/product/ProductCategoryFactory'
 import ServiceCategoryFactory from 'Database/factories/service/ServiceCategoryFactory'
 import CampaignTypeFactory from 'Database/factories/email/CampaignTypeFactory'
+import TemplateFactory from 'Database/factories/email/TemplateFactory'
 
 export default class extends BaseSeeder {
   private async runSeeder(Seeder: { default: typeof BaseSeeder }) {
@@ -125,7 +126,13 @@ export default class extends BaseSeeder {
     await CampaignTypeFactory.with('campaign', 3, (c) => {
       c.with('interests', 3, (i) => {
         i.with('subscribers', 3)
-      }).with('template')
+      })
     }).createMany(3)
+
+    await TemplateFactory.merge({
+      name: 'Forgot Password Email',
+      content:
+        'Forgot Your Password! Dont Worry. Here is your 6 digts code {{otp}}, Use it to reset the password',
+    }).create()
   }
 }

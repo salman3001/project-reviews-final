@@ -8,10 +8,12 @@ import {
 } from '../../../utils/BaseApiService';
 import { onMounted, ref } from 'vue';
 import ImageInput from 'src/components/forms/ImageInput.vue';
+import { ckConfig } from "src/utils/ckConfig";
 
 const router = useRouter();
 const route = useRoute();
 const uploads = ref('');
+
 
 const form = ref({
   title: '',
@@ -135,7 +137,7 @@ onMounted(() => {
               : '/images/dummy-thumb.jpg'" />
           </div>
           <div class="full-width" style="display: flex; min-height: 25rem; flex-direction: column">
-            <QuillEditor v-model:content="form.longDesc" contentType="html" />
+            <ckeditor v-model="form.longDesc" :config="ckConfig"></ckeditor>
           </div>
         </div>
 

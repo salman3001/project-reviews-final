@@ -7,6 +7,7 @@ import {
   LanguageApi,
 } from '../../../../utils/BaseApiService';
 import { ref } from 'vue';
+import { ckConfig } from 'src/utils/ckConfig';
 
 const router = useRouter();
 const route = useRoute();
@@ -72,8 +73,8 @@ const submit = async () => {
   <div class="q-pa-lg">
     <div class="row items-center q-gutter-sm q-mb-xl">
       <q-icon name="keyboard_backspace" size="30px" style="cursor: pointer" @click="() => {
-          router.push({ name: 'admin.knowlegebase.content.index' });
-        }
+        router.push({ name: 'admin.knowlegebase.content.index' });
+      }
         " />
       <span class="text-h6"> Update Content </span>
     </div>
@@ -118,7 +119,7 @@ const submit = async () => {
                 )) || 'Order number not avaialabe. Choose another one',
             ]" />
           <div class="full-width" style="display: flex; min-height: 25rem; flex-direction: column">
-            <QuillEditor v-model:content="form.content" contentType="html" theme="snow" toolbar="full" />
+            <ckeditor v-model="form.content" :config="ckConfig"></ckeditor>
           </div>
         </div>
 
@@ -134,8 +135,8 @@ const submit = async () => {
       </div>
       <div class="row justify-end q-gutter-md">
         <q-btn style="background-color: #e6e4d9; color: #aeaca1; min-width: 8rem" @click="() => {
-            router.push({ name: 'admin.knowlegebase.content.index' });
-          }
+          router.push({ name: 'admin.knowlegebase.content.index' });
+        }
           ">Cancle</q-btn>
         <q-btn color="primary" v-if="IsPostingContnet">
           <q-circular-progress indeterminate size="20px" class="q-px-10" :thickness="1" color="grey-8"

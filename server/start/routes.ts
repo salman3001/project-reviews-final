@@ -39,3 +39,7 @@ Route.get('api', async ({ response }) => {
 Route.group(() => {
   Route.resource('language', 'LanguageController')
 }).prefix('api')
+
+Route.get('/email', ({ view }) => {
+  return view.render('emails/layout')
+})

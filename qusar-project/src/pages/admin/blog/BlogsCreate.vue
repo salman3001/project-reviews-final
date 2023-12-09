@@ -8,6 +8,7 @@ import {
 } from '../../../utils/BaseApiService';
 import { ref } from 'vue';
 import ImageInput from 'src/components/forms/ImageInput.vue';
+import { ckConfig } from 'src/utils/ckConfig';
 
 const router = useRouter();
 
@@ -99,7 +100,7 @@ const submit = async (e: SubmitEvent) => {
             <ImageInput name="image" width="250px" />
           </div>
           <div class="full-width" style="display: flex; min-height: 25rem; flex-direction: column">
-            <QuillEditor v-model:content="form.longDesc" contentType="html" theme="snow" toolbar="full" />
+            <ckeditor v-model="form.longDesc" :config="ckConfig"></ckeditor>
           </div>
         </div>
 

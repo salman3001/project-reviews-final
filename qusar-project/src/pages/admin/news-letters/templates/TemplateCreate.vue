@@ -6,6 +6,7 @@ import {
 import { ref } from 'vue';
 import ImageInput from 'src/components/forms/ImageInput.vue';
 import { srollToView } from 'src/utils/scrollToView';
+import { ckConfig } from 'src/utils/ckConfig';
 
 const router = useRouter();
 
@@ -20,7 +21,7 @@ const form = ref({
 
 
 const { execute: createTemplate, loading: posting } =
-  templateApi.post(form.value, {
+  templateApi.post({
     headers: {
       'Content-Type': 'multipart/form-data'
     }
@@ -31,7 +32,7 @@ const { execute: createTemplate, loading: posting } =
   });
 
 const submit = () => {
-  createTemplate()
+  createTemplate(form.value)
 };
 
 </script>
@@ -64,7 +65,7 @@ const submit = () => {
           <q-input type="textarea" outlined v-model="form.template.desc" label="Description" class="col-12 " />
           <div class="full-width" style="display: flex; min-height: 25rem; flex-direction: column;">
             <h6>Content</h6>
-            <QuillEditor v-model:content="form.template.content" contentType="html" theme="snow" toolbar="full" />
+            <ckeditor v-model="form.template.content" :config="ckConfig"></ckeditor>
           </div>
         </div>
       </div>
