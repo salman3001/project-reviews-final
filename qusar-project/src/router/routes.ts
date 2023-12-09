@@ -25,11 +25,6 @@ const routes: RouteRecordRaw[] = [
     component: () => import('pages/auth/AdminForgotPassword.vue'),
     name: 'admin.forgotPassword',
   },
-  {
-    path: '/admin-reset-password',
-    component: () => import('pages/auth/AdminResetPassword.vue'),
-    name: 'admin.resetPassword',
-  },
 
   //admin routes
   {
