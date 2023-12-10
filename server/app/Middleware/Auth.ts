@@ -31,18 +31,21 @@ export default class AuthMiddleware {
      * it can decide the correct response behavior based upon the guard
      * driver
      */
+
     let guardLastAttempted: string | undefined
 
     for (let guard of guards) {
       guardLastAttempted = guard
 
       if (await auth.use(guard).authenticate()) {
+        console.log(auth.defaultGuard)
         /**
          * Instruct auth to use the given guard as the default guard for
          * the rest of the request, since the user authenticated
          * succeeded here
          */
         auth.defaultGuard = guard
+
         return true
       }
     }
@@ -77,6 +80,7 @@ export default class AuthMiddleware {
   /**
    * Handle ws namespace connection
    */
+
   public async wsHandle(
     { auth }: WsContextContract,
     next: () => Promise<void>,

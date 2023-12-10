@@ -19,23 +19,7 @@
   "preloads": [
     "./start/routes",
     "./start/kernel",
-    "./start/bouncer",
-    {
-      "file": "./start/wsKernel",
-      "environment": [
-        "web",
-        "test"
-      ],
-      "optional": true
-    },
-    {
-      "file": "./start/socket",
-      "environment": [
-        "web",
-        "test"
-      ],
-      "optional": true
-    }
+    "./start/bouncer"
   ],
   "providers": [
     "./providers/AppProvider",
@@ -47,8 +31,7 @@
     "@adonisjs/bouncer",
     "@adonisjs/mail",
     "@verful/notifications",
-    "@adonisjs/view",
-    "@ruby184/adonis-socket.io"
+    "@adonisjs/view"
   ],
   "aceProviders": [
     "@adonisjs/repl"
@@ -72,6 +55,5 @@
       "pattern": "resources/views/**/*.edge",
       "reloadServer": false
     }
-  ],
-  "wsExceptionHandlerNamespace": "App/Exceptions/WsHandler"
+  ]
 }

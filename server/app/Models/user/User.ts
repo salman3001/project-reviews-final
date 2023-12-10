@@ -36,6 +36,9 @@ export default class User extends compose(BaseModel, Notifiable('user_notificati
   @column({ serializeAs: null })
   public password: string
 
+  @column({ serializeAs: null })
+  public socketToken: string
+
   @column()
   public rememberMeToken: string | null
 

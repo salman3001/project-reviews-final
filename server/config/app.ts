@@ -104,8 +104,8 @@ export const http: ServerConfig = {
   cookie: {
     domain: '',
     path: '/',
-    maxAge: '2h',
-    httpOnly: true,
+    maxAge: '1day',
+    httpOnly: false,
     secure: false,
     sameSite: false,
   },

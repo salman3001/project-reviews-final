@@ -23,6 +23,12 @@ const authStore = defineStore('Auth', () => {
     });
   };
 
+  const setSocketToken = (payload: any) => {
+    $q.cookies.set('socketToken', payload, {
+      expires: 1,
+    });
+  };
+
   const adminLogin = async (email: string, password: string) => {
     try {
       const res = await api.post('/auth/admin-login', {
@@ -31,6 +37,7 @@ const authStore = defineStore('Auth', () => {
       });
       setUser(res?.data?.user);
       setToken(res?.data?.token?.token);
+      setSocketToken(res?.data?.socketToken);
       router.push({ name: 'adminDashboard' });
       Notify.create({ message: 'Login Successfull!', color: 'positive' });
     } catch (error: any) {
@@ -45,6 +52,7 @@ const authStore = defineStore('Auth', () => {
       await api.get('/auth/admin-logout');
       $q.cookies.remove('token');
       $q.cookies.remove('user');
+      $q.cookies.remove('socketToken');
       Notify.create({
         message: 'Logout Successfull!',
         color: 'positive',

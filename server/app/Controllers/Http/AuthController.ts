@@ -19,8 +19,6 @@ export default class AuthController {
 
     const user = await AdminUser.findBy('email', payload.email)
     if (!user || user?.isActive == false) {
-      console.log('ran')
-
       return response.unauthorized({
         message: 'Failed to login. Account is not active or doesnt exist',
       })
@@ -31,11 +29,17 @@ export default class AuthController {
         expiresIn: '1 day',
       })
 
+      const socketToken = Math.floor(100000 + Math.random() * 900000).toString()
+
+      user.socketToken = socketToken
+
+      await user.save()
+
       await user?.load('role', (role) => {
         role.preload('permissions')
       })
 
-      return { token, user }
+      return { token, user, socketToken }
     } catch (error) {
       return response.unauthorized({
         message: 'Failed to login. Check your credentials!',

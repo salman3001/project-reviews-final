@@ -32,6 +32,9 @@ export default class AdminUser extends compose(BaseModel, Notifiable('admin_user
   @column({ serializeAs: null })
   public password: string
 
+  @column({ serializeAs: null })
+  public socketToken: string
+
   @column()
   public rememberMeToken: string | null
 

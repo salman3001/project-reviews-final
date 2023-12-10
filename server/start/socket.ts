@@ -1,5 +1,15 @@
-import Ws from '@ioc:Ruby184/Socket.IO/Ws'
+import TicketChatController from 'App/Controllers/ws/TicketChatController'
+import wsAuth from 'App/Middleware/wsAuth'
+import Ws from 'App/services/Ws'
+Ws.boot()
 
-Ws.namespace('/')
-  .connected('TestController.onConnected')
-  .disconnected('TestController.onDisconnected')
+/**
+ * Listen for incoming socket connections
+ */
+
+const ticketChat = Ws.io.of('/ticket_chat/')
+ticketChat.use(wsAuth)
+ticketChat.on('connection', (socket) => {
+  const controller = new TicketChatController(socket)
+  controller.execute()
+})

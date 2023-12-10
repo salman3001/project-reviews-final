@@ -1,12 +1,17 @@
 import { io } from 'socket.io-client';
 
-export const socket = io(process.env.UPLOAD, {
-  extraHeaders: {
-    Authorization:
-      'Bearer NA.CB7KM832dd04NXMkGqZ47vZVhw808beRVpZsk74iF9R7UXKzHIP5kJvmFGl3',
+const socket = io(process.env.UPLOAD + '/ticket_chat/', {
+  transports: ['websocket'],
+  auth: {
+    socketToken: '823413',
+    userId: 1,
   },
 });
 
-socket.on('news', (arg) => {
-  console.log(arg);
+socket.emit('join-chat', 1, (err: any, response: any) => {
+  console.log(response);
+});
+
+socket.emit('chat-message', {
+  message: 'My First Message',
 });
