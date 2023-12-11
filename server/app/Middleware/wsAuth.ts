@@ -20,20 +20,20 @@ const wsAuth = async (
   if (admin) {
     const isTokenValid = token == admin.socketToken
     if (isTokenValid) {
-      socket.handshake.auth.user = user
+      socket.handshake.auth.user = admin
       next()
+      return
     }
-  }
-
-  if (user) {
+  } else if (user) {
     const isTokenValid = token == user.socketToken
     if (isTokenValid) {
       socket.handshake.auth.user = user
       next()
+      return
     }
+  } else {
+    next(new Error('Unauthorized'))
   }
-
-  next(new Error('Unauthorized'))
 }
 
 export default wsAuth

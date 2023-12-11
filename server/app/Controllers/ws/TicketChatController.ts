@@ -12,8 +12,6 @@ export default class TicketChatController {
 
   public async execute() {
     this.socket.on('join-chat', async (ticketId: number, cb: any) => {
-      console.log(ticketId)
-      console.log(cb)
       cb({
         status: 'ok',
       })
