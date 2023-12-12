@@ -7,14 +7,14 @@ const auth = authStore()
 const notify = notificationStore()
 
 onMounted(() => {
-  notify.getAllNotification();
+  notify.getUnreadNotifications();
   notify.getSocket()
 
 })
 </script>
 <template>
   <q-btn round icon="mail" class="text-black" unelevated>
-    <q-badge floating rounded color="red">{{ notify.notificationCount.unread }}</q-badge>
+    <q-badge floating rounded color="red">{{ notify.notificationCount }}</q-badge>
     <q-menu anchor="bottom left">
 
 

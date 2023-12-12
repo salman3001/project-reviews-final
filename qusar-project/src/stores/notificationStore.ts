@@ -6,15 +6,12 @@ import { ref } from 'vue';
 
 const notificationStore = defineStore('notification', () => {
   const notifcations = ref<any[]>([]);
-  const notificationCount = ref({
-    total: 0,
-    unread: 0,
-  });
+  const notificationCount = ref(0);
   const $q = useQuasar();
 
-  const getAllNotification = async () => {
+  const getUnreadNotifications = async () => {
     try {
-      const res = await api.get('/notifcations');
+      const res = await api.get('/notifcations/get-unread');
       notifcations.value = res?.data?.notifcations;
       notificationCount.value = res?.data?.count;
       // Notify.create({ message: 'Login Successfull!', color: 'positive' });
@@ -56,8 +53,6 @@ const notificationStore = defineStore('notification', () => {
   const getSocket = () => {
     const user = $q.cookies.get('user') as any;
     const token = $q.cookies.get('socketToken') as any;
-    console.log(process.env.UPLOADS + '/notification');
-
     const socket = io(process.env.UPLOAD + '/user-socket/', {
       transports: ['websocket'],
       auth: {
@@ -72,14 +67,14 @@ const notificationStore = defineStore('notification', () => {
 
     socket.on('new-notification', (data: any) => {
       notifcations.value.push({ data });
-      notificationCount.value.unread += 1;
+      notificationCount.value += 1;
     });
   };
 
   return {
     notifcations,
     notificationCount,
-    getAllNotification,
+    getUnreadNotifications,
     deleteNotifcations,
     deleteOneNotifcation,
     getSocket,

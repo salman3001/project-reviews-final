@@ -1,5 +1,6 @@
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import AdminUser from 'App/Models/adminUser/AdminUser'
+import AdminUserNotifications from 'App/Models/adminUser/AdminUserNotifications'
 
 export default class NotificationsController {
   public async index({ request, response, auth }: HttpContextContract) {
@@ -11,7 +12,7 @@ export default class NotificationsController {
 
     if (user) {
       await (user as AdminUser).load('notifications')
-      const unread = await user.unreadNotifications()
+      const unread = await user.notifications
       count.total = user?.notifications?.length
       count.unread = unread.length
 
@@ -22,6 +23,29 @@ export default class NotificationsController {
       if (type === 'unread') {
         notifcations = unread
       }
+    }
+
+    return response.json({ notifcations, count })
+  }
+
+  public async getUnread({ response, auth }: HttpContextContract) {
+    const user = auth.user as AdminUser
+
+    let notifcations: any[] = []
+    let count = 0
+
+    if (user) {
+      await user.load('notifications', (b) => {
+        b.whereNull('read_At').orderBy('created_at').limit(2)
+      })
+
+      notifcations = user.notifications
+
+      const c = await AdminUserNotifications.query()
+        .where('notifiableId', user.id)
+        .count('* as total')
+
+      console.log(c[0].$extras.total)
     }
 
     return response.json({ notifcations, count })
