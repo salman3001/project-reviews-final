@@ -1,15 +1,26 @@
 import { DateTime } from 'luxon'
 import { column, BaseModel } from '@ioc:Adonis/Lucid/Orm'
 
-export default class AdminUserNotifications extends BaseModel {
+export default class Notifications extends BaseModel {
   @column({ isPrimary: true })
   public id: number
 
-  @column()
+  @column({
+    consume: (v) => {
+      return JSON.parse(v)
+    },
+  })
   public data: object
 
   @column()
-  public notifiableId: number
+  public userId: number
+
+  @column()
+  public adminUserId: number
+
+  public markAsRead() {
+    this.reatAt = DateTime.now()
+  }
 
   @column.dateTime()
   public reatAt: DateTime

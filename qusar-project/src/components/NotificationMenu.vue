@@ -21,7 +21,7 @@ onMounted(() => {
       <q-list dense style="min-width: 300px;font-size: small;">
         <q-item clickable v-close-popup v-for="(n, i)  in notify.notifcations" :key="i"
           style="background-color: rgb(237, 233, 228);" class="q-my-xs">
-          <q-item-section>{{ n?.data?.title }}</q-item-section>
+          <q-item-section>{{ n?.data?.message }}</q-item-section>
         </q-item>
         <q-separator />
       </q-list>

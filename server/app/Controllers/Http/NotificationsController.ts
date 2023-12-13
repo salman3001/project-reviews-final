@@ -1,6 +1,8 @@
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
+import Database from '@ioc:Adonis/Lucid/Database'
 import AdminUser from 'App/Models/adminUser/AdminUser'
 import AdminUserNotifications from 'App/Models/adminUser/AdminUserNotifications'
+import User from 'App/Models/user/User'
 
 export default class NotificationsController {
   public async index({ request, response, auth }: HttpContextContract) {
@@ -32,20 +34,38 @@ export default class NotificationsController {
     const user = auth.user as AdminUser
 
     let notifcations: any[] = []
-    let count = 0
+    let count: any = 0
 
     if (user) {
       await user.load('notifications', (b) => {
         b.whereNull('read_At').orderBy('created_at').limit(2)
       })
 
+      if (user instanceof AdminUser) {
+        const query = await Database.query()
+          .from('notifications')
+          .select('id')
+          .where('admin_user_id', user.id)
+          .count('* as count')
+          .first()
+
+        count = query.count
+      }
+
+      if (user instanceof User) {
+        const query = await Database.query()
+          .from('notifications')
+          .select('id')
+          .where('user_id', user.id)
+          .count('* as count')
+          .first()
+
+        count = query.count
+      }
+
       notifcations = user.notifications
 
-      const c = await AdminUserNotifications.query()
-        .where('notifiableId', user.id)
-        .count('* as total')
-
-      console.log(c[0].$extras.total)
+      console.log(count)
     }
 
     return response.json({ notifcations, count })

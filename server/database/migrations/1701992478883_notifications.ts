@@ -1,17 +1,18 @@
 import BaseSchema from '@ioc:Adonis/Lucid/Schema'
 
 export default class Notifications extends BaseSchema {
-  protected tableName = 'user_notifications'
+  protected tableName = 'notifications'
 
   public async up() {
     this.schema.createTable(this.tableName, (table) => {
       table.increments('id').primary()
       table.json('data').notNullable()
+      table.integer('user_id').unsigned().references('id').inTable('users').onDelete('CASCADE')
       table
-        .integer('notifiable_id')
+        .integer('admin_user_id')
         .unsigned()
         .references('id')
-        .inTable('users')
+        .inTable('admin_users')
         .onDelete('CASCADE')
       table.timestamp('read_at', { useTz: true })
       table.timestamp('created_at', { useTz: true }).notNullable()

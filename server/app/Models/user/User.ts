@@ -25,6 +25,7 @@ import {
 } from '@ioc:Adonis/Addons/ResponsiveAttachment'
 import { compose } from '@ioc:Adonis/Core/Helpers'
 import { Notifiable } from '@ioc:Verful/Notification/Mixins'
+import Notifications from '../Notifications'
 
 export default class User extends compose(BaseModel, Notifiable('user_notifications')) {
   @column({ isPrimary: true })
@@ -83,6 +84,9 @@ export default class User extends compose(BaseModel, Notifiable('user_notificati
 
   @hasMany(() => Education)
   public educations: HasMany<typeof Education>
+
+  @hasMany(() => Notifications)
+  public notifications: HasMany<typeof Notifications>
 
   @manyToMany(() => Language, {
     pivotColumns: ['proficiency'],
