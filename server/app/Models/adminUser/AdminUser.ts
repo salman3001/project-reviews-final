@@ -19,7 +19,7 @@ import {
   ResponsiveAttachmentContract,
 } from '@ioc:Adonis/Addons/ResponsiveAttachment'
 import Activity from '../Activity'
-import Notifications from '../Notifications'
+import Notifications from '../Notification'
 
 export default class AdminUser extends BaseModel {
   @column({ isPrimary: true })

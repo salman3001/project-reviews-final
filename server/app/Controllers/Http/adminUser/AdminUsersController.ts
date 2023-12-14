@@ -10,7 +10,7 @@ import SocialService from 'App/services/SocialService'
 import RoleService from 'App/services/admin/RoleService'
 import { ResponsiveAttachment } from '@ioc:Adonis/Addons/ResponsiveAttachment'
 import { schema, rules } from '@ioc:Adonis/Core/Validator'
-import TestNotification, { testNotification } from 'App/Notifications/TestNotification'
+import { TestNotification } from 'App/Notifications/TestNotification'
 
 export default class AdminUsersController {
   public async index({ response, request, bouncer }: HttpContextContract) {
@@ -64,7 +64,7 @@ export default class AdminUsersController {
     const qs = request.qs() as IndexQs
     const user = await AdminUserService.show(+params.id, qs)
     await bouncer.with('AdminUserPolicy').authorize('view', user as AdminUser)
-    user?.related('notifications').create(testNotification(user))
+    new TestNotification().create(user as AdminUser)
     return response.json(user)
   }
 

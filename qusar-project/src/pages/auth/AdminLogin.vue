@@ -5,6 +5,7 @@ import { ref } from 'vue';
 
 const auth = authStore();
 const isPwd = ref(true);
+const loading = ref(false)
 
 const form = ref({
   rememberMe: false,
@@ -13,29 +14,25 @@ const form = ref({
 });
 
 const login = async () => {
+  loading.value = true
   await auth.adminLogin(
     form.value.email,
     form.value.password,
     form.value.rememberMe
   );
+  loading.value = false
 };
 </script>
 <template>
   <q-layout>
     <q-page-container>
-      <q-page
-        class="row items-center justify-evenly"
-        style="
+      <q-page class="row items-center justify-evenly" style="
           background-image: url('/images/login-bg.png');
           background-repeat: no-repeat;
           background-position: center;
-        "
-      >
+        ">
         <div class="q-pa-md">
-          <q-card
-            class="my-card q-pa-md"
-            style="min-width: 400px; border-radius: 15px"
-          >
+          <q-card class="my-card q-pa-md" style="min-width: 400px; border-radius: 15px">
             <q-card-section>
               <div class="row justify-center">
                 <BrandLogo />
@@ -56,32 +53,23 @@ const login = async () => {
                 </div>
                 <div>
                   <label>Password</label>
-                  <q-input
-                    dense
-                    v-model="form.password"
-                    outlined
-                    :type="isPwd ? 'password' : 'text'"
-                  >
+                  <q-input dense v-model="form.password" outlined :type="isPwd ? 'password' : 'text'">
                     <template v-slot:append>
-                      <q-icon
-                        :name="isPwd ? 'visibility_off' : 'visibility'"
-                        class="cursor-pointer"
-                        @click="isPwd = !isPwd"
-                      />
+                      <q-icon :name="isPwd ? 'visibility_off' : 'visibility'" class="cursor-pointer"
+                        @click="isPwd = !isPwd" />
                     </template>
                   </q-input>
                   <div class="row items-center justify-between">
                     <q-checkbox v-model="form.rememberMe" label="Remember Me" />
-                    <router-link
-                      :to="{ name: 'admin.forgotPassword' }"
-                      style="text-decoration: none; color: black"
-                      >Forgot Password</router-link
-                    >
+                    <router-link :to="{ name: 'admin.forgotPassword' }" style="text-decoration: none; color: black">Forgot
+                      Password</router-link>
                   </div>
                 </div>
-                <q-btn type="submit" color="primary" style="width: 100%"
-                  >Submit</q-btn
-                >
+                <q-btn color="primary" v-if="loading" :disable="true" style="width: 100%">
+                  <q-circular-progress indeterminate size="20px" class="q-px-10" :thickness="1" color="grey-8"
+                    track-color="orange-2" style="min-width: 8rem" />
+                </q-btn>
+                <q-btn v-else type="submit" color="primary" style="width: 100%">Submit</q-btn>
               </form>
             </q-card-section>
           </q-card>

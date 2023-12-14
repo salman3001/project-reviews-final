@@ -7,7 +7,7 @@
     "@adonisjs/lucid/build/commands",
     "@adonisjs/bouncer/build/commands",
     "@adonisjs/mail/build/commands",
-    "@verful/notifications/build/commands"
+    "@rlanz/bull-queue/build/commands"
   ],
   "exceptionHandlerNamespace": "App/Exceptions/Handler",
   "aliases": {
@@ -30,8 +30,8 @@
     "@adonisjs/attachment-lite",
     "@adonisjs/bouncer",
     "@adonisjs/mail",
-    "@verful/notifications",
-    "@adonisjs/view"
+    "@adonisjs/view",
+    "@rlanz/bull-queue"
   ],
   "aceProviders": [
     "@adonisjs/repl"

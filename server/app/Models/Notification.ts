@@ -1,7 +1,8 @@
 import { DateTime } from 'luxon'
-import { column, BaseModel } from '@ioc:Adonis/Lucid/Orm'
+import { column, BaseModel, afterCreate } from '@ioc:Adonis/Lucid/Orm'
+import Ws from 'App/services/Ws'
 
-export default class Notifications extends BaseModel {
+export default class Notification extends BaseModel {
   @column({ isPrimary: true })
   public id: number
 
@@ -30,4 +31,16 @@ export default class Notifications extends BaseModel {
 
   @column.dateTime({ autoCreate: true, autoUpdate: true })
   public updatedAt: DateTime
+
+  @afterCreate()
+  public static pushNotification(notification: Notification) {
+    let room = ''
+    if (notification.userId) {
+      room = `user:${notification.userId}`
+    }
+    if (notification.adminUserId) {
+      room = `admin:${notification.adminUserId}`
+    }
+    Ws.io.of('/user-socket/').to(room).emit('new-notification', notification)
+  }
 }

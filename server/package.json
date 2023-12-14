@@ -66,7 +66,7 @@
     "@adonisjs/mail": "^8.2.1",
     "@adonisjs/repl": "^3.1.11",
     "@adonisjs/view": "^6.2.0",
-    "@verful/notifications": "^2.0.3",
+    "@rlanz/bull-queue": "^1.0.6",
     "adonis-responsive-attachment": "^1.5.10",
     "aws-sdk": "^2.1514.0",
     "luxon": "^3.4.3",

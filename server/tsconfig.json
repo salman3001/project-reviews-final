@@ -35,8 +35,8 @@
       "@adonisjs/attachment-lite",
       "@adonisjs/bouncer",
       "@adonisjs/mail",
-      "@verful/notifications",
       "@adonisjs/view",
+      "@rlanz/bull-queue"
     ]
   }
 }

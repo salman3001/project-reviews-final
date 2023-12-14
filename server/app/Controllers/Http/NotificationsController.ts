@@ -1,7 +1,6 @@
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import Database from '@ioc:Adonis/Lucid/Database'
 import AdminUser from 'App/Models/adminUser/AdminUser'
-import AdminUserNotifications from 'App/Models/adminUser/AdminUserNotifications'
 import User from 'App/Models/user/User'
 
 export default class NotificationsController {
@@ -38,7 +37,7 @@ export default class NotificationsController {
 
     if (user) {
       await user.load('notifications', (b) => {
-        b.whereNull('read_At').orderBy('created_at').limit(2)
+        b.whereNull('read_At').orderBy('created_at').limit(20)
       })
 
       if (user instanceof AdminUser) {
