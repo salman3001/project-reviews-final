@@ -10,8 +10,8 @@ const notificationStore = defineStore('notification', () => {
   const $q = useQuasar();
   const socket = ref<Socket | null>(null);
 
-  const getUnreadNotifications = async () => {
-    notifcationApi.getUnread().then(({ data }) => {
+  const getMenuNotifications = async () => {
+    notifcationApi.getMenuNotifications().then(({ data }) => {
       notifcations.value = (data.value as any)?.notifcations;
       notificationCount.value = (data.value as any)?.count;
     });
@@ -24,12 +24,22 @@ const notificationStore = defineStore('notification', () => {
         {
           onSuccess: () => {
             notifcations.value = [];
+            notificationCount.value = 0;
           },
         }
       );
       execute();
     } else if (type == 'read') {
-      notifcationApi.deleteReadNotifcations().execute();
+      await notifcationApi
+        .deleteReadNotifcations(
+          {},
+          {
+            onSuccess: () => {
+              getMenuNotifications();
+            },
+          }
+        )
+        .execute();
     }
   };
 
@@ -38,7 +48,19 @@ const notificationStore = defineStore('notification', () => {
       {},
       {
         onSuccess: () => {
-          getUnreadNotifications();
+          getMenuNotifications();
+        },
+      }
+    );
+    execute(id);
+  };
+
+  const markAsRead = async (id: string) => {
+    const { execute } = notifcationApi.markAsRead(
+      {},
+      {
+        onSuccess: () => {
+          getMenuNotifications();
         },
       }
     );
@@ -99,11 +121,12 @@ const notificationStore = defineStore('notification', () => {
   return {
     notifcations,
     notificationCount,
-    getUnreadNotifications,
+    getMenuNotifications,
     deleteNotifcations,
     deleteOneNotifcation,
     connectSocket,
     disconnectSocket,
+    markAsRead,
   };
 });
 

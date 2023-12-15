@@ -19,12 +19,13 @@ export default class Notification extends BaseModel {
   @column()
   public adminUserId: number
 
-  public markAsRead() {
-    this.reatAt = DateTime.now()
+  public async markAsRead() {
+    this.readAt = DateTime.now()
+    await this.save()
   }
 
   @column.dateTime()
-  public reatAt: DateTime
+  public readAt: DateTime
 
   @column.dateTime({ autoCreate: true })
   public createdAt: DateTime

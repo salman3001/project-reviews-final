@@ -556,7 +556,7 @@ class NotificationApiService extends BaseApiService {
     const execute = async () => {
       try {
         loading.value = true;
-        const res = await api.delete(this.url + 'delete/read', config);
+        const res = await api.delete(this.url + '/delete/read', config);
         loading.value = false;
         cb?.onSuccess && cb?.onSuccess();
         Notify.create({
@@ -594,7 +594,7 @@ class NotificationApiService extends BaseApiService {
     };
   }
 
-  public async getUnread(
+  public async getMenuNotifications(
     query?: AdditionalParams,
     config?: AxiosRequestConfig<any> | undefined
   ) {
@@ -602,7 +602,7 @@ class NotificationApiService extends BaseApiService {
     const data = ref(null);
     try {
       loading.value = true;
-      const res = await api.get(this.url + '/get-unread', {
+      const res = await api.get(this.url + '/get-menu-notifications', {
         params: {
           ...query,
         },
@@ -632,6 +632,53 @@ class NotificationApiService extends BaseApiService {
     }
 
     return { loading, data };
+  }
+
+  public markAsRead(
+    config?: AxiosRequestConfig<any> | undefined,
+    cb?: { onSuccess?: () => void; onError?: () => void }
+  ) {
+    const loading = ref(false);
+    const execute = async (id: string) => {
+      try {
+        loading.value = true;
+        const res = await api.post(this.url + '/mark-as-read/' + id, config);
+        loading.value = false;
+        cb?.onSuccess && cb?.onSuccess();
+        Notify.create({
+          message: `${this.name} Marked As Read`,
+          color: 'positive',
+          icon: 'done',
+        });
+      } catch (error: any) {
+        if (error?.response) {
+          loading.value = false;
+          cb?.onError && cb?.onError();
+          Notify.create({
+            message:
+              error?.response?.data?.message ||
+              `Failed to Mark as Read ${this.name}`,
+            color: 'negative',
+          });
+        } else if (error?.request) {
+          loading.value = false;
+          cb?.onError && cb?.onError();
+          Notify.create({
+            message: `Trying to create ${this.name}.Server Not Reachable!`,
+            color: 'negative',
+          });
+        } else {
+          loading.value = false;
+          cb?.onError && cb?.onError();
+          Notify.create({ message: error.message, color: 'negative' });
+        }
+      }
+    };
+
+    return {
+      loading,
+      execute,
+    };
   }
 }
 

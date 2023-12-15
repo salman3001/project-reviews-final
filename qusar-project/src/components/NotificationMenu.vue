@@ -1,13 +1,14 @@
 <script setup>
 import notificationStore from 'src/stores/notificationStore'
-import authStore from 'src/stores/authStroe'
 import { onMounted, onUnmounted } from 'vue';
+import { useRouter } from 'vue-router';
 
-const auth = authStore()
+const router = useRouter()
+
 const notify = notificationStore()
 
 onMounted(() => {
-  notify.getUnreadNotifications();
+  notify.getMenuNotifications();
   notify.connectSocket()
 })
 
@@ -23,13 +24,17 @@ onUnmounted(() => {
 
       <q-list dense style="min-width: 300px;font-size: small;">
         <q-item clickable v-close-popup v-for="(n, i)  in notify.notifcations" :key="i"
-          style="background-color: rgb(237, 233, 228);" class="q-my-xs">
-          <q-item-section>{{ n?.data?.message }}</q-item-section>
+          :style="{ backgroundColor: n?.read_at ? 'none' : 'rgb(237, 233, 228)' }" class="q-my-xs" @click="() => {
+            router.push({
+              name: 'admin.notification.index'
+            })
+          }">
+          <q-item-section>{{ n?.data?.message }} </q-item-section>
         </q-item>
         <q-separator />
       </q-list>
       <div class="justify-center row q-py-1 q-pt-sm" style="border-top: 1px solid lightgray;">
-        <router-link :to="{ name: 'admin.notification.index' }">
+        <router-link :to="{ name: 'admin.notification.index' }" style="text-decoration: none;">
           <q-btn flat size="small" class="text-secondary">See All</q-btn>
         </router-link>
       </div>

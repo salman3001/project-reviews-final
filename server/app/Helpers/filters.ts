@@ -19,6 +19,8 @@ export interface IndexQs {
   filter: Filter | null
   relationFilter: RelationFilter | null
   populate: Populate | null
+  whereNull: string | null
+  whereNotNull: string | null
   fields: string[] | null
 }
 
@@ -48,6 +50,14 @@ export const filterRecords = async (model: LucidModel, qs: IndexQs) => {
         query.where(key, element)
       }
     }
+  }
+
+  if (qs.whereNotNull) {
+    query.whereNotNull(qs.whereNotNull)
+  }
+
+  if (qs.whereNull) {
+    query.whereNull(qs.whereNull)
   }
 
   if (qs.search) {

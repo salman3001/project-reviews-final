@@ -9,7 +9,18 @@ const loading = ref(false);
 
 const handeler = async () => {
   loading.value = true;
-  await notifications.deleteOneNotifcation(modal?.meta?.id)
+  if (modal?.meta?.type == 'all') {
+    await notifications.deleteNotifcations('all')
+  }
+
+  if (modal?.meta?.type == 'read') {
+    await notifications.deleteNotifcations('read')
+  }
+
+  if (modal?.meta?.type == 'one') {
+    await notifications.deleteOneNotifcation(modal?.meta?.id)
+  }
+
   loading.value = false;
   modal.meta.tableRef && modal.meta.tableRef.setPagination({}, true);
   modal.show = !modal.show;
@@ -25,9 +36,9 @@ const handeler = async () => {
       <q-btn flat dense icon="close" v-close-popup />
     </q-toolbar>
 
-    <q-card-section class="column items-center q-px-md-sm">
+    <q-card-section class="column items-center text-center q-px-md-sm">
       <q-icon name="block" class="col-4" size="5rem" />
-      <p>Are you sure, You want to delete this record?</p>
+      <p>Are you sure, You want to delete this Notification?</p>
     </q-card-section>
     <q-card-section class="row justify-end">
       <div class="q-gutter-sm">

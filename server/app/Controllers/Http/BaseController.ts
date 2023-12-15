@@ -22,6 +22,8 @@ export interface IndexQs {
   filter: Filter | null
   relationFilter: RelationFilter | null
   populate: Populate | null
+  whereNull: string | null
+  whereNotNull: string | null
   fields: string[] | null
 }
 
@@ -64,6 +66,14 @@ export default class BaseController {
           query.where(key, element)
         }
       }
+    }
+
+    if (qs.whereNotNull) {
+      query.whereNotNull(qs.whereNotNull)
+    }
+
+    if (qs.whereNull) {
+      query.whereNotNull(qs.whereNull)
     }
 
     if (qs.search) {

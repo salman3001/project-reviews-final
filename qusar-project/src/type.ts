@@ -25,6 +25,8 @@ export interface AdditionalParams {
   search?: Search | null;
   filter?: Filter | null;
   relationFilter?: RelationFilter | null;
+  whereNull?: string | null;
+  whereNotNull?: string | null;
   populate?: Populate | null;
   fields?: string[] | null;
 }

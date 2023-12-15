@@ -13,14 +13,17 @@ export default class NotificationsController extends BaseController {
   public async index({ request, response, auth }: HttpContextContract) {
     const user = auth.user
     let qs = request.qs() as IndexQs
-
     if (!user) {
       return response.unauthorized()
     }
     let records: any[] = []
 
     if (user instanceof AdminUser) {
-      const newQs: IndexQs = { ...qs, filter: { admin_user_id: user.id.toString() } }
+      const newQs: IndexQs = {
+        ...qs,
+        sortBy: 'created_at',
+        filter: { admin_user_id: user.id.toString() },
+      }
       records = await filterRecords(Notification, newQs)
     }
 
@@ -32,7 +35,7 @@ export default class NotificationsController extends BaseController {
     return response.json(records)
   }
 
-  public async getUnread({ response, auth }: HttpContextContract) {
+  public async getMenuNotifications({ response, auth }: HttpContextContract) {
     const user = auth.user as AdminUser
 
     let notifcations: any[] = []
@@ -40,7 +43,7 @@ export default class NotificationsController extends BaseController {
 
     if (user) {
       await user.load('notifications', (b) => {
-        b.whereNull('read_At').orderBy('created_at').limit(20)
+        b.orderBy('created_at').limit(20)
       })
 
       if (user instanceof AdminUser) {
@@ -77,7 +80,7 @@ export default class NotificationsController extends BaseController {
     const user = auth.user
     if (user) {
       await (user as AdminUser).load('notifications', (n) => {
-        n.whereNotNull('read_At')
+        n.whereNotNull('read_at')
       })
 
       for (const n of user.notifications) {
@@ -100,5 +103,12 @@ export default class NotificationsController extends BaseController {
     }
 
     return response.json({ message: 'record deleted' })
+  }
+
+  public async markAsRead({ response, params }: HttpContextContract) {
+    const id = +params.id
+    const notification = await Notification.findOrFail(id)
+    await notification.markAsRead()
+    return response.json({ message: 'Notification marked as read' })
   }
 }

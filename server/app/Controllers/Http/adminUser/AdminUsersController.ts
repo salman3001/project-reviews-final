@@ -14,30 +14,30 @@ export default class AdminUsersController extends BaseController {
     super(AdminUser, {}, {}, 'AdminUserPolicy')
   }
 
-  // public async index() {
-  //   const user = await AdminUser.findBy('id', 1)
-  //   await user?.related('notifications').create({
-  //     data: { message: 'test notification for you lorem ispsd ksdj skjd  dskdj skd skdj sk ' },
-  //   })
+  public async index() {
+    const user = await AdminUser.findBy('id', 1)
+    await user?.related('notifications').create({
+      data: { message: 'test notification for you lorem ispsd ksdj skjd  dskdj skd skdj sk ' },
+    })
 
-  //   await user?.related('notifications').create({
-  //     data: {
-  //       message: 'test notification for you lorem ispsd ksdj skjd  dskdj skd skdj sk ',
-  //     },
-  //   })
+    await user?.related('notifications').create({
+      data: {
+        message: 'test notification for you lorem ispsd ksdj skjd  dskdj skd skdj sk ',
+      },
+    })
 
-  //   await user?.related('notifications').create({
-  //     data: {
-  //       message: 'test notification for you lorem ispsd ksdj skjd  dskdj skd skdj sk ',
-  //     },
-  //   })
+    await user?.related('notifications').create({
+      data: {
+        message: 'test notification for you lorem ispsd ksdj skjd  dskdj skd skdj sk ',
+      },
+    })
 
-  //   await user?.related('notifications').create({
-  //     data: {
-  //       message: 'test notification for you lorem ispsd ksdj skjd  dskdj skd skdj sk ',
-  //     },
-  //   })
-  // }
+    await user?.related('notifications').create({
+      data: {
+        message: 'test notification for you lorem ispsd ksdj skjd  dskdj skd skdj sk ',
+      },
+    })
+  }
 
   public async store({ request, response, bouncer }: HttpContextContract) {
     await bouncer.with('AdminUserPolicy').authorize('create')
