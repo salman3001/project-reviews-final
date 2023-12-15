@@ -630,7 +630,6 @@ const routes: RouteRecordRaw[] = [
       },
       {
         beforeEnter: (to, from, next) => useAuth(to, from, next, 'admin'),
-
         path: 'campaign/:id/',
         component: () =>
           import('pages/admin/news-letters/campaign/CampaignShow.vue'),
@@ -638,11 +637,9 @@ const routes: RouteRecordRaw[] = [
       },
       {
         beforeEnter: (to, from, next) => useAuth(to, from, next, 'admin'),
-
-        path: 'campaign/:id/edit',
-        component: () =>
-          import('pages/admin/news-letters/campaign/CampaignEdit.vue'),
-        name: 'admin.campaign.edit',
+        path: 'notifcations',
+        component: () => import('pages/admin/NoificationIndex.vue'),
+        name: 'admin.notification.index',
       },
     ],
   },

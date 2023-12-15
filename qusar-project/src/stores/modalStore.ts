@@ -19,7 +19,8 @@ type IModalContent =
   | 'editCity'
   | 'addStreet'
   | 'editStreet'
-  | 'addRole';
+  | 'addRole'
+  | 'deleteNotification';
 
 const modalStore = defineStore('modal', () => {
   const show = ref(false);

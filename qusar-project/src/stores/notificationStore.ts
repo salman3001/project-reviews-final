@@ -1,8 +1,8 @@
 import { defineStore } from 'pinia';
 import { Notify, useQuasar } from 'quasar';
 import { Socket, io } from 'socket.io-client';
-import { api } from 'src/boot/axios';
 import { ref } from 'vue';
+import { notifcationApi } from 'src/utils/BaseApiService';
 
 const notificationStore = defineStore('notification', () => {
   const notifcations = ref<any[]>([]);
@@ -11,44 +11,38 @@ const notificationStore = defineStore('notification', () => {
   const socket = ref<Socket | null>(null);
 
   const getUnreadNotifications = async () => {
-    try {
-      const res = await api.get('/notifcations/get-unread');
-      notifcations.value = res?.data?.notifcations;
-      notificationCount.value = res?.data?.count;
-      // Notify.create({ message: 'Login Successfull!', color: 'positive' });
-    } catch (error: any) {
-      Notify.create({ message: 'Failed to fetch notifcations', color: 'red' });
-    }
+    notifcationApi.getUnread().then(({ data }) => {
+      notifcations.value = (data.value as any)?.notifcations;
+      notificationCount.value = (data.value as any)?.count;
+    });
   };
 
   const deleteNotifcations = async (type: 'all' | 'read') => {
-    try {
-      await api.delete('/notifcations/delete/' + type);
-      Notify.create({
-        message: 'notifcations Deleted Successfull!',
-        color: 'positive',
-      });
-    } catch (error: any) {
-      Notify.create({
-        message: 'Failed to delete notifcations! Something went wrong',
-        color: 'negative',
-      });
+    if (type == 'all') {
+      const { execute } = notifcationApi.deleteAllNotifcations(
+        {},
+        {
+          onSuccess: () => {
+            notifcations.value = [];
+          },
+        }
+      );
+      execute();
+    } else if (type == 'read') {
+      notifcationApi.deleteReadNotifcations().execute();
     }
   };
 
   const deleteOneNotifcation = async (id: string) => {
-    try {
-      await api.delete('/notifcations/delete/' + id);
-      Notify.create({
-        message: 'notifcation Deleted Successfull!',
-        color: 'positive',
-      });
-    } catch (error: any) {
-      Notify.create({
-        message: 'Failed to delete notifcation! Something went wrong',
-        color: 'negative',
-      });
-    }
+    const { execute } = notifcationApi.delete(
+      {},
+      {
+        onSuccess: () => {
+          getUnreadNotifications();
+        },
+      }
+    );
+    execute(id);
   };
 
   const connectSocket = () => {

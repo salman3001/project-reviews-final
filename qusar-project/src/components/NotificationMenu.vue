@@ -29,7 +29,9 @@ onUnmounted(() => {
         <q-separator />
       </q-list>
       <div class="justify-center row q-py-1 q-pt-sm" style="border-top: 1px solid lightgray;">
-        <q-btn flat size="small" class="text-secondary">See All</q-btn>
+        <router-link :to="{ name: 'admin.notification.index' }">
+          <q-btn flat size="small" class="text-secondary">See All</q-btn>
+        </router-link>
       </div>
     </q-menu>
   </q-btn>
