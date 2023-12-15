@@ -1,13 +1,11 @@
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import { schema } from '@ioc:Adonis/Core/Validator'
-import StreetService from 'App/services/address/StreetService'
+import BaseController from '../BaseController'
+import Street from 'App/Models/address/Street'
 
-export default class StreetsController {
-  public async index({ request, response, bouncer }: HttpContextContract) {
-    await bouncer.with('LocationPolicy').authorize('viewList')
-    const qs = request.qs() as any
-    const records = await StreetService.index(qs)
-    return response.json(records)
+export default class StreetsController extends BaseController {
+  constructor() {
+    super(Street, {}, {}, 'LocationPolicy')
   }
 
   public async store({ request, response, bouncer }: HttpContextContract) {
@@ -18,35 +16,21 @@ export default class StreetsController {
       cityId: schema.number.optional(),
     })
     const payload = await request.validate({ schema: streetSchema })
-    const record = await StreetService.store(payload)
+    const record = await Street.create(payload)
     return response.json({ message: 'record created', data: record })
-  }
-
-  public async show({ params, response, request, bouncer }: HttpContextContract) {
-    await bouncer.with('LocationPolicy').authorize('view')
-
-    const qs = request.qs() as any
-    const record = await StreetService.show(+params.id, qs)
-    response.json(record)
   }
 
   public async update({ request, response, params, bouncer }: HttpContextContract) {
     await bouncer.with('LocationPolicy').authorize('update')
-
+    const street = await Street.findOrFail(+params.id)
     const streetSchema = schema.create({
       name: schema.string({ trim: true }),
       isActive: schema.boolean.optional(),
       cityId: schema.number.optional(),
     })
     const payload = await request.validate({ schema: streetSchema })
-    const record = await StreetService.update(params.id, payload)
-    return response.json({ message: 'record updated', data: record })
-  }
-
-  public async destroy({ params, response, bouncer }: HttpContextContract) {
-    await bouncer.with('LocationPolicy').authorize('delete')
-
-    await StreetService.destroy(+params.id)
-    return response.json({ message: 'record deleted' })
+    street.merge(payload)
+    await street.save()
+    return response.json({ message: 'record updated', data: street })
   }
 }

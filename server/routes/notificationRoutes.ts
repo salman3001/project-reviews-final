@@ -1,8 +1,8 @@
 import Route from '@ioc:Adonis/Core/Route'
 
 Route.group(() => {
-  Route.get('/get-unread', 'NotificationsController.getUnread')
-  Route.delete('/delete/read', 'NotificationsController.destroyRead')
-  Route.delete('/delete/all', 'NotificationsController.destroyAll')
-  Route.delete('/delete/:id', 'NotificationsController.destroy')
-}).prefix('api/notifcations')
+  Route.resource('/notifications', 'NotificationsController').only(['index', 'update', 'destroy'])
+  Route.get('/notifications/get-unread', 'NotificationsController.getUnread')
+  Route.delete('/notifications/delete/read', 'NotificationsController.destroyRead')
+  Route.delete('/notifications/delete/all', 'NotificationsController.destroyAll')
+}).prefix('api')

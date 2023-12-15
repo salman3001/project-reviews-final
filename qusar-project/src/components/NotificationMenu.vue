@@ -1,15 +1,18 @@
 <script setup>
 import notificationStore from 'src/stores/notificationStore'
 import authStore from 'src/stores/authStroe'
-import { onMounted } from 'vue';
+import { onMounted, onUnmounted } from 'vue';
 
 const auth = authStore()
 const notify = notificationStore()
 
 onMounted(() => {
   notify.getUnreadNotifications();
-  notify.getSocket()
+  notify.connectSocket()
+})
 
+onUnmounted(() => {
+  notify.disconnectSocket()
 })
 </script>
 <template>

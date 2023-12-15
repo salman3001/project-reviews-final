@@ -1,15 +1,11 @@
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import Subscriber from 'App/Models/email/Subscriber'
 import CreateSubscriberValidator from 'App/Validators/news-letter/CreateSubscriberValidator'
-import SubscriberService from 'App/services/email/SubscriberService'
+import BaseController from '../BaseController'
 
-export default class SubscribersController {
-  public async index({ request, response, bouncer }: HttpContextContract) {
-    await bouncer.with('SubscriberPolicy').authorize('viewList')
-
-    const qs = request.qs() as any
-    const records = await SubscriberService.index(qs)
-    return response.json(records)
+export default class SubscribersController extends BaseController {
+  constructor() {
+    super(Subscriber, {}, {}, 'SubscriberPolicy')
   }
 
   public async store({ request, response, bouncer }: HttpContextContract) {
@@ -23,14 +19,6 @@ export default class SubscribersController {
     }
 
     return response.json({ message: 'record created', data: subscriber })
-  }
-
-  public async show({ params, response, request, bouncer }: HttpContextContract) {
-    await bouncer.with('SubscriberPolicy').authorize('view')
-
-    const qs = request.qs() as any
-    const record = await SubscriberService.show(+params.id, qs)
-    response.json(record)
   }
 
   public async update({ request, response, params, bouncer }: HttpContextContract) {
@@ -48,22 +36,5 @@ export default class SubscribersController {
     }
 
     return response.json({ message: 'record created', data: subscriber })
-  }
-
-  public async destroy({ params, response, bouncer }: HttpContextContract) {
-    await bouncer.with('SubscriberPolicy').authorize('delete')
-
-    await SubscriberService.destroy(+params.id)
-    return response.json({ message: 'record deleted' })
-  }
-
-  public async uniqueField({ request, response }: HttpContextContract) {
-    const qs = request.qs() as any
-    const exist = await SubscriberService.uniqueField(qs)
-    if (exist) {
-      return response.badRequest({ message: 'Field is not unique' })
-    } else {
-      return response.ok({ message: 'Field available' })
-    }
   }
 }

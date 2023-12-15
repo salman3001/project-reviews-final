@@ -1,15 +1,12 @@
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
+import KnowledgeBaseCategory from 'App/Models/helpcenter/KnowledgeBaseCategory'
 import HelpcenterContentCategoryValidator from 'App/Validators/helpcenter/HelpcenterContentCategoryValidator'
-import KnowledgeBaseCategoryService from 'App/services/helpcenter/KnowledgeBaseCategoryService'
 import slugify from 'slugify'
+import BaseController from '../BaseController'
 
-export default class KnowledgeBaseCategoriesController {
-  public async index({ request, response, bouncer }: HttpContextContract) {
-    await bouncer.with('KnowledgebasePolicy').authorize('viewList')
-
-    const qs = request.qs() as any
-    const records = await KnowledgeBaseCategoryService.index(qs)
-    return response.json(records)
+export default class KnowledgeBaseCategoriesController extends BaseController {
+  constructor() {
+    super(KnowledgeBaseCategory, {}, {}, 'KnowledgebasePolicy')
   }
 
   public async store({ request, response, bouncer }: HttpContextContract) {
@@ -21,9 +18,9 @@ export default class KnowledgeBaseCategoriesController {
     let record: any = null
     try {
       if (slug) {
-        record = await KnowledgeBaseCategoryService.store(payload)
+        record = await KnowledgeBaseCategory.create(payload)
       } else {
-        record = await KnowledgeBaseCategoryService.store({
+        record = await KnowledgeBaseCategory.create({
           ...restPayload,
           slug: slugify(payload.name),
         })
@@ -34,49 +31,27 @@ export default class KnowledgeBaseCategoriesController {
     }
   }
 
-  public async show({ params, response, request, bouncer }: HttpContextContract) {
-    await bouncer.with('KnowledgebasePolicy').authorize('view')
-
-    const qs = request.qs() as any
-    const record = await KnowledgeBaseCategoryService.show(+params.id, qs)
-    response.json(record)
-  }
-
   public async update({ request, response, params, bouncer }: HttpContextContract) {
     await bouncer.with('KnowledgebasePolicy').authorize('update')
+    const category = await KnowledgeBaseCategory.findOrFail(+params.id)
 
     const payload = await request.validate(HelpcenterContentCategoryValidator)
     const { slug, ...restPayload } = payload
-    let record: any = null
     try {
       if (slug) {
-        record = await KnowledgeBaseCategoryService.update(+params.id, payload)
+        category.merge(payload)
+        await category.save()
       } else {
-        record = await KnowledgeBaseCategoryService.update(+params.id, {
+        category.merge({
           ...restPayload,
           slug: slugify(payload.name),
         })
+        await category.save()
       }
-      return response.json({ message: 'record updated', data: record })
+      return response.json({ message: 'record updated', data: category })
     } catch (error) {
       console.log(error)
       return response.abort({ message: 'Something went wrong' })
-    }
-  }
-
-  public async destroy({ params, response, bouncer }: HttpContextContract) {
-    await bouncer.with('KnowledgebasePolicy').authorize('delete')
-    await KnowledgeBaseCategoryService.destroy(+params.id)
-    return response.json({ message: 'record deleted' })
-  }
-
-  public async uniqueField({ request, response }: HttpContextContract) {
-    const qs = request.qs() as any
-    const exist = await KnowledgeBaseCategoryService.uniqueField(qs)
-    if (exist) {
-      return response.badRequest({ message: 'Field is not unique' })
-    } else {
-      return response.ok({ message: 'Field available' })
     }
   }
 }

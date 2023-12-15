@@ -3,15 +3,11 @@ import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import ServiceTag from 'App/Models/service/ServiceTag'
 import ServiceCategoryCreateValidator from 'App/Validators/service/ServiceCategoryCreateValidator'
 import ServiceCategoryUpdateValidator from 'App/Validators/service/ServiceCategoryUpdateValidator'
-import ServiceTagService from 'App/services/service/ServiceTagService'
+import BaseController from '../BaseController'
 
-export default class ServiceTagsController {
-  public async index({ request, response, bouncer }: HttpContextContract) {
-    await bouncer.with('ServicePolicy').authorize('viewList')
-
-    const qs = request.qs() as any
-    const records = await ServiceTagService.index(qs)
-    return response.json(records)
+export default class ServiceTagsController extends BaseController {
+  constructor() {
+    super(ServiceTag, {}, {}, 'ServicePolicy')
   }
 
   public async store({ request, response, bouncer }: HttpContextContract) {
@@ -34,14 +30,6 @@ export default class ServiceTagsController {
     await tag.save()
 
     return response.json({ message: 'record created', data: tag })
-  }
-
-  public async show({ params, response, request, bouncer }: HttpContextContract) {
-    await bouncer.with('ServicePolicy').authorize('view')
-
-    const qs = request.qs() as any
-    const record = await ServiceTagService.show(+params.id, qs)
-    response.json(record)
   }
 
   public async update({ request, response, params, bouncer }: HttpContextContract) {
@@ -81,12 +69,5 @@ export default class ServiceTagsController {
     await tag.save()
 
     return response.json({ message: 'record created', data: tag })
-  }
-
-  public async destroy({ params, response, bouncer }: HttpContextContract) {
-    await bouncer.with('ServicePolicy').authorize('delete')
-
-    await ServiceTagService.destroy(+params.id)
-    return response.json({ message: 'record deleted' })
   }
 }

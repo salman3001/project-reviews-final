@@ -1,13 +1,11 @@
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import { schema } from '@ioc:Adonis/Core/Validator'
-import ContinentService from 'App/services/address/ContinentService'
+import BaseController from '../BaseController'
+import Continent from 'App/Models/address/Continent'
 
-export default class ContinentsController {
-  public async index({ request, response, bouncer }: HttpContextContract) {
-    await bouncer.with('LocationPolicy').authorize('viewList')
-    const qs = request.qs() as any
-    const records = await ContinentService.index(qs)
-    return response.json(records)
+export default class ContinentsController extends BaseController {
+  constructor() {
+    super(Continent, {}, {}, 'LocationPolicy')
   }
 
   public async store({ request, response, bouncer }: HttpContextContract) {
@@ -17,31 +15,20 @@ export default class ContinentsController {
       isActive: schema.boolean.optional(),
     })
     const payload = await request.validate({ schema: continentSchema })
-    const record = await ContinentService.store(payload)
+    const record = await Continent.create(payload)
     return response.json({ message: 'record created', data: record })
-  }
-
-  public async show({ params, response, request, bouncer }: HttpContextContract) {
-    await bouncer.with('LocationPolicy').authorize('view')
-    const qs = request.qs() as any
-    const record = await ContinentService.show(+params.id, qs)
-    response.json(record)
   }
 
   public async update({ request, response, params, bouncer }: HttpContextContract) {
     await bouncer.with('LocationPolicy').authorize('update')
+    const continent = await Continent.findOrFail(+params.id)
     const continentSchema = schema.create({
       name: schema.string({ trim: true }),
       isActive: schema.boolean.optional(),
     })
     const payload = await request.validate({ schema: continentSchema })
-    const record = await ContinentService.update(params.id, payload)
-    return response.json({ message: 'record updated', data: record })
-  }
-
-  public async destroy({ params, response, bouncer }: HttpContextContract) {
-    await bouncer.with('LocationPolicy').authorize('delete')
-    await ContinentService.destroy(+params.id)
-    return response.json({ message: 'record deleted' })
+    continent.merge(payload)
+    await continent.save()
+    return response.json({ message: 'record updated', data: continent })
   }
 }

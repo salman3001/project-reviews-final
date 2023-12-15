@@ -94,9 +94,6 @@ const routes: RouteRecordRaw[] = [
       },
       {
         beforeEnter: (to, from, next) => useAuth(to, from, next, 'admin'),
-
-        beforeEnter: (to, from, next) => useAuth(to, from, next, 'admin'),
-
         path: 'help-center/content/create',
         component: () =>
           import('pages/admin/help-center/knowledgebase/ContentCreate.vue'),

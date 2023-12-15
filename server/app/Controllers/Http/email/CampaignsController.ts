@@ -2,14 +2,11 @@ import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import Campaign from 'App/Models/email/Campaign'
 import Template from 'App/Models/email/Template'
 import CreateCampaignValidator from 'App/Validators/news-letter/CreateCampaignValidator'
-import CampaignService from 'App/services/email/CampaignService'
+import BaseController from '../BaseController'
 
-export default class CampaignsController {
-  public async index({ request, response, bouncer }: HttpContextContract) {
-    await bouncer.with('CampaignPolicy').authorize('viewList')
-    const qs = request.qs() as any
-    const records = await CampaignService.index(qs)
-    return response.json(records)
+export default class CampaignsController extends BaseController {
+  constructor() {
+    super(Campaign, {}, {}, 'CampaignPolicy')
   }
 
   public async store({ request, response, bouncer }: HttpContextContract) {
@@ -30,14 +27,6 @@ export default class CampaignsController {
     }
 
     return response.json({ message: 'record created', data: campaign })
-  }
-
-  public async show({ params, response, request, bouncer }: HttpContextContract) {
-    await bouncer.with('CampaignPolicy').authorize('view')
-
-    const qs = request.qs() as any
-    const record = await CampaignService.show(+params.id, qs)
-    response.json(record)
   }
 
   public async update({ request, response, params, bouncer }: HttpContextContract) {
@@ -76,12 +65,5 @@ export default class CampaignsController {
     }
 
     return response.json({ message: 'record created', data: campaign })
-  }
-
-  public async destroy({ params, response, bouncer }: HttpContextContract) {
-    await bouncer.with('CampaignPolicy').authorize('delete')
-
-    await CampaignService.destroy(+params.id)
-    return response.json({ message: 'record deleted' })
   }
 }

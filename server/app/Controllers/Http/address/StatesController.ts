@@ -1,15 +1,12 @@
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import { schema } from '@ioc:Adonis/Core/Validator'
-import StateService from 'App/services/address/StateService'
+import State from 'App/Models/address/State'
+import BaseController from '../BaseController'
 
-export default class StatesController {
-  public async index({ request, response, bouncer }: HttpContextContract) {
-    await bouncer.with('LocationPolicy').authorize('viewList')
-    const qs = request.qs() as any
-    const records = await StateService.index(qs)
-    return response.json(records)
+export default class StatesController extends BaseController {
+  constructor() {
+    super(State, {}, {}, 'LocationPolicy')
   }
-
   public async store({ request, response, bouncer }: HttpContextContract) {
     await bouncer.with('LocationPolicy').authorize('create')
     const StateSchema = schema.create({
@@ -18,32 +15,21 @@ export default class StatesController {
       countryId: schema.number.optional(),
     })
     const payload = await request.validate({ schema: StateSchema })
-    const record = await StateService.store(payload)
+    const record = await State.create(payload)
     return response.json({ message: 'record created', data: record })
-  }
-
-  public async show({ params, response, request, bouncer }: HttpContextContract) {
-    await bouncer.with('LocationPolicy').authorize('view')
-    const qs = request.qs() as any
-    const record = await StateService.show(+params.id, qs)
-    response.json(record)
   }
 
   public async update({ request, response, params, bouncer }: HttpContextContract) {
     await bouncer.with('LocationPolicy').authorize('update')
+    const state = await State.findOrFail(+params.id)
     const StateSchema = schema.create({
       name: schema.string({ trim: true }),
       isActive: schema.boolean.optional(),
       countryId: schema.number.optional(),
     })
     const payload = await request.validate({ schema: StateSchema })
-    const record = await StateService.update(params.id, payload)
-    return response.json({ message: 'record updated', data: record })
-  }
-
-  public async destroy({ params, response, bouncer }: HttpContextContract) {
-    await bouncer.with('LocationPolicy').authorize('delete')
-    await StateService.destroy(+params.id)
-    return response.json({ message: 'record deleted' })
+    state.merge(payload)
+    await state.save()
+    return response.json({ message: 'record updated', data: state })
   }
 }

@@ -1,15 +1,12 @@
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import HelpcenterContentValidator from 'App/Validators/helpcenter/HelpcenterContentValidator'
-import KnowledgeBaseContentService from 'App/services/helpcenter/KnowledgeBaseContentService'
 import slugify from 'slugify'
+import BaseController from '../BaseController'
+import KnowledgeBaseContent from 'App/Models/helpcenter/KnowledgeBaseContent'
 
-export default class KnowledgeBaseContentsController {
-  public async index({ request, response, bouncer }: HttpContextContract) {
-    await bouncer.with('KnowledgebasePolicy').authorize('viewList')
-
-    const qs = request.qs() as any
-    const records = await KnowledgeBaseContentService.index(qs)
-    return response.json(records)
+export default class KnowledgeBaseContentsController extends BaseController {
+  constructor() {
+    super(KnowledgeBaseContent, {}, {}, 'KnowledgebasePolicy')
   }
 
   public async store({ request, response, bouncer }: HttpContextContract) {
@@ -21,9 +18,9 @@ export default class KnowledgeBaseContentsController {
     let record: any = null
     try {
       if (slug) {
-        record = await KnowledgeBaseContentService.store(payload)
+        record = await KnowledgeBaseContent.create(payload)
       } else {
-        record = await KnowledgeBaseContentService.store({
+        record = await KnowledgeBaseContent.create({
           ...restPayload,
           slug: slugify(payload.title),
         })
@@ -35,52 +32,27 @@ export default class KnowledgeBaseContentsController {
     }
   }
 
-  public async show({ params, response, request, bouncer }: HttpContextContract) {
-    await bouncer.with('KnowledgebasePolicy').authorize('view')
-
-    const qs = request.qs() as any
-    const record = await KnowledgeBaseContentService.show(+params.id, qs)
-    response.json(record)
-  }
-
   public async update({ request, response, params, bouncer }: HttpContextContract) {
     await bouncer.with('KnowledgebasePolicy').authorize('update')
-
+    const content = await KnowledgeBaseContent.findOrFail(+params.id)
     const payload = await request.validate(HelpcenterContentValidator)
     const { slug, ...restPayload } = payload
-    let record: any = null
+
     try {
       if (slug) {
-        record = await KnowledgeBaseContentService.update(+params.id, payload)
+        content.merge(payload)
+        await content.save()
       } else {
-        record = await KnowledgeBaseContentService.update(+params.id, {
+        content.merge({
           ...restPayload,
           slug: slugify(payload.title),
         })
+        await content.save()
       }
-      return response.json({ message: 'record updated', data: record })
+      return response.json({ message: 'record updated', data: content })
     } catch (error) {
       console.log(error)
       return response.abort({ message: 'Something went wrong' })
-    }
-  }
-
-  public async destroy({ params, response, bouncer }: HttpContextContract) {
-    await bouncer.with('KnowledgebasePolicy').authorize('delete')
-
-    await KnowledgeBaseContentService.destroy(+params.id)
-    return response.json({ message: 'record deleted' })
-  }
-
-  ////////
-
-  public async uniqueField({ request, response }: HttpContextContract) {
-    const qs = request.qs() as any
-    const exist = await KnowledgeBaseContentService.uniqueField(qs)
-    if (exist) {
-      return response.badRequest({ message: 'Field is not unique' })
-    } else {
-      return response.ok({ message: 'Field available' })
     }
   }
 }

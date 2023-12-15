@@ -14,18 +14,21 @@ const authStore = defineStore('Auth', () => {
   const setUser = (payload: any) => {
     $q.cookies.set('user', payload, {
       expires: 1,
+      path: '/',
     });
   };
 
   const setToken = (payload: any) => {
     $q.cookies.set('token', payload, {
       expires: 1,
+      path: '/',
     });
   };
 
   const setSocketToken = (payload: any) => {
     $q.cookies.set('socketToken', payload, {
       expires: 1,
+      path: '/',
     });
   };
 

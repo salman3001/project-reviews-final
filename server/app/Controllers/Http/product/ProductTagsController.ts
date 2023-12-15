@@ -3,14 +3,11 @@ import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import ProductTag from 'App/Models/product/ProductTag'
 import CategoryCreateValidator from 'App/Validators/product/CategoryCreateValidator'
 import CategoryUpdateValidator from 'App/Validators/product/CategoryUpdateValidator'
-import ProductTagService from 'App/services/product/ProductTagService'
+import BaseController from '../BaseController'
 
-export default class ProductTagsController {
-  public async index({ request, response, bouncer }: HttpContextContract) {
-    await bouncer.with('ProductPolicy').authorize('viewList')
-    const qs = request.qs() as any
-    const records = await ProductTagService.index(qs)
-    return response.json(records)
+export default class ProductTagsController extends BaseController {
+  constructor() {
+    super(ProductTag, {}, {}, 'ProductPolicy')
   }
 
   public async store({ request, response, bouncer }: HttpContextContract) {
@@ -33,14 +30,6 @@ export default class ProductTagsController {
     await tag.save()
 
     return response.json({ message: 'record created', data: tag })
-  }
-
-  public async show({ params, response, request, bouncer }: HttpContextContract) {
-    await bouncer.with('ProductPolicy').authorize('view')
-
-    const qs = request.qs() as any
-    const record = await ProductTagService.show(+params.id, qs)
-    response.json(record)
   }
 
   public async update({ request, response, params, bouncer }: HttpContextContract) {
@@ -80,12 +69,5 @@ export default class ProductTagsController {
     await tag.save()
 
     return response.json({ message: 'record created', data: tag })
-  }
-
-  public async destroy({ params, response, bouncer }: HttpContextContract) {
-    await bouncer.with('ProductPolicy').authorize('delete')
-
-    await ProductTagService.destroy(+params.id)
-    return response.json({ message: 'record deleted' })
   }
 }

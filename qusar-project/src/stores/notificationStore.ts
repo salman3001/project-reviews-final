@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia';
 import { Notify, useQuasar } from 'quasar';
-import { io } from 'socket.io-client';
+import { Socket, io } from 'socket.io-client';
 import { api } from 'src/boot/axios';
 import { ref } from 'vue';
 
@@ -8,6 +8,7 @@ const notificationStore = defineStore('notification', () => {
   const notifcations = ref<any[]>([]);
   const notificationCount = ref(0);
   const $q = useQuasar();
+  const socket = ref<Socket | null>(null);
 
   const getUnreadNotifications = async () => {
     try {
@@ -50,25 +51,55 @@ const notificationStore = defineStore('notification', () => {
     }
   };
 
-  const getSocket = () => {
-    const user = $q.cookies.get('user') as any;
-    const token = $q.cookies.get('socketToken') as any;
-    const socket = io(process.env.UPLOAD + '/user-socket/', {
-      transports: ['websocket'],
-      auth: {
-        userId: user?.id || '',
-        socketToken: token || '',
-      },
-    });
+  const connectSocket = () => {
+    if (!socket.value) {
+      const user = $q.cookies.get('user') as any;
+      const token = $q.cookies.get('socketToken') as any;
 
-    socket.on('room-joined', (room: string) => {
-      console.log(room);
-    });
+      socket.value = io(process.env.UPLOAD + '/notifications/', {
+        transports: ['websocket'],
+        auth: {
+          userId: user?.id || '',
+          socketToken: token || '',
+        },
+      });
 
-    socket.on('new-notification', (data: any) => {
-      notifcations.value.push({ data });
-      notificationCount.value += 1;
-    });
+      socket.value.on('room-joined', (room: string) => {
+        console.log(room);
+      });
+
+      socket.value.on('new-notification', (notification: any) => {
+        if (notifcations.value.length < 20) {
+          notifcations.value.push(notification);
+          notificationCount.value += 1;
+          Notify.create({
+            icon: 'info',
+            color: '#FAF9F6',
+            message: `New Notification! ${notification?.data?.message}`,
+            timeout: 5000,
+            position: 'top',
+          });
+        } else {
+          notifcations.value.pop();
+          notifcations.value.unshift(notification);
+          notificationCount.value += 1;
+          Notify.create({
+            icon: 'info',
+            color: '#FAF9F',
+            message: `New Notification!  ${notification?.data?.message}`,
+            timeout: 5000,
+            position: 'top',
+          });
+        }
+      });
+    }
+  };
+
+  const disconnectSocket = () => {
+    if (socket.value) {
+      socket.value.disconnect();
+      socket.value = null;
+    }
   };
 
   return {
@@ -77,7 +108,8 @@ const notificationStore = defineStore('notification', () => {
     getUnreadNotifications,
     deleteNotifcations,
     deleteOneNotifcation,
-    getSocket,
+    connectSocket,
+    disconnectSocket,
   };
 });
 

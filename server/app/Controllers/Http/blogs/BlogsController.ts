@@ -2,15 +2,12 @@ import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import Blog from 'App/Models/blogs/Blog'
 import BlogValidator from 'App/Validators/blogs/BlogValidator'
 import slugify from 'slugify'
-import BlogService from 'App/services/blogs/BlogService'
 import { ResponsiveAttachment } from '@ioc:Adonis/Addons/ResponsiveAttachment'
+import BaseController from '../BaseController'
 
-export default class BlogsController {
-  public async index({ request, response, bouncer }: HttpContextContract) {
-    await bouncer.with('BlogPolicy').authorize('viewList')
-    const qs = request.qs() as any
-    const records = await BlogService.index(qs)
-    return response.json(records)
+export default class BlogsController extends BaseController {
+  constructor() {
+    super(Blog, BlogValidator, BlogValidator, 'BlogPolicy')
   }
 
   public async store({ request, response, bouncer }: HttpContextContract) {
@@ -20,9 +17,9 @@ export default class BlogsController {
     let blog: null | Blog = null
 
     if (slug) {
-      blog = await BlogService.store({ ...payload, slug })
+      blog = await Blog.create({ ...payload, slug })
     } else {
-      blog = await BlogService.store({ slug: slugify(payload.title), ...payload })
+      blog = await Blog.create({ slug: slugify(payload.title), ...payload })
     }
 
     if (blogCategoryId) {
@@ -37,30 +34,24 @@ export default class BlogsController {
     return response.json({ message: 'Blog Created' })
   }
 
-  public async show({ params, response, request, bouncer }: HttpContextContract) {
-    await bouncer.with('BlogPolicy').authorize('view')
-
-    const qs = request.qs() as any
-    const record = await BlogService.show(+params.id, qs)
-    response.json(record)
-  }
-
   public async update({ request, response, params, bouncer }: HttpContextContract) {
     await bouncer.with('BlogPolicy').authorize('update')
 
+    const blog = await Blog.findOrFail(+params.id)
+
     const { image, blogCategoryId, slug, ...payload } = await request.validate(BlogValidator)
 
-    let blog: null | Blog = null
-
     if (slug) {
-      blog = await BlogService.update(+params.id, { ...payload, slug })
+      blog.merge({ ...payload, slug })
+      await blog.save()
     } else {
-      blog = await BlogService.update(+params.id, { slug: slugify(payload.title), ...payload })
+      blog.merge({ slug: slugify(payload.title), ...payload })
+      await blog.save()
     }
 
     if (blogCategoryId) {
-      blog && (await blog.related('category').detach())
-      blog && (await blog.related('category').attach([blogCategoryId]))
+      await blog.related('category').detach()
+      await blog.related('category').attach([blogCategoryId])
     }
 
     if (image) {
@@ -69,21 +60,5 @@ export default class BlogsController {
 
     await blog.save()
     return response.json({ message: 'Blog Updated' })
-  }
-
-  public async destroy({ params, response, bouncer }: HttpContextContract) {
-    await bouncer.with('BlogPolicy').authorize('delete')
-    await BlogService.destroy(+params.id)
-    return response.json({ message: 'record deleted' })
-  }
-
-  public async uniqueField({ request, response }: HttpContextContract) {
-    const qs = request.qs() as any
-    const exist = await BlogService.uniqueField(qs)
-    if (exist) {
-      return response.badRequest({ message: 'Field is not unique' })
-    } else {
-      return response.ok({ message: 'Field available' })
-    }
   }
 }

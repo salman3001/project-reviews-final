@@ -2,15 +2,11 @@ import { ResponsiveAttachment } from '@ioc:Adonis/Addons/ResponsiveAttachment'
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import Template from 'App/Models/email/Template'
 import CreateTemplateValidator from 'App/Validators/news-letter/CreateTemplateValidator'
-import TemplateService from 'App/services/email/TemplateService'
+import BaseController from '../BaseController'
 
-export default class TemplatesController {
-  public async index({ request, response, bouncer }: HttpContextContract) {
-    await bouncer.with('TemplatePolicy').authorize('viewList')
-
-    const qs = request.qs() as any
-    const records = await TemplateService.index(qs)
-    return response.json(records)
+export default class TemplatesController extends BaseController {
+  constructor() {
+    super(Template, {}, {}, 'TemplatePolicy')
   }
 
   public async store({ request, response, bouncer }: HttpContextContract) {
@@ -27,14 +23,6 @@ export default class TemplatesController {
     return response.json({ message: 'record created', data: template })
   }
 
-  public async show({ params, response, request, bouncer }: HttpContextContract) {
-    await bouncer.with('TemplatePolicy').authorize('view')
-
-    const qs = request.qs() as any
-    const record = await TemplateService.show(+params.id, qs)
-    response.json(record)
-  }
-
   public async update({ request, response, params, bouncer }: HttpContextContract) {
     await bouncer.with('TemplatePolicy').authorize('update')
 
@@ -49,13 +37,5 @@ export default class TemplatesController {
     }
     await template.save()
     return response.json({ message: 'record created', data: template })
-  }
-
-  public async destroy({ params, response, bouncer }: HttpContextContract) {
-    await bouncer.with('TemplatePolicy').authorize('delete')
-
-    const template = await Template.findOrFail(+params.id)
-    await template.delete()
-    return response.json({ message: 'record deleted' })
   }
 }

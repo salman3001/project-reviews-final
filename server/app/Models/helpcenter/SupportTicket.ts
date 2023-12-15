@@ -1,7 +1,8 @@
 import { DateTime } from 'luxon'
-import { BaseModel, BelongsTo, belongsTo, column } from '@ioc:Adonis/Lucid/Orm'
+import { BaseModel, BelongsTo, HasMany, belongsTo, column, hasMany } from '@ioc:Adonis/Lucid/Orm'
 import { TicketStatus } from 'App/Helpers/enums'
 import User from '../user/User'
+import ChatMessage from './ChatMessage'
 
 export default class SupportTicket extends BaseModel {
   @column({ isPrimary: true })
@@ -18,6 +19,9 @@ export default class SupportTicket extends BaseModel {
 
   @column()
   public status: TicketStatus
+
+  @hasMany(() => ChatMessage)
+  public messages: HasMany<typeof ChatMessage>
 
   @column.dateTime({ autoCreate: true })
   public createdAt: DateTime

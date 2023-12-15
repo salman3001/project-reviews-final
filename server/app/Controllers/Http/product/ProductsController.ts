@@ -4,16 +4,13 @@ import Image from 'App/Models/Image'
 import Product from 'App/Models/product/Product'
 import ProductCreateValidator from 'App/Validators/product/ProductCreateValidator'
 import ProductUpdateValidator from 'App/Validators/product/ProductUpdateValidator'
-import ImageService from 'App/services/ImageService'
-import VideoService from 'App/services/VideoService'
-import ProductService from 'App/services/product/ProductService'
+import BaseController from '../BaseController'
+import Video from 'App/Models/Video'
+import { Attachment } from '@ioc:Adonis/Addons/AttachmentLite'
 
-export default class ProductsController {
-  public async index({ request, response, bouncer }: HttpContextContract) {
-    await bouncer.with('ProductPolicy').authorize('viewList')
-    const qs = request.qs() as any
-    const records = await ProductService.index(qs)
-    return response.json(records)
+export default class ProductsController extends BaseController {
+  constructor() {
+    super(Product, {}, {}, 'ProductPolicy')
   }
 
   public async store({ request, response, bouncer }: HttpContextContract) {
@@ -54,7 +51,7 @@ export default class ProductsController {
       const images = await Promise.all(
         payload.images.map(async (img) => {
           try {
-            const storeImg = await ImageService.store(img)
+            const storeImg = await Image.create({ file: await ResponsiveAttachment.fromFile(img) })
             return storeImg
           } catch (error) {
             console.error('Error storing image:', error)
@@ -71,21 +68,13 @@ export default class ProductsController {
     }
 
     if (payload.video) {
-      const video = await VideoService.store(payload.video)
-      product.related('video').save(video)
+      const video = await Video.create({ file: Attachment.fromFile(payload.video) })
+      await product.related('video').save(video)
     }
 
     await product.save()
 
     return response.json({ message: 'record created', data: product })
-  }
-
-  public async show({ params, response, request, bouncer }: HttpContextContract) {
-    await bouncer.with('ProductPolicy').authorize('view')
-
-    const qs = request.qs() as any
-    const record = await ProductService.show(+params.id, qs)
-    response.json(record)
   }
 
   public async update({ request, response, params, bouncer }: HttpContextContract) {
@@ -158,7 +147,7 @@ export default class ProductsController {
       const images = await Promise.all(
         payload.images.map(async (img) => {
           try {
-            const storeImg = await ImageService.store(img)
+            const storeImg = await Image.create({ file: await ResponsiveAttachment.fromFile(img) })
             return storeImg
           } catch (error) {
             console.error('Error storing image:', error)
@@ -177,11 +166,11 @@ export default class ProductsController {
       await product.load('video')
 
       if (product.video) {
-        await VideoService.destroy(product.video.id)
+        await product.video.delete()
       }
 
-      const video = await VideoService.store(payload.video)
-      product.related('video').save(video)
+      const video = await Video.create({ file: Attachment.fromFile(payload.video) })
+      await product.related('video').save(video)
     }
 
     await product.save()
@@ -198,22 +187,23 @@ export default class ProductsController {
     if (product.screenshots) {
       await Promise.all(
         product.screenshots.map(async (img) => {
-          await ImageService.destroy(img.id)
+          await img.delete()
         })
       )
     }
 
     if (product.video) {
-      await VideoService.destroy(product.video.id)
+      await product.video.delete()
     }
 
-    await ProductService.destroy(+params.id)
+    await product.delete()
 
     return response.json({ message: 'record deleted' })
   }
 
   public async deleteScreenShot({ params, response }: HttpContextContract) {
-    const image = await ImageService.destroy(+params.id)
+    const image = await Image.findOrFail(+params.id)
+    await image.delete()
     return response.json({ message: 'Screeshot deleted', image })
   }
 }

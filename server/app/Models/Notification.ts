@@ -41,6 +41,6 @@ export default class Notification extends BaseModel {
     if (notification.adminUserId) {
       room = `admin:${notification.adminUserId}`
     }
-    Ws.io.of('/user-socket/').to(room).emit('new-notification', notification)
+    Ws.io.of('/notifications/').to(room).emit('new-notification', notification)
   }
 }

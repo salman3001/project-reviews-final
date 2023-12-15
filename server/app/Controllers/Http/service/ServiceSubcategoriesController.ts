@@ -3,14 +3,11 @@ import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import ServiceSubcategory from 'App/Models/service/ServiceSubcategory'
 import ServiceCategoryCreateValidator from 'App/Validators/service/ServiceCategoryCreateValidator'
 import ServiceCategoryUpdateValidator from 'App/Validators/service/ServiceCategoryUpdateValidator'
-import ServiceSubcategoryService from 'App/services/service/ServiceSubcategoryService'
+import BaseController from '../BaseController'
 
-export default class ServiceSubcategoriesController {
-  public async index({ request, response, bouncer }: HttpContextContract) {
-    await bouncer.with('ServicePolicy').authorize('viewList')
-    const qs = request.qs() as any
-    const records = await ServiceSubcategoryService.index(qs)
-    return response.json(records)
+export default class ServiceSubcategoriesController extends BaseController {
+  constructor() {
+    super(ServiceSubcategory, {}, {}, 'ServicePolicy')
   }
 
   public async store({ request, response, bouncer }: HttpContextContract) {
@@ -33,14 +30,6 @@ export default class ServiceSubcategoriesController {
     await category.save()
 
     return response.json({ message: 'record created', data: category })
-  }
-
-  public async show({ params, response, request, bouncer }: HttpContextContract) {
-    await bouncer.with('ServicePolicy').authorize('view')
-
-    const qs = request.qs() as any
-    const record = await ServiceSubcategoryService.show(+params.id, qs)
-    response.json(record)
   }
 
   public async update({ request, response, params, bouncer }: HttpContextContract) {
@@ -80,12 +69,5 @@ export default class ServiceSubcategoriesController {
     await category.save()
 
     return response.json({ message: 'record created', data: category })
-  }
-
-  public async destroy({ params, response, bouncer }: HttpContextContract) {
-    await bouncer.with('ServicePolicy').authorize('delete')
-
-    await ServiceSubcategoryService.destroy(+params.id)
-    return response.json({ message: 'record deleted' })
   }
 }

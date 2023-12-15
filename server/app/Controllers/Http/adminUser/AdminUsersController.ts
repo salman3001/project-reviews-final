@@ -3,30 +3,24 @@ import AdminUser from 'App/Models/adminUser/AdminUser'
 import AdminUserValidator from 'App/Validators/adminUser/AdminUserValidator'
 import AdminUserUpdateValidator from 'App/Validators/adminUser/AdminUserUpdateValidator'
 import Role from 'App/Models/adminUser/Role'
-import AdminUserService from 'App/services/admin/AdminUserService'
-import { IndexQs } from 'App/services/BaseService'
-import AddressService from 'App/services/address/AddressService'
-import SocialService from 'App/services/SocialService'
-import RoleService from 'App/services/admin/RoleService'
 import { ResponsiveAttachment } from '@ioc:Adonis/Addons/ResponsiveAttachment'
 import { schema, rules } from '@ioc:Adonis/Core/Validator'
-import { TestNotification } from 'App/Notifications/TestNotification'
+import BaseController from '../BaseController'
+import Address from 'App/Models/address/Address'
+import Social from 'App/Models/Social'
 
-export default class AdminUsersController {
-  public async index({ response, request, bouncer }: HttpContextContract) {
-    await bouncer.with('AdminUserPolicy').authorize('viewList')
-    const qs = request.qs() as IndexQs
-    const users = await AdminUserService.index(qs)
-    return response.json(users)
+export default class AdminUsersController extends BaseController {
+  constructor() {
+    super(AdminUser, {}, {}, 'AdminUserPolicy')
   }
 
   public async store({ request, response, bouncer }: HttpContextContract) {
     await bouncer.with('AdminUserPolicy').authorize('create')
     const payload = await request.validate(AdminUserValidator)
-    const user = await AdminUserService.store(payload.user)
+    const user = await AdminUser.create(payload.user)
 
     if (payload.address) {
-      const address = await AddressService.store({
+      const address = await Address.create({
         address: payload?.address?.address || '',
         continentId: payload?.address?.continentId
           ? Number(payload?.address?.continentId)
@@ -42,13 +36,8 @@ export default class AdminUsersController {
     }
 
     if (payload.social) {
-      const social = await SocialService.store(payload.social)
+      const social = await Social.create(payload.social)
       user.related('social').save(social)
-    }
-
-    if (payload.user.roleId) {
-      const role = await RoleService.show(+payload.user.roleId)
-      if (role) await user.related('role').associate(role)
     }
 
     if (payload.image) {
@@ -60,58 +49,48 @@ export default class AdminUsersController {
     return response.json(user)
   }
 
-  public async show({ response, params, request, bouncer }: HttpContextContract) {
-    const qs = request.qs() as IndexQs
-    const user = await AdminUserService.show(+params.id, qs)
-    await bouncer.with('AdminUserPolicy').authorize('view', user as AdminUser)
-    new TestNotification().create(user as AdminUser)
-    return response.json(user)
-  }
-
   public async update({ request, response, params, bouncer }: HttpContextContract) {
-    const payload = await request.validate(AdminUserUpdateValidator)
-    let user = await AdminUserService.update(+params.id, payload.user)
+    let user = await AdminUser.findOrFail(+params.id)
     await bouncer.with('AdminUserPolicy').authorize('update', user as AdminUser)
-    if (user) {
-      if (payload.address) {
-        await user.load('address')
-        if (user.address) {
-          await user.address.delete()
-          await user.related('address').create(payload.address)
-        } else {
-          await user.related('address').create(payload.address)
-        }
-      }
-      if (payload.social) {
-        await user.load('social')
-        console.log(payload.social)
+    const payload = await request.validate(AdminUserUpdateValidator)
+    user.merge(payload.user)
+    await user.save()
 
-        if (user.social) {
-          await SocialService.update(user.social.id, payload.social)
-        } else {
-          const social = await SocialService.store(payload.social)
-          user.related('social').save(social)
-        }
-      }
-      if (payload.user.roleId) {
-        user.roleId = +payload.user.roleId
-      }
+    await user.related('notifications').create({
+      data: { message: 'behnchod' },
+    })
 
-      if (payload.image) {
-        user.avatar = await ResponsiveAttachment.fromFile(payload.image)
+    if (payload.address) {
+      await user.load('address')
+      if (user.address) {
+        await user.address.delete()
+        await user.related('address').create(payload.address)
+      } else {
+        await user.related('address').create(payload.address)
       }
+    }
+    if (payload.social) {
+      await user.load('social')
+      console.log(payload.social)
+
+      if (user.social) {
+        await user.social.delete()
+      } else {
+        const social = await Social.create(payload.social)
+        user.related('social').save(social)
+      }
+    }
+    if (payload.user.roleId) {
+      user.roleId = +payload.user.roleId
+    }
+
+    if (payload.image) {
+      user.avatar = await ResponsiveAttachment.fromFile(payload.image)
     }
 
     await user?.save()
 
     return response.json(user)
-  }
-
-  public async destroy({ params, response, bouncer }: HttpContextContract) {
-    await bouncer.with('AdminUserPolicy').authorize('delete')
-    await AdminUserService.destroy(+params.id)
-
-    return response.json({ message: 'User Deleted' })
   }
 
   public async banUser({ params, response, bouncer }: HttpContextContract) {
@@ -136,17 +115,8 @@ export default class AdminUsersController {
     const user = await AdminUser.find(+params.id)
     await user?.related('role').dissociate()
     if (role) await user?.related('role').associate(role)
-    return response.json({ message: 'Role Updates' })
-  }
 
-  public async uniqueField({ request, response }: HttpContextContract) {
-    const qs = request.qs() as any
-    const exist = await AdminUserService.uniqueField(qs)
-    if (exist) {
-      return response.badRequest({ message: 'Field is not unique' })
-    } else {
-      return response.ok({ message: 'Field available' })
-    }
+    return response.json({ message: 'Role Updates' })
   }
 
   public async updateUserPassword({ params, response, request, bouncer }: HttpContextContract) {

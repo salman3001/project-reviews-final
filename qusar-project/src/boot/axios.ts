@@ -10,10 +10,6 @@ declare module '@vue/runtime-core' {
 }
 
 const token = () => Cookies.get('token');
-const removeAll = () => {
-  Cookies.remove('token');
-  Cookies.remove('user');
-};
 
 // Be careful when using SSR for cross-request state pollution
 // due to creating a Singleton instance here;

@@ -38,7 +38,7 @@ export default class AdminUserUpdateValidator {
       phone: schema.string.optional({ trim: true }, [rules.minLength(8)]),
       desc: schema.string.optional(),
       isActive: schema.boolean.optional(),
-      roleId: schema.string.optional({ trim: true }),
+      roleId: schema.number.optional(),
     }),
     address: schema.object.optional().members({
       address: schema.string.optional({ trim: true }),

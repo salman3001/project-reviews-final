@@ -3,15 +3,11 @@ import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import ProductSubcategory from 'App/Models/product/ProductSubcategory'
 import CategoryCreateValidator from 'App/Validators/product/CategoryCreateValidator'
 import CategoryUpdateValidator from 'App/Validators/product/CategoryUpdateValidator'
-import ProductSubcategoryService from 'App/services/product/ProductSubcategoryService'
+import BaseController from '../BaseController'
 
-export default class ProductSubcategoriesController {
-  public async index({ request, response, bouncer }: HttpContextContract) {
-    await bouncer.with('ProductPolicy').authorize('viewList')
-
-    const qs = request.qs() as any
-    const records = await ProductSubcategoryService.index(qs)
-    return response.json(records)
+export default class ProductSubcategoriesController extends BaseController {
+  constructor() {
+    super(ProductSubcategory, {}, {}, 'ProductPolicy')
   }
 
   public async store({ request, response, bouncer }: HttpContextContract) {
@@ -34,14 +30,6 @@ export default class ProductSubcategoriesController {
     await category.save()
 
     return response.json({ message: 'record created', data: category })
-  }
-
-  public async show({ params, response, request, bouncer }: HttpContextContract) {
-    await bouncer.with('ProductPolicy').authorize('view')
-
-    const qs = request.qs() as any
-    const record = await ProductSubcategoryService.show(+params.id, qs)
-    response.json(record)
   }
 
   public async update({ request, response, params, bouncer }: HttpContextContract) {
@@ -81,12 +69,5 @@ export default class ProductSubcategoriesController {
     await category.save()
 
     return response.json({ message: 'record created', data: category })
-  }
-
-  public async destroy({ params, response, bouncer }: HttpContextContract) {
-    await bouncer.with('ProductPolicy').authorize('delete')
-
-    await ProductSubcategoryService.destroy(+params.id)
-    return response.json({ message: 'record deleted' })
   }
 }

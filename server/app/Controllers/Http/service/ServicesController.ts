@@ -5,17 +5,12 @@ import Image from 'App/Models/Image'
 import Service from 'App/Models/service/Service'
 import ServiceCreateValidator from 'App/Validators/service/ServiceCreateValidator'
 import ServiceUpdateValidator from 'App/Validators/service/ServiceUpdateValidator'
-import ImageService from 'App/services/ImageService'
-import VideoService from 'App/services/VideoService'
-import ServiceService from 'App/services/service/ServiceService'
+import BaseController from '../BaseController'
+import Video from 'App/Models/Video'
 
-export default class ServicesController {
-  public async index({ request, response, bouncer }: HttpContextContract) {
-    await bouncer.with('ServicePolicy').authorize('viewList')
-
-    const qs = request.qs() as any
-    const records = await ServiceService.index(qs)
-    return response.json(records)
+export default class ServicesController extends BaseController {
+  constructor() {
+    super(Service, {}, {}, 'ServicePolicy')
   }
 
   public async store({ request, response, bouncer }: HttpContextContract) {
@@ -56,7 +51,7 @@ export default class ServicesController {
       const images = await Promise.all(
         payload.images.map(async (img) => {
           try {
-            const storeImg = await ImageService.store(img)
+            const storeImg = await Image.create({ file: await ResponsiveAttachment.fromFile(img) })
             return storeImg
           } catch (error) {
             console.error('Error storing image:', error)
@@ -74,21 +69,13 @@ export default class ServicesController {
     }
 
     if (payload.video) {
-      const video = await VideoService.store(payload.video)
-      service.related('video').save(video)
+      const video = await Video.create({ file: Attachment.fromFile(payload.video) })
+      await service.related('video').save(video)
     }
 
     await service.save()
 
     return response.json({ message: 'record created', data: service })
-  }
-
-  public async show({ params, response, request, bouncer }: HttpContextContract) {
-    await bouncer.with('ServicePolicy').authorize('view')
-
-    const qs = request.qs() as any
-    const record = await ServiceService.show(+params.id, qs)
-    response.json(record)
   }
 
   public async update({ request, response, params, bouncer }: HttpContextContract) {
@@ -161,7 +148,7 @@ export default class ServicesController {
       const images = await Promise.all(
         payload.images.map(async (img) => {
           try {
-            const storeImg = await ImageService.store(img)
+            const storeImg = await Image.create({ file: await ResponsiveAttachment.fromFile(img) })
             return storeImg
           } catch (error) {
             console.error('Error storing image:', error)
@@ -179,10 +166,10 @@ export default class ServicesController {
     if (payload.video) {
       await service.load('video')
       if (service.video) {
-        await VideoService.destroy(service.video.id)
+        await service.video.delete()
       }
-      const video = await VideoService.store(payload.video)
-      service.related('video').save(video)
+      const video = await Video.create({ file: Attachment.fromFile(payload.video) })
+      await service.related('video').save(video)
     }
 
     await service.save()
@@ -200,22 +187,22 @@ export default class ServicesController {
     if (service.screenshots) {
       await Promise.all(
         service.screenshots.map(async (img) => {
-          await ImageService.destroy(img.id)
+          await img.delete()
         })
       )
     }
 
     if (service.video) {
-      await VideoService.destroy(service.video.id)
+      await service.video.delete()
     }
 
-    await ServiceService.destroy(+params.id)
+    await service.delete()
     return response.json({ message: 'record deleted' })
   }
 
   public async deleteScreenShot({ params, response, bouncer }: HttpContextContract) {
     await bouncer.with('ServicePolicy').authorize('delete')
-    const image = await ImageService.destroy(+params.id)
+    const image = await Image.findOrFail(+params.id)
     return response.json({ message: 'Screeshot deleted', image })
   }
 }
