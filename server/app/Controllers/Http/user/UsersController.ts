@@ -156,7 +156,6 @@ export default class UsersController extends BaseController {
 
   public async banUser({ params, response, bouncer }: HttpContextContract) {
     await bouncer.with('userPolicy').authorize('delete')
-
     const user = await User.findOrFail(+params.id)
     user.isActive = false
     await user.save()
