@@ -16,6 +16,7 @@ import StreetEditModal from './address/StreetEditModal.vue';
 import StreetAddModal from './address/StreetAddModal.vue';
 import AddRoleModal from './AddRoleModal.vue';
 import DeleteNotificationModal from './DeleteNotificationModal.vue';
+import ChangeSupportTicketStatus from './ChangeSupportTicketStatus.vue';
 
 const modal = modalStore();
 </script>
@@ -38,6 +39,7 @@ const modal = modalStore();
     <AddRoleModal v-if="modal.content === 'addRole'" />
     <BanUser v-if="modal.content === 'changeUserStatus'" />
     <DeleteNotificationModal v-if="modal.content === 'deleteNotification'" />
+    <ChangeSupportTicketStatus v-if="modal.content === 'changeSupportTicketStatus'" />
     <!-- <ModalContactMessage v-if="modal.content === 'contactMessage'" />
     <ModalAddressContinentAdd v-if="modal.content === 'addContinent'" />
     <ModalAddressContinentEdit v-if="modal.content === 'editContinent'" />

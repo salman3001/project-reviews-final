@@ -8,7 +8,13 @@ export default class extends BaseSchema {
     this.schema.createTable(this.tableName, (table) => {
       table.increments('id').primary()
       table.string('subject').notNullable()
-      table.integer('user_id').unsigned().references('id').inTable('users').onDelete('SET NULL')
+      table
+        .integer('user_id')
+        .unsigned()
+        .references('id')
+        .inTable('users')
+        .onDelete('CASCADE')
+        .notNullable()
 
       table.enum('status', Object.values(TicketStatus)).defaultTo('Open').notNullable()
 

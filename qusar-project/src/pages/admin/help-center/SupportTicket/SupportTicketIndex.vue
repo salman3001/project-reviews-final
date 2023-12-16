@@ -3,11 +3,13 @@ import { QTableProps, date } from 'quasar';
 import { useGetTableData } from 'src/composables/useGetTableData';
 import { AdditionalParams } from 'src/type';
 import { exportCSV } from 'src/utils/exportCSV';
-import { computed, reactive } from 'vue';
+import { reactive } from 'vue';
 import modalStore from 'src/stores/modalStore';
+import { useRouter } from 'vue-router';
 
 const modal = modalStore();
 const { formatDate } = date
+const router = useRouter();
 
 const filter = reactive<AdditionalParams>({
   filter: {
@@ -15,14 +17,6 @@ const filter = reactive<AdditionalParams>({
   },
 });
 
-const status = computed({
-  get() {
-    return filter.filter.status;
-  },
-  set(newValue) {
-    filter.filter.status = newValue;
-  },
-});
 
 const { data, loading, onRequest, pagination, tableRef } = useGetTableData(
   '/help-center/support-ticket',
@@ -97,7 +91,7 @@ const colomns: QTableProps['columns'] = [
         /> -->
 
         <div class="row q-gutter-sm">
-          <q-select outlined dense options-dense emit-value map-options v-model="status" :options="[
+          <q-select outlined dense options-dense emit-value map-options v-model="filter.filter.status" :options="[
             { label: 'All', value: null },
             { label: 'Open', value: 'Open' },
             { label: 'Closed', value: 'Closed' },
@@ -113,6 +107,10 @@ const colomns: QTableProps['columns'] = [
               </q-item>
             </q-list>
           </q-btn-dropdown>
+          <q-btn color="primary" @click="() => {
+            router.push({ name: 'admin.supportTicket.create' });
+          }
+            ">+ Add Ticket</q-btn>
         </div>
       </div>
       <q-table ref="tableRef" flat bordered title="Suppor Tickets" :loading="loading" :rows="data" :columns="colomns"
@@ -131,40 +129,33 @@ const colomns: QTableProps['columns'] = [
             <div class="">
               <q-btn-dropdown size="sm" color="primary" label="Options">
                 <q-list dense>
-                  <!-- <q-item
-                    clickable
-                    v-close-popup
-                    @click="
-                      () => {
-                        router.push({
-                          name: 'admin.knowlegebase.content.show',
-                          params: { id: props.row.id },
-                        });
-                      }
-                    "
-                  >
+
+                  <q-item clickable v-close-popup @click="
+                    modal.togel('changeSupportTicketStatus', {
+                      id: props.row.id,
+                      status: props.row.status,
+                      tableRef,
+                      title: 'Change Ticket Status?',
+                    })
+                    ">
                     <q-item-section>
                       <q-item-label>
-                        <q-icon name="visibility" /> View
-                      </q-item-label>
+                        <q-icon name="published_with_changes" /> Change Status</q-item-label>
                     </q-item-section>
                   </q-item>
-                  <q-item
-                    clickable
-                    v-close-popup
-                    @click="
-                      () => {
-                        router.push({
-                          name: 'admin.knowlegebase.content.edit',
-                          params: { id: props.row.id },
-                        });
+                  <q-item clickable v-close-popup @click="() => {
+                    router.push({
+                      name: 'admin.supportTicket.chat', params: {
+                        id: props.row.id
                       }
-                    "
-                  >
+                    })
+                  }
+                    ">
                     <q-item-section>
-                      <q-item-label> <q-icon name="edit" /> Edit </q-item-label>
+                      <q-item-label>
+                        <q-icon name="chat" /> Open Chat</q-item-label>
                     </q-item-section>
-                  </q-item> -->
+                  </q-item>
                   <q-item clickable v-close-popup @click="
                     modal.togel('deleteRecord', {
                       url: '/help-center/support-ticket/' + props.row.id,

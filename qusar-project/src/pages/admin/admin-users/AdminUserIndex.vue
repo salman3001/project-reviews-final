@@ -8,10 +8,13 @@ import { exportCSV } from 'src/utils/exportCSV';
 import { computed, onMounted, reactive, ref } from 'vue';
 import modalStore from 'src/stores/modalStore';
 import { useRouter } from 'vue-router';
+import authStore from 'src/stores/authStroe';
+import { permissions } from 'src/utils/enums';
 
 const modal = modalStore();
 const router = useRouter();
 const uploads = ref('');
+const auth = authStore()
 
 const filter = reactive<AdditionalParams>({
   populate: {
@@ -194,7 +197,7 @@ onMounted(() => {
                         <q-icon name="visibility" /> View</q-item-label>
                     </q-item-section>
                   </q-item>
-                  <q-item clickable v-close-popup @click="
+                  <q-item v-if="auth.hasPermission(permissions.MANAGE_ROLES)" clickable v-close-popup @click="
                     modal.togel('changeRole', {
                       roles: roles,
                       id: props.row.id,
@@ -209,7 +212,7 @@ onMounted(() => {
                     </q-item-section>
                   </q-item>
 
-                  <q-item clickable v-close-popup @click="
+                  <q-item v-if="props.row?.role?.name != 'Super Admin'" clickable v-close-popup @click="
                     modal.togel('changeAdminStatus', {
                       id: props.row.id,
                       tableRef,
@@ -222,7 +225,7 @@ onMounted(() => {
                     </q-item-section>
                   </q-item>
 
-                  <q-item clickable v-close-popup @click="() => {
+                  <q-item v-if="props.row?.role?.name != 'Super Admin'" clickable v-close-popup @click="() => {
                     router.push({
                       name: 'admin.adminUsers.edit',
                       params: { id: props.row.id },
@@ -234,7 +237,7 @@ onMounted(() => {
                         <q-icon name="edit" /> Edit User</q-item-label>
                     </q-item-section>
                   </q-item>
-                  <q-item clickable v-close-popup @click="
+                  <q-item v-if="props.row?.role?.name != 'Super Admin'" clickable v-close-popup @click="
                     modal.togel('deleteRecord', {
                       url: '/admin-users/' + props.row.id,
                       tableRef,

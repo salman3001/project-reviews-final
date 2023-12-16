@@ -6,7 +6,7 @@ import SupportTicket from 'App/Models/helpcenter/SupportTicket'
 
 export default class SupportTicketPolicy extends BasePolicy {
   public async viewList(user: any) {
-    if (isAdmin(user) && (await hasPermission(user, permissions.MANAGE_TICKETS))) {
+    if (user) {
       return true
     } else {
       return false

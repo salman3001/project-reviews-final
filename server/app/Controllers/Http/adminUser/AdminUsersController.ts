@@ -14,30 +14,30 @@ export default class AdminUsersController extends BaseController {
     super(AdminUser, {}, {}, 'AdminUserPolicy')
   }
 
-  public async index() {
-    const user = await AdminUser.findBy('id', 1)
-    await user?.related('notifications').create({
-      data: { message: 'test notification for you lorem ispsd ksdj skjd  dskdj skd skdj sk ' },
-    })
+  // public async index() {
+  //   const user = await AdminUser.findBy('id', 1)
+  //   await user?.related('notifications').create({
+  //     data: { message: 'test notification for you lorem ispsd ksdj skjd  dskdj skd skdj sk ' },
+  //   })
 
-    await user?.related('notifications').create({
-      data: {
-        message: 'test notification for you lorem ispsd ksdj skjd  dskdj skd skdj sk ',
-      },
-    })
+  //   await user?.related('notifications').create({
+  //     data: {
+  //       message: 'test notification for you lorem ispsd ksdj skjd  dskdj skd skdj sk ',
+  //     },
+  //   })
 
-    await user?.related('notifications').create({
-      data: {
-        message: 'test notification for you lorem ispsd ksdj skjd  dskdj skd skdj sk ',
-      },
-    })
+  //   await user?.related('notifications').create({
+  //     data: {
+  //       message: 'test notification for you lorem ispsd ksdj skjd  dskdj skd skdj sk ',
+  //     },
+  //   })
 
-    await user?.related('notifications').create({
-      data: {
-        message: 'test notification for you lorem ispsd ksdj skjd  dskdj skd skdj sk ',
-      },
-    })
-  }
+  //   await user?.related('notifications').create({
+  //     data: {
+  //       message: 'test notification for you lorem ispsd ksdj skjd  dskdj skd skdj sk ',
+  //     },
+  //   })
+  // }
 
   public async store({ request, response, bouncer }: HttpContextContract) {
     await bouncer.with('AdminUserPolicy').authorize('create')
@@ -119,8 +119,8 @@ export default class AdminUsersController extends BaseController {
   }
 
   public async banUser({ params, response, bouncer }: HttpContextContract) {
+    const user = await AdminUser.findOrFail(+params.id)
     await bouncer.with('AdminUserPolicy').authorize('delete')
-    const user = await AdminUser.find(+params.id)
     if (user) {
       user.isActive = false
       await user.save()
@@ -131,7 +131,7 @@ export default class AdminUsersController extends BaseController {
   }
 
   public async changeRole({ params, response, request, bouncer }: HttpContextContract) {
-    await bouncer.with('AdminUserPolicy').authorize('delete')
+    await bouncer.with('RolePolicy').authorize('update')
     const roleId = request.input('roleId')
     const role = await Role.find(+roleId)
     console.log(roleId)
@@ -147,7 +147,7 @@ export default class AdminUsersController extends BaseController {
   public async updateUserPassword({ params, response, request, bouncer }: HttpContextContract) {
     const user = await AdminUser.findOrFail(+params.id)
 
-    await bouncer.with('AdminUserPolicy').authorize('update', user)
+    await bouncer.with('AdminUserPolicy').authorize('updatePassword', user)
 
     const validationSchema = schema.create({
       password: schema.string({ trim: true }, [rules.minLength(8)]),

@@ -14,3 +14,9 @@ export enum permissions {
   MANAGE_LOCATION = 'Manage Location',
   MANAGE_ROLES = 'Manage Roles',
 }
+
+export enum TicketStatus {
+  OPEN = 'Open',
+  CLOSED = 'Closed',
+  RESPONDED = 'Responded',
+}

@@ -20,7 +20,8 @@ type IModalContent =
   | 'addStreet'
   | 'editStreet'
   | 'addRole'
-  | 'deleteNotification';
+  | 'deleteNotification'
+  | 'changeSupportTicketStatus';
 
 const modalStore = defineStore('modal', () => {
   const show = ref(false);

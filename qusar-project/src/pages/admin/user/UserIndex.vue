@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { QTableProps, date } from 'quasar';
 import SearchInput from 'src/components/forms/SearchInput.vue';
-import { useGet } from 'src/composables/useGet';
 import { useGetTableData } from 'src/composables/useGetTableData';
 import { AdditionalParams } from 'src/type';
 import { exportCSV } from 'src/utils/exportCSV';

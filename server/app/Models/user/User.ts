@@ -24,6 +24,7 @@ import {
   responsiveAttachment,
 } from '@ioc:Adonis/Addons/ResponsiveAttachment'
 import Notifications from '../Notification'
+import SupportTicket from '../helpcenter/SupportTicket'
 
 export default class User extends BaseModel {
   @column({ isPrimary: true })
@@ -85,6 +86,9 @@ export default class User extends BaseModel {
 
   @hasMany(() => Notifications)
   public notifications: HasMany<typeof Notifications>
+
+  @hasMany(() => SupportTicket)
+  public supportTickets: HasMany<typeof SupportTicket>
 
   @manyToMany(() => Language, {
     pivotColumns: ['proficiency'],

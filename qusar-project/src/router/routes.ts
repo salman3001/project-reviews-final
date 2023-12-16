@@ -152,8 +152,27 @@ const routes: RouteRecordRaw[] = [
 
         path: 'help-center/support-ticket',
         component: () =>
-          import('pages/admin/help-center/SupportTicketIndex.vue'),
+          import(
+            'pages/admin/help-center/SupportTicket/SupportTicketIndex.vue'
+          ),
         name: 'admin.supportTicket.index',
+      },
+      {
+        beforeEnter: (to, from, next) => useAuth(to, from, next, 'admin'),
+
+        path: 'help-center/support-ticket/create',
+        component: () =>
+          import(
+            'pages/admin/help-center/SupportTicket/SupportTicketCreate.vue'
+          ),
+        name: 'admin.supportTicket.create',
+      },
+      {
+        beforeEnter: (to, from, next) => useAuth(to, from, next, 'admin'),
+        path: 'help-center/support-ticket/chat/:id',
+        component: () =>
+          import('pages/admin/help-center/SupportTicket/SupportChat.vue'),
+        name: 'admin.supportTicket.chat',
       },
       {
         beforeEnter: (to, from, next) => useAuth(to, from, next, 'admin'),
