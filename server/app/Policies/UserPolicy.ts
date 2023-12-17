@@ -6,7 +6,7 @@ import User from 'App/Models/user/User'
 
 export default class UserPolicy extends BasePolicy {
   public async viewList(user: any) {
-    if (isAdmin(user) && (await hasPermission(user, permissions.MANAGE_USER))) {
+    if (isAdmin(user)) {
       return true
     } else {
       return false

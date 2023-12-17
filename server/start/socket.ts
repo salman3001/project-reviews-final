@@ -12,7 +12,7 @@ const userSocketIo = Ws.io.of('/notifications/').use(wsAuth)
 const ticketChatIo = Ws.io.of('/ticket_chat/').use(wsAuth)
 
 ticketChatIo.on('connection', (socket) => {
-  const controller = new TicketChatController(socket)
+  const controller = new TicketChatController(socket, ticketChatIo)
   controller.execute()
 })
 

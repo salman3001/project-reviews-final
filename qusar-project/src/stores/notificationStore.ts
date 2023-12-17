@@ -10,6 +10,11 @@ const notificationStore = defineStore('notification', () => {
   const $q = useQuasar();
   const socket = ref<Socket | null>(null);
 
+  const playSound = () => {
+    const audio = new Audio('/audio/iphone_sound.mp3');
+    audio.play();
+  };
+
   const getMenuNotifications = async () => {
     notifcationApi.getMenuNotifications().then(({ data }) => {
       notifcations.value = (data.value as any)?.notifcations;
@@ -95,6 +100,7 @@ const notificationStore = defineStore('notification', () => {
             timeout: 5000,
             position: 'top',
           });
+          playSound();
         } else {
           notifcations.value.pop();
           notifcations.value.unshift(notification);
@@ -106,6 +112,7 @@ const notificationStore = defineStore('notification', () => {
             timeout: 5000,
             position: 'top',
           });
+          playSound();
         }
       });
     }

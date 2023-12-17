@@ -2,29 +2,25 @@ import { permissions } from 'App/Helpers/enums'
 import { hasPermission } from 'App/Helpers/permissionHelpers'
 import { isAdmin } from 'App/Helpers/permissionHelpers'
 import SupportTicket from 'App/Models/helpcenter/SupportTicket'
-import { Socket } from 'socket.io'
+import { Namespace, Socket } from 'socket.io'
 import { DefaultEventsMap } from 'socket.io/dist/typed-events'
 
 export default class TicketChatController {
-  constructor(private socket: Socket<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap, any>) {}
+  constructor(
+    private socket: Socket<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap, any>,
+    private io: Namespace<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap, any>
+  ) {}
   private ticket: null | SupportTicket = null
   private room: string | null = null
 
   public async execute() {
-    this.socket.on('join-chat', async (ticketId: number, cb: any) => {
-      cb({
-        status: 'ok',
-      })
+    this.socket.on('join-chat', async (ticketId: number) => {
+      this.room = await this.createChatRoom(ticketId)
+
       if (await this.isAllowed(this.socket.handshake.auth?.user)) {
-        this.room = await this.createChatRoom(ticketId)
-
-        this.room && this.socket.join(this.room!) && cb(`Joined toom ${this.room}`)
+        this.room && this.socket.join(this.room)
+        this.room && this.io.to(this.room).emit('room-joined', this.room)
       }
-    })
-
-    this.socket.on('chat-message', (message: string) => {
-      this.room && this.socket.to(this.room).emit(message)
-      console.log(message)
     })
   }
 
@@ -33,7 +29,7 @@ export default class TicketChatController {
 
     if (ticket) {
       this.ticket = ticket
-      return `ticket-room-${ticket.id}`
+      return `ticket-chat-${ticket.id}`
     } else {
       return null
     }
