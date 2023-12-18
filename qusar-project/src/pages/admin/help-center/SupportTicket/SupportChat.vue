@@ -83,7 +83,7 @@ onUpdated(() => {
           <div v-if="chatStore.messages?.data.length > 1" class="row justify-center full-width">
             <q-circular-progress v-if="chatStore.loadingMore" indeterminate size="20px" class="q-px-10" :thickness="1"
               color="grey-8" track-color="orange-2" style="min-width: 8rem" />
-            <q-btn v-else size="sm" color="secondary"
+            <q-btn v-else-if="chatStore.messages.data.length > 19" size="sm" color="secondary"
               @click="() => { chatStore.getMoreMessages(ticket?.id, page); y = -10000000000; page += 1 }">Load
               More</q-btn>
           </div>
