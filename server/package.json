@@ -6,7 +6,7 @@
     "dev": "node ace serve --watch",
     "build": "node ace build --production --ignore-ts-errors",
     "start": "node server.js",
-    "build:prod": "npm i && node ace build --production --ignore-ts-errors",
+    "build:prod": "npm cache clean --force && npm i && node ace build --production --ignore-ts-errors",
     "start:prod": "cd build && node ace migration:run --force && node ace db:seed  && npm ci --production && node server.js",
     "test": "node ace test",
     "lint": "eslint . --ext=.ts",
