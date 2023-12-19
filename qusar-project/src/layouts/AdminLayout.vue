@@ -2,6 +2,7 @@
 import { ref } from 'vue';
 import SearchInput from 'components/forms/SearchInput.vue';
 import BrandLogo from 'components/BrandLogo.vue';
+import AdminSideMenu from 'components/admin/AdminSideMenu.vue';
 import NotificationMenu from 'components/NotificationMenu.vue';
 import ProfileMenu from 'components/ProfileMenu.vue';
 import NavMenu from 'components/NavMenu.vue';
@@ -241,11 +242,28 @@ const auth = authStore()
               </q-item-section>
             </q-item>
           </NavMenu>
+          <NavMenu title="Media" v-if="auth.hasPermission(permissions.MANAGE_MEDIA)">
+            <q-item clickable v-close-popup>
+              <q-item-section>
+                <router-link :to="{
+                  name: 'admin.media.images',
+                }" class="text-black" style="text-decoration: none">Images</router-link>
+              </q-item-section>
+            </q-item>
+            <q-item clickable v-close-popup>
+              <q-item-section>
+                <router-link :to="{
+                  name: 'admin.media.videos',
+                }" class="text-black" style="text-decoration: none">Videos</router-link>
+              </q-item-section>
+            </q-item>
+          </NavMenu>
         </div>
       </q-toolbar>
     </q-header>
 
     <q-drawer :behavior="'mobile'" v-model="leftDrawerOpen" show-if-above bordered>
+      <AdminSideMenu />
     </q-drawer>
 
     <q-page-container>

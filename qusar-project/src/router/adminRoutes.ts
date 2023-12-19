@@ -1,31 +1,7 @@
 import { useAuth } from 'src/composables/useAuth';
 import { RouteRecordRaw } from 'vue-router';
 
-const routes: RouteRecordRaw[] = [
-  {
-    path: '/',
-    component: () => import('layouts/WebLayout.vue'),
-    children: [
-      {
-        path: '',
-        component: () => import('pages/IndexPage.vue'),
-        name: 'home',
-      },
-    ],
-  },
-
-  //auth routes
-  {
-    path: '/admin-login',
-    component: () => import('pages/auth/AdminLogin.vue'),
-    name: 'adminLogin',
-  },
-  {
-    path: '/admin-forgot-password',
-    component: () => import('pages/auth/AdminForgotPassword.vue'),
-    name: 'admin.forgotPassword',
-  },
-
+const adminRoutes: RouteRecordRaw[] = [
   //admin routes
   {
     beforeEnter: (to, from, next) => useAuth(to, from, next, 'admin'),
@@ -660,15 +636,21 @@ const routes: RouteRecordRaw[] = [
         component: () => import('pages/admin/NoificationIndex.vue'),
         name: 'admin.notification.index',
       },
+      {
+        beforeEnter: (to, from, next) => useAuth(to, from, next, 'admin'),
+        path: 'media/images',
+        component: () =>
+          import('pages/admin/media/images/MediaImagesIndex.vue'),
+        name: 'admin.media.images',
+      },
+      {
+        beforeEnter: (to, from, next) => useAuth(to, from, next, 'admin'),
+        path: 'media/videos',
+        component: () => import('pages/admin/media/videos/MediaVideoIndex.vue'),
+        name: 'admin.media.videos',
+      },
     ],
-  },
-
-  // Always leave this as last one,
-  // but you can also remove it
-  {
-    path: '/:catchAll(.*)*',
-    component: () => import('pages/ErrorNotFound.vue'),
   },
 ];
 
-export default routes;
+export default adminRoutes;

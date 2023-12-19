@@ -38,6 +38,7 @@ Route.get('api', async ({ response }) => {
 
 Route.group(() => {
   Route.resource('language', 'LanguageController')
+  Route.resource('media', 'MediaController')
 }).prefix('api')
 
 Route.get('/email', ({ view }) => {

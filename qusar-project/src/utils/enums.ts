@@ -13,10 +13,16 @@ export enum permissions {
   MANAGE_USER = 'Manage Users',
   MANAGE_LOCATION = 'Manage Location',
   MANAGE_ROLES = 'Manage Roles',
+  MANAGE_MEDIA = 'Manage Media',
 }
 
 export enum TicketStatus {
   OPEN = 'Open',
   CLOSED = 'Closed',
   RESPONDED = 'Responded',
+}
+
+export enum MediaTypes {
+  VIDEO = 'Video',
+  IMAGE = 'Image',
 }

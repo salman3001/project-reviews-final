@@ -24,8 +24,14 @@ export enum permissions {
   MANAGE_USER = 'Manage Users',
   MANAGE_LOCATION = 'Manage Location',
   MANAGE_ROLES = 'Manage Roles',
+  MANAGE_MEDIA = 'Manage Media',
 }
 
 export enum NotificationTypes {
   NEW_SUPPORT_TICKET = 'new-support-ticket',
+}
+
+export enum MediaTypes {
+  VIDEO = 'Video',
+  IMAGE = 'Image',
 }

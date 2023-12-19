@@ -67,6 +67,8 @@ export const activityLogApi = new BaseApiClass(
   'Activity Log'
 );
 
+export const mediaApi = new BaseApiClass('/media', 'Media');
+
 export * from 'src/utils/api/UserApi';
 export * from 'src/utils/api/AdminUserApi';
 export * from 'src/utils/api/productApi';
