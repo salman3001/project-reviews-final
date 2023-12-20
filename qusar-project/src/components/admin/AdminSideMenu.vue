@@ -134,14 +134,14 @@ defineEmits(['close'])
         </div>
         <q-list dense style="font-size: 20px;font-weight: 400;" class="">
           <q-item clickable v-close-popup>
-            <q-item-section>
+            <q-item-section style="text-align: end;">
               <router-link :to="{
                 name: 'admin.blogs.index',
               }" class="text-black" style="text-decoration: none">Blog Posts</router-link>
             </q-item-section>
           </q-item>
           <q-item clickable v-close-popup>
-            <q-item-section>
+            <q-item-section style="text-align: end;">
               <router-link :to="{
                 name: 'admin.blogs.category.index',
               }" class="text-black" style="text-decoration: none">Blog Categories</router-link>
@@ -160,35 +160,35 @@ defineEmits(['close'])
         </div>
         <q-list dense style="font-size: 20px;font-weight: 400;" class="">
           <q-item clickable v-close-popup>
-            <q-item-section>
+            <q-item-section style="text-align: end;">
               <router-link :to="{
                 name: 'admin.location.continent.index',
               }" class="text-black" style="text-decoration: none">Continents</router-link>
             </q-item-section>
           </q-item>
           <q-item clickable v-close-popup>
-            <q-item-section>
+            <q-item-section style="text-align: end;">
               <router-link :to="{
                 name: 'admin.location.country.index',
               }" class="text-black" style="text-decoration: none">Countries</router-link>
             </q-item-section>
           </q-item>
           <q-item clickable v-close-popup>
-            <q-item-section>
+            <q-item-section style="text-align: end;">
               <router-link :to="{
                 name: 'admin.location.state.index',
               }" class="text-black" style="text-decoration: none">States</router-link>
             </q-item-section>
           </q-item>
           <q-item clickable v-close-popup>
-            <q-item-section>
+            <q-item-section style="text-align: end;">
               <router-link :to="{
                 name: 'admin.location.city.index',
               }" class="text-black" style="text-decoration: none">Cities</router-link>
             </q-item-section>
           </q-item>
           <q-item clickable v-close-popup>
-            <q-item-section>
+            <q-item-section style="text-align: end;">
               <router-link :to="{
                 name: 'admin.location.street.index',
               }" class="text-black" style="text-decoration: none">Street</router-link>
@@ -207,28 +207,28 @@ defineEmits(['close'])
         </div>
         <q-list dense style="font-size: 20px;font-weight: 400;" class="">
           <q-item clickable v-close-popup>
-            <q-item-section>
+            <q-item-section style="text-align: end;">
               <router-link :to="{
                 name: 'admin.product.index',
               }" class="text-black" style="text-decoration: none">Product List</router-link>
             </q-item-section>
           </q-item>
           <q-item clickable v-close-popup>
-            <q-item-section>
+            <q-item-section style="text-align: end;">
               <router-link :to="{
                 name: 'admin.productCategory.index',
               }" class="text-black" style="text-decoration: none">Product Category</router-link>
             </q-item-section>
           </q-item>
           <q-item clickable v-close-popup>
-            <q-item-section>
+            <q-item-section style="text-align: end;">
               <router-link :to="{
                 name: 'admin.productSubcategory.index',
               }" class="text-black" style="text-decoration: none">Product Subcategory</router-link>
             </q-item-section>
           </q-item>
           <q-item clickable v-close-popup>
-            <q-item-section>
+            <q-item-section style="text-align: end;">
               <router-link :to="{
                 name: 'admin.productTag.index',
               }" class="text-black" style="text-decoration: none">Product Tags</router-link>
@@ -246,28 +246,28 @@ defineEmits(['close'])
         </div>
         <q-list dense style="font-size: 20px;font-weight: 400;" class="">
           <q-item clickable v-close-popup>
-            <q-item-section>
+            <q-item-section style="text-align: end;">
               <router-link :to="{
                 name: 'admin.service.index',
               }" class="text-black" style="text-decoration: none">Service List</router-link>
             </q-item-section>
           </q-item>
           <q-item clickable v-close-popup>
-            <q-item-section>
+            <q-item-section style="text-align: end;">
               <router-link :to="{
                 name: 'admin.serviceCategory.index',
               }" class="text-black" style="text-decoration: none">Service Category</router-link>
             </q-item-section>
           </q-item>
           <q-item clickable v-close-popup>
-            <q-item-section>
+            <q-item-section style="text-align: end;">
               <router-link :to="{
                 name: 'admin.serviceSubcategory.index',
               }" class="text-black" style="text-decoration: none">Service Subcategory</router-link>
             </q-item-section>
           </q-item>
           <q-item clickable v-close-popup>
-            <q-item-section>
+            <q-item-section style="text-align: end;">
               <router-link :to="{
                 name: 'admin.serviceTag.index',
               }" class="text-black" style="text-decoration: none">Service Tags</router-link>
@@ -286,21 +286,21 @@ defineEmits(['close'])
         </div>
         <q-list dense style="font-size: 20px;font-weight: 400;" class="">
           <q-item clickable v-close-popup v-if="auth.hasPermission(permissions.MANAGE_SUBSCRIBERS)">
-            <q-item-section>
+            <q-item-section style="text-align: end;">
               <router-link :to="{
                 name: 'admin.subscriber.index',
               }" class="text-black" style="text-decoration: none">Subscribers</router-link>
             </q-item-section>
           </q-item>
           <q-item clickable v-close-popup v-if="auth.hasPermission(permissions.MANAGE_TEMPLATES)">
-            <q-item-section>
+            <q-item-section style="text-align: end;">
               <router-link :to="{
                 name: 'admin.template.index',
               }" class="text-black" style="text-decoration: none">Templates</router-link>
             </q-item-section>
           </q-item>
           <q-item clickable v-close-popup v-if="auth.hasPermission(permissions.MANAGE_CAMPAIGNS)">
-            <q-item-section>
+            <q-item-section style="text-align: end;">
               <router-link :to="{
                 name: 'admin.campaign.index',
               }" class="text-black" style="text-decoration: none">Campaigns</router-link>
@@ -319,14 +319,14 @@ defineEmits(['close'])
         </div>
         <q-list dense style="font-size: 20px;font-weight: 400;" class="">
           <q-item clickable v-close-popup>
-            <q-item-section>
+            <q-item-section style="text-align: end;">
               <router-link :to="{
                 name: 'admin.media.images',
               }" class="text-black" style="text-decoration: none">Images</router-link>
             </q-item-section>
           </q-item>
           <q-item clickable v-close-popup>
-            <q-item-section>
+            <q-item-section style="text-align: end;">
               <router-link :to="{
                 name: 'admin.media.videos',
               }" class="text-black" style="text-decoration: none">Videos</router-link>
