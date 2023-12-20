@@ -8,6 +8,7 @@ import { schema, rules } from '@ioc:Adonis/Core/Validator'
 import BaseController from '../BaseController'
 import Address from 'App/Models/address/Address'
 import Social from 'App/Models/Social'
+import { utils, write } from 'xlsx'
 
 export default class AdminUsersController extends BaseController {
   constructor() {
@@ -161,5 +162,26 @@ export default class AdminUsersController extends BaseController {
     user.password = payload.password
     await user.save()
     return response.json({ message: 'Password Changed' })
+  }
+
+  public async export({ params, response, request, bouncer }: HttpContextContract) {
+    // await bouncer.with('AdminUserPolicy').authorize('viewList')
+    const users = await AdminUser.all()
+    const data = users.map((user) => user.serialize())
+
+    // Create a new workbook
+    const workbook = utils.book_new()
+
+    // Convert the data array to a worksheet
+    const worksheet = utils.json_to_sheet(data)
+
+    // Add the worksheet to the workbook
+    utils.book_append_sheet(workbook, worksheet, 'Admin Users')
+
+    // Write the workbook to an Excel file
+    // XLSX.writeFile(workbook, 'output.xlsx')
+
+    console.log(workbook.Sheets['Admin Users'])
+    return response.json({ message: 'ok' })
   }
 }
