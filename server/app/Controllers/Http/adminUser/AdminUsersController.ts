@@ -8,7 +8,12 @@ import { schema, rules } from '@ioc:Adonis/Core/Validator'
 import BaseController from '../BaseController'
 import Address from 'App/Models/address/Address'
 import Social from 'App/Models/Social'
-import { utils, write } from 'xlsx'
+import * as XLSX from 'xlsx'
+import Application from '@ioc:Adonis/Core/Application'
+import { flattenObject } from 'App/Helpers/flattenObject'
+import Drive from '@ioc:Adonis/Core/Drive'
+import { extname } from 'path'
+import { Readable } from 'stream'
 
 export default class AdminUsersController extends BaseController {
   constructor() {
@@ -164,24 +169,67 @@ export default class AdminUsersController extends BaseController {
     return response.json({ message: 'Password Changed' })
   }
 
-  public async export({ params, response, request, bouncer }: HttpContextContract) {
-    // await bouncer.with('AdminUserPolicy').authorize('viewList')
-    const users = await AdminUser.all()
-    const data = users.map((user) => user.serialize())
+  public async export({ response, bouncer }: HttpContextContract) {
+    await bouncer.with('AdminUserPolicy').authorize('viewList')
 
-    // Create a new workbook
-    const workbook = utils.book_new()
+    const users = await AdminUser.query()
+      .select(
+        'id',
+        'first_name',
+        'last_name',
+        'email',
+        'password',
+        'phone',
+        'desc',
+        'is_active',
+        'role_id'
+      )
+      .preload('address', (a) => {
+        a.select('address', 'continent_id', 'country_id', 'state_id', 'city_id', 'street_id', 'zip')
+      })
+      .preload('social', (s) => {
+        s.select('vk', 'website', 'facebook', 'twitter', 'instagram', 'linkedin')
+      })
+      .exec()
 
-    // Convert the data array to a worksheet
-    const worksheet = utils.json_to_sheet(data)
+    const data = users.map((user) => {
+      const {
+        social,
+        address,
+        'social.admin_user_id': SID,
+        'address.admin_user_id': AID,
+        ...rest
+      } = flattenObject(user.serialize())
 
-    // Add the worksheet to the workbook
-    utils.book_append_sheet(workbook, worksheet, 'Admin Users')
+      return {
+        ...rest,
+        password: '',
+      }
+    })
 
-    // Write the workbook to an Excel file
-    // XLSX.writeFile(workbook, 'output.xlsx')
+    const workbook = XLSX.utils.book_new()
 
-    console.log(workbook.Sheets['Admin Users'])
-    return response.json({ message: 'ok' })
+    const worksheet = XLSX.utils.json_to_sheet(data)
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Admin Users')
+    XLSX.writeFile(workbook, Application.tmpPath('uploads/admin_users.xlsx'), {
+      bookType: 'xlsx',
+      type: 'file',
+    })
+
+    const url = await Drive.getSignedUrl('admin_users.xlsx', { expiresIn: '30mins' })
+
+    return response.json({ url })
+  }
+
+  public async import({ response, bouncer, request }: HttpContextContract) {
+    await bouncer.with('AdminUserPolicy').authorize('create')
+
+    const file = request.file('file')
+    if (file) {
+      const json = XLSX.utils.sheet_to_json(file)
+      console.log(json)
+    }
+
+    return response.json({ ok: 'k' })
   }
 }
