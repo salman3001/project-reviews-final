@@ -57,12 +57,8 @@ export default class BaseController {
 
     if (qs.sortBy) {
       if (qs.descending === 'true') {
-        console.log('des')
-
         query.orderBy(qs.sortBy, 'desc')
-      } else if (qs.descending === false) {
-        console.log('esc')
-
+      } else if (qs.descending === 'false') {
         query.orderBy(qs.sortBy, 'asc')
       }
     }

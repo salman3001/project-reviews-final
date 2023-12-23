@@ -2,19 +2,21 @@
 import { QTableProps } from 'quasar';
 import SearchInput from 'src/components/forms/SearchInput.vue';
 import { useGet } from 'src/composables/useGet';
-import { useGetTableData } from 'src/composables/useGetTableData';
 import { AdditionalParams } from 'src/type';
-import { computed, onMounted, reactive, ref } from 'vue';
+import { onMounted, reactive, ref } from 'vue';
 import modalStore from 'src/stores/modalStore';
 import { useRouter } from 'vue-router';
 import authStore from 'src/stores/authStroe';
 import { permissions } from 'src/utils/enums';
 import ExportExcel from 'src/components/ExportExcel.vue';
 import ImportExcel from 'src/components/ImportExcel.vue';
+import { onTableRequest } from 'src/utils/onTableRequest'
+import { AdminUserApi } from 'src/utils/BaseApiService';
 
 const modal = modalStore();
 const router = useRouter();
 const uploads = ref('');
+
 const auth = authStore()
 
 const filter = reactive<AdditionalParams>({
@@ -31,23 +33,6 @@ const filter = reactive<AdditionalParams>({
   },
 });
 
-const roleId = computed({
-  get() {
-    return filter.filter.roleId;
-  },
-  set(newValue) {
-    filter.filter.roleId = newValue;
-  },
-});
-
-const status = computed({
-  get() {
-    return filter.filter.is_active;
-  },
-  set(newValue) {
-    filter.filter.is_active = newValue;
-  },
-});
 
 const {
   data: roles,
@@ -55,26 +40,33 @@ const {
   trigger: getRoles,
 } = useGet('roles', {});
 
-const { data, loading, onRequest, pagination, tableRef } = useGetTableData(
-  'admin-users',
-  {
-    populate: {
-      role: {
-        fields: ['*'],
-        populate: {
-          AdminUser: {
-            fields: ['*'],
-            populate: {
-              role: {
-                fields: ['*'],
-              },
+const tableRef = ref();
+
+const pagination = ref({
+  sortBy: 'id',
+  descending: false,
+  page: 1,
+  rowsPerPage: 10,
+  rowsNumber: 10,
+});
+
+const { onRequest, loading, rows } = onTableRequest(AdminUserApi, pagination, {
+  populate: {
+    role: {
+      fields: ['*'],
+      populate: {
+        AdminUser: {
+          fields: ['*'],
+          populate: {
+            role: {
+              fields: ['*'],
             },
           },
         },
       },
     },
   }
-);
+})
 
 const colomns: QTableProps['columns'] = [
   { name: 'id', field: 'id', label: 'ID', align: 'left' },
@@ -84,12 +76,15 @@ const colomns: QTableProps['columns'] = [
     label: 'Name',
     align: 'left',
     sortable: true,
+
   },
   {
     name: 'email',
     field: 'email',
     label: 'Email',
     align: 'left',
+    sortable: true,
+
   },
   {
     name: 'role',
@@ -112,12 +107,9 @@ const colomns: QTableProps['columns'] = [
   },
 ];
 
-const srt = (s) => {
-  console.log(s);
-
-}
 onMounted(() => {
   getRoles();
+  tableRef.value && tableRef.value.requestServerInteraction();
   uploads.value = process.env.UPLOAD as string;
 });
 </script>
@@ -135,11 +127,12 @@ onMounted(() => {
           " />
 
         <div class="row q-gutter-sm">
-          <q-select v-model="roleId" v-if="!rolesLoading" dense options-dense emit-value map-options outlined :options="[{ label: 'All', value: null }, ...roles.map((r: any) => ({
-            label: r.name,
-            value: r.id,
-          }))]" label="Role" class="col-auto" style="min-width: 8rem" />
-          <q-select outlined dense options-dense emit-value map-options v-model="status" :options="[
+          <q-select v-model="filter.filter!.roleId" v-if="!rolesLoading" dense options-dense emit-value map-options
+            outlined :options="[{ label: 'All', value: null }, ...roles.map((r: any) => ({
+              label: r.name,
+              value: r.id,
+            }))]" label="Role" class="col-auto" style="min-width: 8rem" />
+          <q-select outlined dense options-dense emit-value map-options v-model="filter.filter!.is_active" :options="[
             { label: 'All', value: null },
             { label: 'Active', value: 1 },
             { label: 'Inactive', value: 0 },
@@ -152,7 +145,8 @@ onMounted(() => {
             ">+ Add User</q-btn>
         </div>
       </div>
-      <q-table ref="tableRef" flat bordered title="Admin Users" :loading="loading" :rows="data" :columns="colomns"
+      <!-- <MyQTable :colomns="colomns" :url="'admin-users'" /> -->
+      <q-table ref="tableRef" flat bordered title="Admin Users" :loading="loading" :rows="rows" :columns="colomns"
         class="zebra-table" v-model:pagination="pagination" :filter="filter" @request="onRequest" row-key="id">
         <template v-slot:body-cell-first_name="props">
           <q-td :props="props" class="row q-gutter-x-xs items-center" style="flex-wrap: nowrap;">

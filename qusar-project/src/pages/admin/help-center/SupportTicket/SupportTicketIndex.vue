@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import { QTableProps, date } from 'quasar';
-import { useGetTableData } from 'src/composables/useGetTableData';
 import { AdditionalParams } from 'src/type';
-import { exportCSV } from 'src/utils/exportCSV';
-import { reactive } from 'vue';
+import { onMounted, reactive, ref } from 'vue';
 import modalStore from 'src/stores/modalStore';
 import { useRouter } from 'vue-router';
+import { onTableRequest } from 'src/utils/onTableRequest';
+import { SupportTickeApi } from 'src/utils/BaseApiService';
 
 const modal = modalStore();
 const { formatDate } = date
@@ -17,17 +17,24 @@ const filter = reactive<AdditionalParams>({
   },
 });
 
+const tableRef = ref();
 
-const { data, loading, onRequest, pagination, tableRef } = useGetTableData(
-  '/help-center/support-ticket',
-  {
-    populate: {
-      user: {
-        fields: ['first_name', 'last_name'],
-      },
+const pagination = ref({
+  sortBy: 'id',
+  descending: false,
+  page: 1,
+  rowsPerPage: 10,
+  rowsNumber: 10,
+});
+
+
+const { onRequest, loading, rows } = onTableRequest(SupportTickeApi, pagination, {
+  populate: {
+    user: {
+      fields: ['first_name', 'last_name'],
     },
-  }
-);
+  },
+})
 
 const colomns: QTableProps['columns'] = [
   { name: 'id', field: 'id', label: 'ID', align: 'left' },
@@ -50,14 +57,15 @@ const colomns: QTableProps['columns'] = [
     field: 'status',
     label: 'Status',
     align: 'center',
+    sortable: true
   },
   {
     name: 'created_at',
     field: (row: any) => formatDate(row?.created_at, 'DD-MM-YYYY HH:mm'),
     label: 'Date',
     align: 'center',
-    style: 'min-width:150px'
-
+    style: 'min-width:150px',
+    sortable: true
   },
   {
     name: 'updated_at',
@@ -74,6 +82,10 @@ const colomns: QTableProps['columns'] = [
     align: 'center',
   },
 ];
+
+onMounted(() => {
+  tableRef.value && tableRef.value.requestServerInteraction();
+})
 </script>
 
 <template>
@@ -91,7 +103,7 @@ const colomns: QTableProps['columns'] = [
         /> -->
 
         <div class="row q-gutter-sm">
-          <q-select outlined dense options-dense emit-value map-options v-model="filter.filter.status" :options="[
+          <q-select outlined dense options-dense emit-value map-options v-model="filter.filter!.status" :options="[
             { label: 'All', value: null },
             { label: 'Open', value: 'Open' },
             { label: 'Closed', value: 'Closed' },
@@ -104,7 +116,7 @@ const colomns: QTableProps['columns'] = [
             ">+ Add Ticket</q-btn>
         </div>
       </div>
-      <q-table ref="tableRef" flat bordered title="Suppor Tickets" :loading="loading" :rows="data" :columns="colomns"
+      <q-table ref="tableRef" flat bordered title="Suppor Tickets" :loading="loading" :rows="rows" :columns="colomns"
         class="zebra-table" v-model:pagination="pagination" :filter="filter" @request="onRequest" row-key="id" wrap-cells>
         <template v-slot:body-cell-status="props">
           <q-td :props="props">

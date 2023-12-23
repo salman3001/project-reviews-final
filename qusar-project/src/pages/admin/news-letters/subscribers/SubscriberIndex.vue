@@ -1,15 +1,14 @@
 <script setup lang="ts">
 import { QTableProps, date } from 'quasar';
 import SearchInput from 'src/components/forms/SearchInput.vue';
-import { useGetTableData } from 'src/composables/useGetTableData';
 import { AdditionalParams } from 'src/type';
-import { exportCSV } from 'src/utils/exportCSV';
 import { onMounted, reactive, ref } from 'vue';
 import modalStore from 'src/stores/modalStore';
 import { useRouter } from 'vue-router';
-import { interestApi } from 'src/utils/BaseApiService';
+import { interestApi, subscriberApi } from 'src/utils/BaseApiService';
 import ImportExcel from 'src/components/ImportExcel.vue';
 import ExportExcel from 'src/components/ExportExcel.vue';
+import { onTableRequest } from 'src/utils/onTableRequest';
 
 const modal = modalStore();
 const router = useRouter();
@@ -41,16 +40,30 @@ interestApi.index({
   interest.value = data.value
 })
 
-const { data, loading, onRequest, pagination, tableRef } = useGetTableData(
-  'subscriber',
-  {
-    populate: {
-      interests: {
-        fields: ['name'],
-      },
+const tableRef = ref();
+
+const pagination = ref({
+  sortBy: 'id',
+  descending: false,
+  page: 1,
+  rowsPerPage: 10,
+  rowsNumber: 10,
+});
+
+
+const { onRequest, loading, rows } = onTableRequest(subscriberApi, pagination, {
+  populate: {
+    interests: {
+      fields: ['name'],
     },
-  }
-);
+  },
+})
+
+onMounted(() => {
+  uploads.value = process.env.UPLOAD as string;
+  tableRef.value && tableRef.value.requestServerInteraction();
+});
+
 
 const colomns: QTableProps['columns'] = [
   { name: 'id', field: 'id', label: 'ID', align: 'left' },
@@ -77,7 +90,8 @@ const colomns: QTableProps['columns'] = [
     name: 'created_at',
     field: (row: any) => formatDate(row?.created_at, 'DD-MM-YYYY'),
     label: 'Subscribed Date',
-    align: 'center'
+    align: 'center',
+    sortable: true
   },
   {
     name: 'dob',
@@ -106,9 +120,6 @@ const colomns: QTableProps['columns'] = [
   },
 ];
 
-onMounted(() => {
-  uploads.value = process.env.UPLOAD as string;
-});
 </script>
 
 <template>
@@ -123,12 +134,12 @@ onMounted(() => {
         }
           " />
         <div class="row q-gutter-sm">
-          <q-select v-model="filter.relationFilter.interests.value" v-if="interest" dense options-dense emit-value
+          <q-select v-model="filter.relationFilter!.interests.value" v-if="interest" dense options-dense emit-value
             map-options outlined :options="[{ label: 'All', value: null }, ...interest.map((r: any) => ({
               label: r.name,
               value: r.id,
             }))]" label="Intrests" class="col-auto" style="min-width: 8rem" />
-          <q-select outlined dense options-dense emit-value map-options v-model="filter.filter.status" :options="[
+          <q-select outlined dense options-dense emit-value map-options v-model="filter.filter!.status" :options="[
             { label: 'All', value: null },
             { label: 'Active', value: 1 },
             { label: 'Inactive', value: 0 },
@@ -141,7 +152,7 @@ onMounted(() => {
             ">+ Add Subscriber</q-btn>
         </div>
       </div>
-      <q-table ref="tableRef" flat bordered title="Subscribers" :loading="loading" :rows="data" :columns="colomns"
+      <q-table ref="tableRef" flat bordered title="Subscribers" :loading="loading" :rows="rows" :columns="colomns"
         class="zebra-table" v-model:pagination="pagination" :filter="filter" @request="onRequest" row-key="id">
         <template v-slot:body-cell-interests="props">
           <q-td :props="props">

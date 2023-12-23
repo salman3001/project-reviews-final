@@ -1,15 +1,14 @@
 <script setup lang="ts">
 import { QTableProps, date } from 'quasar';
 import SearchInput from 'src/components/forms/SearchInput.vue';
-import { useGetTableData } from 'src/composables/useGetTableData';
 import { AdditionalParams } from 'src/type';
-import { exportCSV } from 'src/utils/exportCSV';
 import { onMounted, reactive, ref } from 'vue';
 import modalStore from 'src/stores/modalStore';
 import { useRouter } from 'vue-router';
-import { CountriesApi } from 'src/utils/BaseApiService';
+import { CountriesApi, userApi } from 'src/utils/BaseApiService';
 import ImportExcel from 'src/components/ImportExcel.vue';
 import ExportExcel from 'src/components/ExportExcel.vue';
+import { onTableRequest } from 'src/utils/onTableRequest';
 
 const modal = modalStore();
 const router = useRouter();
@@ -47,21 +46,34 @@ CountriesApi.index({
   countries.value = data.value
 })
 
-const { data, loading, onRequest, pagination, tableRef } = useGetTableData(
-  'users',
-  {
-    populate: {
-      address: {
-        fields: ['country_id'],
-        populate: {
-          country: {
-            fields: ['name']
-          }
+const tableRef = ref();
+
+const pagination = ref({
+  sortBy: 'id',
+  descending: false,
+  page: 1,
+  rowsPerPage: 10,
+  rowsNumber: 10,
+});
+
+const { onRequest, loading, rows } = onTableRequest(userApi, pagination, {
+  populate: {
+    address: {
+      fields: ['country_id'],
+      populate: {
+        country: {
+          fields: ['name']
         }
-      },
+      }
     },
-  }
-);
+  },
+})
+
+onMounted(() => {
+  uploads.value = process.env.UPLOAD as string;
+  tableRef.value && tableRef.value.requestServerInteraction();
+});
+
 
 const colomns: QTableProps['columns'] = [
   { name: 'id', field: 'id', label: 'ID', align: 'left' },
@@ -89,7 +101,9 @@ const colomns: QTableProps['columns'] = [
     name: 'created_at',
     field: (row: any) => formatDate(row?.created_at, 'DD-MM-YYYY'),
     label: 'Joined',
-    align: 'center'
+    align: 'center',
+    sortable: true,
+
   },
   {
     name: 'is_active',
@@ -105,9 +119,6 @@ const colomns: QTableProps['columns'] = [
   },
 ];
 
-onMounted(() => {
-  uploads.value = process.env.UPLOAD as string;
-});
 </script>
 
 <template>
@@ -123,12 +134,12 @@ onMounted(() => {
           " />
 
         <div class="row q-gutter-sm">
-          <q-select v-model="filter.relationFilter.address.filter.country.value" v-if="countries" dense options-dense
+          <q-select v-model="filter.relationFilter!.address.filter!.country.value" v-if="countries" dense options-dense
             emit-value map-options outlined :options="[{ label: 'All', value: null }, ...countries.map((r: any) => ({
               label: r.name,
               value: r.id,
             }))]" label="Country" class="col-auto" style="min-width: 8rem" />
-          <q-select outlined dense options-dense emit-value map-options v-model="filter.filter.is_active" :options="[
+          <q-select outlined dense options-dense emit-value map-options v-model="filter.filter!.is_active" :options="[
             { label: 'All', value: null },
             { label: 'Active', value: 1 },
             { label: 'Inactive', value: 0 },
@@ -141,7 +152,7 @@ onMounted(() => {
             ">+ Add User</q-btn>
         </div>
       </div>
-      <q-table ref="tableRef" flat bordered title="Users" :loading="loading" :rows="data" :columns="colomns"
+      <q-table ref="tableRef" flat bordered title="Users" :loading="loading" :rows="rows" :columns="colomns"
         class="zebra-table" v-model:pagination="pagination" :filter="filter" @request="onRequest" row-key="id">
         <template v-slot:body-cell-first_name="props">
           <q-td :props="props" class="row q-gutter-x-xs items-center" style="flex-wrap: nowrap;">

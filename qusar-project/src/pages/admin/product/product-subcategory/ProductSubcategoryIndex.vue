@@ -1,14 +1,14 @@
 <script setup lang="ts">
-import { QTableProps, date } from 'quasar';
+import { QTableProps } from 'quasar';
 import SearchInput from 'src/components/forms/SearchInput.vue';
-import { useGetTableData } from 'src/composables/useGetTableData';
 import { AdditionalParams } from 'src/type';
-import { exportCSV } from 'src/utils/exportCSV';
 import { onMounted, reactive, ref } from 'vue';
 import modalStore from 'src/stores/modalStore';
 import { useRouter } from 'vue-router';
 import ImportExcel from 'src/components/ImportExcel.vue';
 import ExportExcel from 'src/components/ExportExcel.vue';
+import { onTableRequest } from 'src/utils/onTableRequest';
+import { productSubCategoryApi } from 'src/utils/BaseApiService';
 
 const modal = modalStore();
 const router = useRouter()
@@ -25,9 +25,29 @@ const filter = reactive<AdditionalParams>({
 });
 
 
-const { data, loading, onRequest, pagination, tableRef } = useGetTableData(
-  'product-subcategory',
-);
+const tableRef = ref();
+
+const pagination = ref({
+  sortBy: 'id',
+  descending: false,
+  page: 1,
+  rowsPerPage: 10,
+  rowsNumber: 10,
+});
+
+
+const { onRequest, loading, rows } = onTableRequest(productSubCategoryApi, pagination, {
+  populate: {
+    subCategory: {
+      fields: ['name', 'id'],
+    },
+  },
+})
+
+onMounted(() => {
+  uploads.value = process.env.UPLOAD as string;
+  tableRef.value && tableRef.value.requestServerInteraction();
+});
 
 
 const colomns: QTableProps['columns'] = [
@@ -53,9 +73,6 @@ const colomns: QTableProps['columns'] = [
   },
 ];
 
-onMounted(() => {
-  uploads.value = process.env.UPLOAD as string;
-});
 </script>
 
 <template>
@@ -69,7 +86,7 @@ onMounted(() => {
         }
           " />
         <div class="row q-gutter-sm">
-          <q-select outlined dense options-dense emit-value map-options v-model="filter.filter.status" :options="[
+          <q-select outlined dense options-dense emit-value map-options v-model="filter.filter!.status" :options="[
             { label: 'All', value: null },
             { label: 'Active', value: 1 },
             { label: 'Inactive', value: 0 },
@@ -85,7 +102,7 @@ onMounted(() => {
         </div>
       </div>
 
-      <q-table ref="tableRef" flat bordered title="Products Subcategories" :loading="loading" :rows="data"
+      <q-table ref="tableRef" flat bordered title="Products Subcategories" :loading="loading" :rows="rows"
         :columns="colomns" class="zebra-table" v-model:pagination="pagination" :filter="filter" @request="onRequest"
         row-key="id">
         <template v-slot:body-cell-name="props">

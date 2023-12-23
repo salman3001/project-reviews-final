@@ -1,15 +1,14 @@
 <script setup lang="ts">
 import { QTableProps, date } from 'quasar';
 import SearchInput from 'src/components/forms/SearchInput.vue';
-import { useGetTableData } from 'src/composables/useGetTableData';
 import { AdditionalParams } from 'src/type';
-import { exportCSV } from 'src/utils/exportCSV';
 import { onMounted, reactive, ref } from 'vue';
 import modalStore from 'src/stores/modalStore';
-import { serviceCategoryApi, serviceSubCategoryApi } from 'src/utils/BaseApiService';
+import { serviceApi, serviceCategoryApi, serviceSubCategoryApi } from 'src/utils/BaseApiService';
 import { useRouter } from 'vue-router';
 import ImportExcel from 'src/components/ImportExcel.vue';
 import ExportExcel from 'src/components/ExportExcel.vue';
+import { onTableRequest } from 'src/utils/onTableRequest';
 
 const modal = modalStore();
 const { formatDate } = date
@@ -36,20 +35,33 @@ const filter = reactive<AdditionalParams>({
   },
 });
 
+const tableRef = ref();
 
-const { data, loading, onRequest, pagination, tableRef } = useGetTableData(
-  'service',
-  {
-    populate: {
-      serviceCategory: {
-        fields: ['name', 'id'],
-      },
-      serviceSubcategory: {
-        fields: ['name', 'id'],
-      },
+const pagination = ref({
+  sortBy: 'id',
+  descending: false,
+  page: 1,
+  rowsPerPage: 10,
+  rowsNumber: 10,
+});
+
+
+const { onRequest, loading, rows } = onTableRequest(serviceApi, pagination, {
+  populate: {
+    serviceCategory: {
+      fields: ['name', 'id'],
     },
-  }
-);
+    serviceSubcategory: {
+      fields: ['name', 'id'],
+    },
+  },
+})
+
+onMounted(() => {
+  uploads.value = process.env.UPLOAD as string;
+  tableRef.value && tableRef.value.requestServerInteraction();
+});
+
 
 const serviceCategories = ref<null | any[]>(null)
 const { } = serviceCategoryApi.index({
@@ -100,7 +112,8 @@ const colomns: QTableProps['columns'] = [
     field: (row: any) => formatDate(row?.created_at, 'DD-MM-YYYY HH:mm'),
     label: 'Listed',
     align: 'center',
-    style: 'min-width:150px'
+    style: 'min-width:150px',
+    sortable: true
 
   },
   {
@@ -117,9 +130,6 @@ const colomns: QTableProps['columns'] = [
   },
 ];
 
-onMounted(() => {
-  uploads.value = process.env.UPLOAD as string;
-});
 </script>
 
 <template>
@@ -134,7 +144,7 @@ onMounted(() => {
           " />
         <div class="row q-gutter-sm">
           <q-select v-if="serviceCategories" outlined dense options-dense emit-value map-options
-            v-model="filter.relationFilter.serviceCategory.value" :options="[
+            v-model="filter.relationFilter!.serviceCategory.value" :options="[
               { label: 'All', value: null },
               ...serviceCategories.map((c) => ({
                 label: c?.name,
@@ -142,14 +152,14 @@ onMounted(() => {
               })),
             ]" label="Category" class="col-auto" style="min-width: 8rem" />
           <q-select v-if="serviceSubcategories" outlined dense options-dense emit-value map-options
-            v-model="filter.relationFilter.serviceSubcategory.value" :options="[
+            v-model="filter.relationFilter!.serviceSubcategory.value" :options="[
               { label: 'All', value: null },
               ...serviceSubcategories.map((c) => ({
                 label: c?.name,
                 value: c?.id,
               })),
             ]" label="Subcategory" class="col-auto" style="min-width: 8rem" />
-          <q-select outlined dense options-dense emit-value map-options v-model="filter.filter.status" :options="[
+          <q-select outlined dense options-dense emit-value map-options v-model="filter.filter!.status" :options="[
             { label: 'All', value: null },
             { label: 'Active', value: 1 },
             { label: 'Inactive', value: 0 },
@@ -165,7 +175,7 @@ onMounted(() => {
         </div>
       </div>
 
-      <q-table ref="tableRef" flat bordered title="Services" :loading="loading" :rows="data" :columns="colomns"
+      <q-table ref="tableRef" flat bordered title="Services" :loading="loading" :rows="rows" :columns="colomns"
         class="zebra-table" v-model:pagination="pagination" :filter="filter" @request="onRequest" row-key="id">
         <template v-slot:body-cell-name="props">
           <q-td :props="props" class="row q-gutter-x-xs items-center">

@@ -1,14 +1,13 @@
 <script setup lang="ts">
 import { QTableProps } from 'quasar';
 import SearchInput from 'src/components/forms/SearchInput.vue';
-import { useGetTableData } from 'src/composables/useGetTableData';
 import { AdditionalParams } from 'src/type';
-import { exportCSV } from 'src/utils/exportCSV';
-import { reactive, ref } from 'vue';
+import { onMounted, reactive, ref } from 'vue';
 import modalStore from 'src/stores/modalStore';
-import { ContinentsApi } from 'src/utils/BaseApiService';
+import { ContinentsApi, CountriesApi } from 'src/utils/BaseApiService';
 import ImportExcel from 'src/components/ImportExcel.vue';
 import ExportExcel from 'src/components/ExportExcel.vue';
+import { onTableRequest } from 'src/utils/onTableRequest';
 
 const modal = modalStore();
 
@@ -34,16 +33,25 @@ ContinentsApi.index({
   continents.value = data.value;
 });
 
-const { data, loading, onRequest, pagination, tableRef } = useGetTableData(
-  'address/countries',
-  {
-    populate: {
-      continent: {
-        fields: ['name', 'id'],
-      },
+const tableRef = ref();
+
+const pagination = ref({
+  sortBy: 'id',
+  descending: false,
+  page: 1,
+  rowsPerPage: 10,
+  rowsNumber: 10,
+});
+
+
+const { onRequest, loading, rows } = onTableRequest(CountriesApi, pagination, {
+  populate: {
+    continent: {
+      fields: ['name', 'id'],
     },
-  }
-);
+  },
+})
+
 
 const colomns: QTableProps['columns'] = [
   { name: 'id', field: 'id', label: 'ID', align: 'left' },
@@ -74,6 +82,10 @@ const colomns: QTableProps['columns'] = [
     align: 'center',
   },
 ];
+
+onMounted(() => {
+  tableRef.value && tableRef.value.requestServerInteraction();
+});
 </script>
 
 <template>
@@ -88,14 +100,14 @@ const colomns: QTableProps['columns'] = [
           " />
         <div class="row q-gutter-sm">
           <q-select v-if="continents" outlined dense options-dense emit-value map-options
-            v-model="filter.relationFilter.continent.value" :options="[
+            v-model="filter.relationFilter!.continent.value" :options="[
               { label: 'All', value: null },
               ...continents.map((c) => ({
                 label: c?.name,
                 value: c?.id,
               })),
             ]" label="Continent" class="col-auto" style="min-width: 8rem" />
-          <q-select outlined dense options-dense emit-value map-options v-model="filter.filter.is_active" :options="[
+          <q-select outlined dense options-dense emit-value map-options v-model="filter.filter!.is_active" :options="[
             { label: 'All', value: null },
             { label: 'Active', value: 1 },
             { label: 'Inactive', value: 0 },
@@ -109,7 +121,7 @@ const colomns: QTableProps['columns'] = [
         </div>
       </div>
 
-      <q-table ref="tableRef" flat bordered title="Countries" :loading="loading" :rows="data" :columns="colomns"
+      <q-table ref="tableRef" flat bordered title="Countries" :loading="loading" :rows="rows" :columns="colomns"
         class="zebra-table" v-model:pagination="pagination" :filter="filter" @request="onRequest" row-key="id">
         <template v-slot:body-cell-is_active="props">
           <q-td :props="props">

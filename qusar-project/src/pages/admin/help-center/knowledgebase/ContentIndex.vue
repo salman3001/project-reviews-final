@@ -1,18 +1,18 @@
 <script setup lang="ts">
 import { QTableProps } from 'quasar';
 import SearchInput from 'src/components/forms/SearchInput.vue';
-import { useGetTableData } from 'src/composables/useGetTableData';
 import { AdditionalParams } from 'src/type';
-import { exportCSV } from 'src/utils/exportCSV';
-import { computed, onMounted, reactive, ref } from 'vue';
+import { onMounted, reactive, ref } from 'vue';
 import modalStore from 'src/stores/modalStore';
 import { useRouter } from 'vue-router';
 import {
   KnowledgebaseCategoryApi,
+  KnowledgebaseContentApi,
   LanguageApi,
 } from 'src/utils/BaseApiService';
 import ImportExcel from 'src/components/ImportExcel.vue';
 import ExportExcel from 'src/components/ExportExcel.vue';
+import { onTableRequest } from 'src/utils/onTableRequest';
 
 const modal = modalStore();
 const router = useRouter();
@@ -34,68 +34,41 @@ const filter = reactive<AdditionalParams>({
   },
 });
 
-const search = computed({
-  get() {
-    return filter.search.title;
-  },
-  set(newValue) {
-    filter.search.title = newValue;
-  },
+const tableRef = ref();
+
+const pagination = ref({
+  sortBy: 'id',
+  descending: false,
+  page: 1,
+  rowsPerPage: 10,
+  rowsNumber: 10,
 });
 
-const status = computed({
-  get() {
-    return filter.filter.is_active;
-  },
-  set(newValue) {
-    filter.filter.is_active = newValue;
-  },
-});
 
-const categoryId = computed({
-  get() {
-    return filter.relationFilter.category.value;
-  },
-  set(newValue) {
-    filter.relationFilter.category.value = newValue;
-  },
-});
-
-const lanugageId = computed({
-  get() {
-    return filter.filter.language_id;
-  },
-  set(newValue) {
-    filter.filter.language_id = newValue;
-  },
-});
-
-const { data, loading, onRequest, pagination, tableRef } = useGetTableData(
-  '/help-center/content',
-  {
-    populate: {
-      category: {
-        fields: ['*'],
-      },
-      language: {
-        fields: ['*'],
-      },
+const { onRequest, loading, rows } = onTableRequest(KnowledgebaseContentApi, pagination, {
+  populate: {
+    category: {
+      fields: ['*'],
     },
-  }
-);
+    language: {
+      fields: ['*'],
+    },
+  },
+})
 
-const categories = ref(null);
+
+const categories = ref<any[]>([]);
 KnowledgebaseCategoryApi.index({
   fields: ['name', 'id'],
 }).then(({ data }) => {
-  categories.value = data.value;
+  categories.value = data.value as any;
 });
 
-const languages = ref(null);
+const languages = ref<any[]>([]);
 LanguageApi.index({
   fields: ['name', 'id'],
 }).then(({ data }) => {
-  languages.value = data.value;
+  languages.value = data.value as any;
 });
 
 const colomns: QTableProps['columns'] = [
@@ -105,7 +78,6 @@ const colomns: QTableProps['columns'] = [
     field: 'title',
     label: 'Title',
     align: 'left',
-    sortable: true,
     style: 'min-width:500px;',
   },
   {
@@ -133,6 +105,10 @@ const colomns: QTableProps['columns'] = [
     align: 'center',
   },
 ];
+
+onMounted(() => {
+  tableRef.value && tableRef.value.requestServerInteraction();
+})
 </script>
 
 <template>
@@ -146,15 +122,17 @@ const colomns: QTableProps['columns'] = [
           " />
 
         <div class="row q-gutter-sm">
-          <q-select v-model="categoryId" v-if="categories" dense options-dense emit-value map-options outlined :options="[{ label: 'All', value: '' }, ...categories.map((r: any) => ({
-            label: r.name,
-            value: r.id,
-          }))]" label="Categories" class="col-auto" style="min-width: 8rem" />
-          <q-select v-model="lanugageId" v-if="languages" dense options-dense emit-value map-options outlined :options="[{ label: 'All', value: null }, ...languages.map((r: any) => ({
-            label: r.name,
-            value: r.id,
-          }))]" label="Languages" class="col-auto" style="min-width: 8rem" />
-          <q-select outlined dense options-dense emit-value map-options v-model="status" :options="[
+          <q-select v-model="filter.relationFilter!.category.value" v-if="categories" dense options-dense emit-value
+            map-options outlined :options="[{ label: 'All', value: '' }, ...categories.map((r: any) => ({
+              label: r.name,
+              value: r.id,
+            }))]" label="Categories" class="col-auto" style="min-width: 8rem" />
+          <q-select v-model="filter.filter!.language_id" v-if="languages" dense options-dense emit-value map-options
+            outlined :options="[{ label: 'All', value: null }, ...languages.map((r: any) => ({
+              label: r.name,
+              value: r.id,
+            }))]" label="Languages" class="col-auto" style="min-width: 8rem" />
+          <q-select outlined dense options-dense emit-value map-options v-model="filter.filter!.is_active" :options="[
             { label: 'All', value: null },
             { label: 'Active', value: 1 },
             { label: 'Inactive', value: 0 },
@@ -167,7 +145,7 @@ const colomns: QTableProps['columns'] = [
             ">+ Add Content</q-btn>
         </div>
       </div>
-      <q-table ref="tableRef" flat bordered title="Content" :loading="loading" :rows="data" :columns="colomns"
+      <q-table ref="tableRef" flat bordered title="Content" :loading="loading" :rows="rows" :columns="colomns"
         class="zebra-table" v-model:pagination="pagination" :filter="filter" @request="onRequest" row-key="id" wrap-cells>
         <template v-slot:body-cell-is_active="props">
           <q-td :props="props">

@@ -1,17 +1,27 @@
 <script setup lang="ts">
 import { QTableProps, date } from 'quasar';
-import { useGetTableData } from 'src/composables/useGetTableData';
-import { exportCSV } from 'src/utils/exportCSV';
 import modalStore from 'src/stores/modalStore';
 import ExportExcel from 'src/components/ExportExcel.vue';
+import { ContactMessageApi } from 'src/utils/BaseApiService';
+import { onTableRequest } from 'src/utils/onTableRequest';
+import { onMounted, ref } from 'vue';
 
 const modal = modalStore();
 const { formatDate } = date
 
+const tableRef = ref();
 
-const { data, loading, onRequest, pagination, tableRef } = useGetTableData(
-  '/help-center/contact-message'
-);
+const pagination = ref({
+  sortBy: 'id',
+  descending: false,
+  page: 1,
+  rowsPerPage: 10,
+  rowsNumber: 10,
+});
+
+
+const { onRequest, loading, rows } = onTableRequest(ContactMessageApi, pagination,)
+
 
 const colomns: QTableProps['columns'] = [
   { name: 'id', field: 'id', label: 'ID', align: 'left' },
@@ -40,7 +50,8 @@ const colomns: QTableProps['columns'] = [
     field: (row: any) => formatDate(row?.created_at, 'DD-MM-YYYY HH:mm'),
     label: 'Date',
     align: 'center',
-    style: 'min-width:150px'
+    style: 'min-width:150px',
+    sortable: true
   },
   {
     name: 'option',
@@ -49,6 +60,10 @@ const colomns: QTableProps['columns'] = [
     align: 'center',
   },
 ];
+
+onMounted(() => {
+  tableRef.value && tableRef.value.requestServerInteraction();
+})
 </script>
 
 <template>
@@ -61,7 +76,7 @@ const colomns: QTableProps['columns'] = [
           <export-excel type="contact-message" />
         </div>
       </div>
-      <q-table ref="tableRef" flat bordered title="Contact Messages" :loading="loading" :rows="data" :columns="colomns"
+      <q-table ref="tableRef" flat bordered title="Contact Messages" :loading="loading" :rows="rows" :columns="colomns"
         class="zebra-table" v-model:pagination="pagination" @request="onRequest" row-key="id" wrap-cells>
         <template v-slot:body-cell-option="props">
           <q-td :props="props">
