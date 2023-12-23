@@ -1,5 +1,4 @@
 import {
-  BaseModel,
   LucidModel,
   LucidRow,
   ModelPaginatorContract,
@@ -7,6 +6,12 @@ import {
 } from '@ioc:Adonis/Lucid/Orm'
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import { PoliciesList } from '@ioc:Adonis/Addons/Bouncer'
+import { convertKeysToCamelCase } from 'App/Helpers/toCamelCase'
+import * as XLSX from 'xlsx'
+import Application from '@ioc:Adonis/Core/Application'
+import Drive from '@ioc:Adonis/Core/Drive'
+import { flatten, unflatten } from 'uni-flatten'
+import { schema, validator } from '@ioc:Adonis/Core/Validator'
 
 type Populate = Record<string, { fields: string[]; populate: Populate }>
 type Search = Record<string, string> | null
@@ -33,7 +38,8 @@ export default class BaseController {
     public storeValidator: any,
     public updateValidator: any,
     private bauncerPolicy?: keyof PoliciesList,
-    public perPage?: number
+    public perPage?: number,
+    public importSelects: string[] = []
   ) {}
 
   public async index({ request, response, bouncer }: HttpContextContract) {
@@ -48,9 +54,13 @@ export default class BaseController {
     }
 
     if (qs.sortBy) {
-      if (qs.descending === true) {
+      if (qs.descending === 'true') {
+        console.log('des')
+
         query.orderBy(qs.sortBy, 'desc')
       } else if (qs.descending === false) {
+        console.log('esc')
+
         query.orderBy(qs.sortBy, 'asc')
       }
     }
@@ -218,5 +228,70 @@ export default class BaseController {
         })
       }
     }
+  }
+
+  public async export({ response, bouncer }: HttpContextContract) {
+    this.bauncerPolicy && (await bouncer.with(this.bauncerPolicy).authorize('viewList'))
+
+    const records = await this.getExportRecords()
+
+    const data = records.map((r) => {
+      const data = flatten(convertKeysToCamelCase(r.serialize()))
+      return this.excludeIncludeExportProperties(data)
+    })
+
+    const workbook = XLSX.utils.book_new()
+
+    const worksheet = XLSX.utils.json_to_sheet(data)
+    XLSX.utils.book_append_sheet(workbook, worksheet, this.model.name)
+    XLSX.writeFile(workbook, Application.tmpPath(`uploads/${this.model.name}.xlsx`), {
+      bookType: 'xlsx',
+      type: 'file',
+    })
+
+    const url = await Drive.getSignedUrl(`${this.model.name}.xlsx`, { expiresIn: '30mins' })
+
+    return response.json({ url })
+  }
+
+  public async import({ response, bouncer, request }: HttpContextContract) {
+    this.bauncerPolicy && (await bouncer.with(this.bauncerPolicy).authorize('create'))
+    const validatorSchema = schema.create({
+      file: schema.file({ extnames: ['xlsx'] }),
+    })
+
+    const { file } = await request.validate({ schema: validatorSchema })
+
+    await file.moveToDisk('./', {
+      name: `${this.model.name}.xlsx`,
+    })
+
+    const book = XLSX.readFile(Application.tmpPath(`uploads/${this.model.name}.xlsx`))
+    const sheet = book.Sheets[this.model.name]
+    const json = XLSX.utils.sheet_to_json(sheet)
+
+    for (const j of json as any) {
+      const deflattenObject = unflatten(j)
+      await this.storeExcelData(deflattenObject, request.ctx as HttpContextContract)
+    }
+
+    return response.json({ message: 'File Uploaded. Refresh the page' })
+  }
+
+  public async getExportRecords() {
+    const records = await this.model.all()
+    return records
+  }
+
+  public async storeExcelData(data: any, ctx: HttpContextContract) {
+    const validatedData = await validator.validate({
+      schema: new this.updateValidator(ctx).schema,
+      data: data,
+    })
+    await this.model.updateOrCreate({ id: validatedData.id }, validatedData)
+  }
+
+  public excludeIncludeExportProperties(record: any) {
+    return record
   }
 }

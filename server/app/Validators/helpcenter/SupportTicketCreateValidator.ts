@@ -25,6 +25,7 @@ export default class SupportTicketCreateValidator {
    *    ```
    */
   public schema = schema.create({
+    id: schema.number.optional(),
     subject: schema.string(),
     status: schema.enum(Object.values(TicketStatus)),
     userId: schema.number(),

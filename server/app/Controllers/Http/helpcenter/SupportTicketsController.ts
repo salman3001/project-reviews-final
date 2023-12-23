@@ -6,11 +6,15 @@ import SupportTicketCreateValidator from 'App/Validators/helpcenter/SupportTicke
 import ChatMessage from 'App/Models/helpcenter/ChatMessage'
 import AdminUser from 'App/Models/adminUser/AdminUser'
 import User from 'App/Models/user/User'
-import Ws from 'App/services/Ws'
 
 export default class SupportTicketsController extends BaseController {
   constructor() {
-    super(SupportTicket, {}, {}, 'SupportTicketPolicy')
+    super(
+      SupportTicket,
+      SupportTicketCreateValidator,
+      SupportTicketCreateValidator,
+      'SupportTicketPolicy'
+    )
   }
 
   public async store({ request, response, bouncer }: HttpContextContract): Promise<void> {

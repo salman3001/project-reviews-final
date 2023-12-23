@@ -4,7 +4,6 @@ import SearchInput from 'src/components/forms/SearchInput.vue';
 import { useGet } from 'src/composables/useGet';
 import { useGetTableData } from 'src/composables/useGetTableData';
 import { AdditionalParams } from 'src/type';
-import { exportCSV } from 'src/utils/exportCSV';
 import { computed, onMounted, reactive, ref } from 'vue';
 import modalStore from 'src/stores/modalStore';
 import { useRouter } from 'vue-router';
@@ -113,6 +112,10 @@ const colomns: QTableProps['columns'] = [
   },
 ];
 
+const srt = (s) => {
+  console.log(s);
+
+}
 onMounted(() => {
   getRoles();
   uploads.value = process.env.UPLOAD as string;
@@ -141,8 +144,8 @@ onMounted(() => {
             { label: 'Active', value: 1 },
             { label: 'Inactive', value: 0 },
           ]" label="Status" class="col-auto" style="min-width: 8rem" />
-          <ImportExcel />
-          <ExportExcel />
+          <ImportExcel type="admin-users" />
+          <ExportExcel type="admin-users" />
           <q-btn color="primary" @click="() => {
             router.push({ name: 'admin.adminUsers.create' });
           }

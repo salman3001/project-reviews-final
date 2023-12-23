@@ -25,6 +25,7 @@ export default class CreateSubscriberValidator {
    */
   public schema = schema.create({
     subscriber: schema.object().members({
+      id: schema.number.optional(),
       first_name: schema.string({ trim: true }),
       last_name: schema.string({ trim: true }),
       email: schema.string({ trim: true }, [

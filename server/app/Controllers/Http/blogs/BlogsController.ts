@@ -61,4 +61,9 @@ export default class BlogsController extends BaseController {
     await blog.save()
     return response.json({ message: 'Blog Updated' })
   }
+
+  public excludeIncludeExportProperties(record: any) {
+    const { createdAt, updatedAt, ...rest } = record
+    return rest
+  }
 }

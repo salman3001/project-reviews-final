@@ -29,6 +29,7 @@ export default class AdminUserUpdateValidator {
       size: '2mb',
     }),
     user: schema.object().members({
+      id: schema.number.optional(),
       email: schema.string({ trim: true }, [
         rules.email(),
         rules.normalizeEmail({ allLowercase: true }),

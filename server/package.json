@@ -78,6 +78,7 @@
     "socket.io": "^4.7.2",
     "source-map-support": "^0.5.21",
     "sqlite3": "^5.1.6",
+    "uni-flatten": "^1.5.5",
     "uuid": "^9.0.1",
     "xlsx": "^0.18.5"
   }

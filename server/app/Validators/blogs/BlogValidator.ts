@@ -24,6 +24,8 @@ export default class BlogValidator {
    *    ```
    */
   public schema = schema.create({
+    id: schema.number.optional(),
+
     title: schema.string(),
     slug: schema.string.optional(),
     isPublished: schema.boolean.optional(),

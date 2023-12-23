@@ -7,7 +7,12 @@ import BaseController from '../BaseController'
 
 export default class ServiceCategoriesController extends BaseController {
   constructor() {
-    super(ServiceCategory, {}, {}, 'ServicePolicy')
+    super(
+      ServiceCategory,
+      ServiceCategoryCreateValidator,
+      ServiceCategoryUpdateValidator,
+      'ServicePolicy'
+    )
   }
 
   public async store({ request, response, bouncer }: HttpContextContract) {

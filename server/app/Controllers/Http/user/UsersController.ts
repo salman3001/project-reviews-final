@@ -8,7 +8,7 @@ import BaseController from '../BaseController'
 
 export default class UsersController extends BaseController {
   constructor() {
-    super(User, {}, {}, 'userPolicy')
+    super(User, UserCreateValidator, UserUpdateeValidator, 'userPolicy')
   }
 
   public async store({ request, response, bouncer }: HttpContextContract) {

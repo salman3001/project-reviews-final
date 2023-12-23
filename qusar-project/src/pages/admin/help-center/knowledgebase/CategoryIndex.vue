@@ -8,6 +8,8 @@ import { computed, reactive, ref } from 'vue';
 import modalStore from 'src/stores/modalStore';
 import { useRouter } from 'vue-router';
 import { LanguageApi } from 'src/utils/BaseApiService';
+import ImportExcel from 'src/components/ImportExcel.vue';
+import ExportExcel from 'src/components/ExportExcel.vue';
 
 const modal = modalStore();
 const router = useRouter();
@@ -103,9 +105,9 @@ const colomns: QTableProps['columns'] = [
     <div class="colomn q-gutter-y-lg" style="width: 100%">
       <div class="row justify-between q-gutter-y-sm">
         <SearchInput @search="(val) => {
-            //@ts-ignore
-            filter.search.name = val;
-          }
+          //@ts-ignore
+          filter.search.name = val;
+        }
           " />
 
         <div class="row q-gutter-sm">
@@ -118,19 +120,11 @@ const colomns: QTableProps['columns'] = [
             { label: 'Active', value: 1 },
             { label: 'Inactive', value: 0 },
           ]" label="Status" class="col-auto" style="min-width: 8rem" />
-          <q-btn-dropdown outline label="Export" style="border: 1px solid lightgray">
-            <q-list dense>
-              <q-item clickable v-close-popup @click="exportCSV(colomns, data)">
-                <q-item-section>
-                  <q-item-label>
-                    <q-icon name="receipt_long" /> Export CSV</q-item-label>
-                </q-item-section>
-              </q-item>
-            </q-list>
-          </q-btn-dropdown>
+          <ImportExcel type="helpcenter-category" />
+          <ExportExcel type="helpcenter-category" />
           <q-btn color="primary" @click="() => {
-              router.push({ name: 'admin.knowlegebase.category.create' });
-            }
+            router.push({ name: 'admin.knowlegebase.category.create' });
+          }
             ">+ Add Category</q-btn>
         </div>
       </div>
@@ -150,11 +144,11 @@ const colomns: QTableProps['columns'] = [
               <q-btn-dropdown size="sm" color="primary" label="Options">
                 <q-list dense>
                   <q-item clickable v-close-popup @click="() => {
-                      router.push({
-                        name: 'admin.knowlegebase.category.show',
-                        params: { id: props.row.id },
-                      });
-                    }
+                    router.push({
+                      name: 'admin.knowlegebase.category.show',
+                      params: { id: props.row.id },
+                    });
+                  }
                     ">
                     <q-item-section>
                       <q-item-label>
@@ -163,11 +157,11 @@ const colomns: QTableProps['columns'] = [
                     </q-item-section>
                   </q-item>
                   <q-item clickable v-close-popup @click="() => {
-                      router.push({
-                        name: 'admin.knowlegebase.category.edit',
-                        params: { id: props.row.id },
-                      });
-                    }
+                    router.push({
+                      name: 'admin.knowlegebase.category.edit',
+                      params: { id: props.row.id },
+                    });
+                  }
                     ">
                     <q-item-section>
                       <q-item-label> <q-icon name="edit" /> Edit </q-item-label>

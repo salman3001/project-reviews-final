@@ -10,7 +10,7 @@ import { Attachment } from '@ioc:Adonis/Addons/AttachmentLite'
 
 export default class ProductsController extends BaseController {
   constructor() {
-    super(Product, {}, {}, 'ProductPolicy')
+    super(Product, ProductCreateValidator, ProductUpdateValidator, 'ProductPolicy')
   }
 
   public async store({ request, response, bouncer }: HttpContextContract) {

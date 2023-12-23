@@ -3,6 +3,7 @@ import { QTableProps, date } from 'quasar';
 import { useGetTableData } from 'src/composables/useGetTableData';
 import { exportCSV } from 'src/utils/exportCSV';
 import modalStore from 'src/stores/modalStore';
+import ExportExcel from 'src/components/ExportExcel.vue';
 
 const modal = modalStore();
 const { formatDate } = date
@@ -57,16 +58,7 @@ const colomns: QTableProps['columns'] = [
         <div></div>
 
         <div class="row q-gutter-sm">
-          <q-btn-dropdown outline label="Export" style="border: 1px solid lightgray">
-            <q-list dense>
-              <q-item clickable v-close-popup @click="exportCSV(colomns, data)">
-                <q-item-section>
-                  <q-item-label>
-                    <q-icon name="receipt_long" /> Export CSV</q-item-label>
-                </q-item-section>
-              </q-item>
-            </q-list>
-          </q-btn-dropdown>
+          <export-excel type="contact-message" />
         </div>
       </div>
       <q-table ref="tableRef" flat bordered title="Contact Messages" :loading="loading" :rows="data" :columns="colomns"

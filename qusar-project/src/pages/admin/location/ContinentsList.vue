@@ -6,6 +6,8 @@ import { AdditionalParams } from 'src/type';
 import { exportCSV } from 'src/utils/exportCSV';
 import { reactive } from 'vue';
 import modalStore from 'src/stores/modalStore';
+import ImportExcel from 'src/components/ImportExcel.vue';
+import ExportExcel from 'src/components/ExportExcel.vue';
 
 const modal = modalStore();
 
@@ -61,16 +63,8 @@ const colomns: QTableProps['columns'] = [
             { label: 'Active', value: 1 },
             { label: 'Inactive', value: 0 },
           ]" label="Status" class="col-auto" style="min-width: 8rem" />
-          <q-btn-dropdown outline label="Export" style="border: 1px solid lightgray">
-            <q-list dense>
-              <q-item clickable v-close-popup @click="exportCSV(colomns, data)">
-                <q-item-section>
-                  <q-item-label>
-                    <q-icon name="receipt_long" /> Export CSV</q-item-label>
-                </q-item-section>
-              </q-item>
-            </q-list>
-          </q-btn-dropdown>
+          <ImportExcel type="continent" />
+          <ExportExcel type="continent" />
           <q-btn color="primary" @click="() => {
             modal.togel('addContinent', { tableRef });
           }

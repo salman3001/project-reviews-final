@@ -97,16 +97,7 @@ const colomns: QTableProps['columns'] = [
             { label: 'Closed', value: 'Closed' },
             { label: 'Responded', value: 'Responded' },
           ]" label="Status" class="col-auto" style="min-width: 8rem" />
-          <q-btn-dropdown outline label="Export" style="border: 1px solid lightgray">
-            <q-list dense>
-              <q-item clickable v-close-popup @click="exportCSV(colomns, data)">
-                <q-item-section>
-                  <q-item-label>
-                    <q-icon name="receipt_long" /> Export CSV</q-item-label>
-                </q-item-section>
-              </q-item>
-            </q-list>
-          </q-btn-dropdown>
+          <!-- exports -->
           <q-btn color="primary" @click="() => {
             router.push({ name: 'admin.supportTicket.create' });
           }

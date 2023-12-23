@@ -6,7 +6,12 @@ import KnowledgeBaseContent from 'App/Models/helpcenter/KnowledgeBaseContent'
 
 export default class KnowledgeBaseContentsController extends BaseController {
   constructor() {
-    super(KnowledgeBaseContent, {}, {}, 'KnowledgebasePolicy')
+    super(
+      KnowledgeBaseContent,
+      HelpcenterContentValidator,
+      HelpcenterContentValidator,
+      'KnowledgebasePolicy'
+    )
   }
 
   public async store({ request, response, bouncer }: HttpContextContract) {

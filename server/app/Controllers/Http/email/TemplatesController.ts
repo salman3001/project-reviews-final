@@ -6,7 +6,7 @@ import BaseController from '../BaseController'
 
 export default class TemplatesController extends BaseController {
   constructor() {
-    super(Template, {}, {}, 'TemplatePolicy')
+    super(Template, CreateTemplateValidator, CreateTemplateValidator, 'TemplatePolicy')
   }
 
   public async store({ request, response, bouncer }: HttpContextContract) {

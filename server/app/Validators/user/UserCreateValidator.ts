@@ -29,6 +29,7 @@ export default class UserCreateValidator {
       size: '2mb',
     }),
     user: schema.object().members({
+      id: schema.number.optional(),
       firstName: schema.string({ trim: true }),
       lastName: schema.string({ trim: true }),
       email: schema.string({ trim: true }, [

@@ -4,46 +4,16 @@ import AdminUserValidator from 'App/Validators/adminUser/AdminUserValidator'
 import AdminUserUpdateValidator from 'App/Validators/adminUser/AdminUserUpdateValidator'
 import Role from 'App/Models/adminUser/Role'
 import { ResponsiveAttachment } from '@ioc:Adonis/Addons/ResponsiveAttachment'
-import { schema, rules } from '@ioc:Adonis/Core/Validator'
+import { schema, rules, validator } from '@ioc:Adonis/Core/Validator'
 import BaseController from '../BaseController'
 import Address from 'App/Models/address/Address'
 import Social from 'App/Models/Social'
-import * as XLSX from 'xlsx'
-import Application from '@ioc:Adonis/Core/Application'
-import { flattenObject } from 'App/Helpers/flattenObject'
-import Drive from '@ioc:Adonis/Core/Drive'
-import { extname } from 'path'
-import { Readable } from 'stream'
+import { LucidRow } from '@ioc:Adonis/Lucid/Orm'
 
 export default class AdminUsersController extends BaseController {
   constructor() {
-    super(AdminUser, {}, {}, 'AdminUserPolicy')
+    super(AdminUser, {}, AdminUserUpdateValidator, 'AdminUserPolicy')
   }
-
-  // public async index() {
-  //   const user = await AdminUser.findBy('id', 1)
-  //   await user?.related('notifications').create({
-  //     data: { message: 'test notification for you lorem ispsd ksdj skjd  dskdj skd skdj sk ' },
-  //   })
-
-  //   await user?.related('notifications').create({
-  //     data: {
-  //       message: 'test notification for you lorem ispsd ksdj skjd  dskdj skd skdj sk ',
-  //     },
-  //   })
-
-  //   await user?.related('notifications').create({
-  //     data: {
-  //       message: 'test notification for you lorem ispsd ksdj skjd  dskdj skd skdj sk ',
-  //     },
-  //   })
-
-  //   await user?.related('notifications').create({
-  //     data: {
-  //       message: 'test notification for you lorem ispsd ksdj skjd  dskdj skd skdj sk ',
-  //     },
-  //   })
-  // }
 
   public async store({ request, response, bouncer }: HttpContextContract) {
     await bouncer.with('AdminUserPolicy').authorize('create')
@@ -169,10 +139,8 @@ export default class AdminUsersController extends BaseController {
     return response.json({ message: 'Password Changed' })
   }
 
-  public async export({ response, bouncer }: HttpContextContract) {
-    await bouncer.with('AdminUserPolicy').authorize('viewList')
-
-    const users = await AdminUser.query()
+  public async getExportRecords(): Promise<LucidRow[]> {
+    const records = await AdminUser.query()
       .select(
         'id',
         'first_name',
@@ -192,44 +160,54 @@ export default class AdminUsersController extends BaseController {
       })
       .exec()
 
-    const data = users.map((user) => {
-      const {
-        social,
-        address,
-        'social.admin_user_id': SID,
-        'address.admin_user_id': AID,
-        ...rest
-      } = flattenObject(user.serialize())
-
-      return {
-        ...rest,
-        password: '',
-      }
-    })
-
-    const workbook = XLSX.utils.book_new()
-
-    const worksheet = XLSX.utils.json_to_sheet(data)
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'Admin Users')
-    XLSX.writeFile(workbook, Application.tmpPath('uploads/admin_users.xlsx'), {
-      bookType: 'xlsx',
-      type: 'file',
-    })
-
-    const url = await Drive.getSignedUrl('admin_users.xlsx', { expiresIn: '30mins' })
-
-    return response.json({ url })
+    return records
   }
 
-  public async import({ response, bouncer, request }: HttpContextContract) {
-    await bouncer.with('AdminUserPolicy').authorize('create')
+  public async storeExcelData(data: any, ctx: HttpContextContract): Promise<void> {
+    const { address, social, ...rest } = data
 
-    const file = request.file('file')
-    if (file) {
-      const json = XLSX.utils.sheet_to_json(file)
-      console.log(json)
+    const validatedData = await validator.validate({
+      schema: new AdminUserUpdateValidator(ctx).schema,
+      data: {
+        user: rest,
+        address,
+        social,
+      },
+    })
+
+    const user = await AdminUser.updateOrCreate(
+      { email: validatedData.user.email },
+      validatedData.user
+    )
+    if (validatedData.address) {
+      await user.load('address')
+      if (user.address) {
+        user.address.merge(validatedData.address)
+        await user.address.save()
+      } else {
+        await user.related('address').create(validatedData.address)
+      }
     }
 
-    return response.json({ ok: 'k' })
+    if (validatedData.social) {
+      await user.load('social')
+      if (user.social) {
+        user.social.merge(validatedData.social)
+        await user.social.save()
+      } else {
+        await user.related('social').create(validatedData.social)
+      }
+    }
+  }
+
+  public excludeIncludeExportProperties(record: any) {
+    const {
+      'social.adminUserId': x,
+      'address.adminUserId': y,
+      'social': s,
+      'address': a,
+      ...rest
+    } = record
+    return { ...rest, password: '' }
   }
 }

@@ -34,7 +34,12 @@ export const useGetTableData = (
 
   const onRequest = async (props: RequestProps) => {
     const { descending, page, rowsPerPage, sortBy } = props.pagination;
+    console.log(descending);
+    console.log(sortBy);
+
     const filter = props.filter;
+    console.log(props.filter);
+
     try {
       loading.value = true;
       const res = await api.get(url, {

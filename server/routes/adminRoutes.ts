@@ -9,6 +9,8 @@ Route.group(() => {
   Route.post('admin-users/import', 'adminUser/AdminUsersController.import')
   Route.post('admin-users/update-password/:id', 'adminUser/AdminUsersController.updateUserPassword')
   Route.resource('admin-users', 'adminUser/AdminUsersController').apiOnly()
+  Route.get('roles/export', 'adminUser/RolesController.export')
+  Route.post('roles/import', 'adminUser/RolesController.import')
   Route.resource('roles', 'adminUser/RolesController').apiOnly()
   Route.resource('permissions', 'adminUser/PermissionsController').apiOnly()
 }).prefix('api')

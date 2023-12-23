@@ -6,7 +6,12 @@ import BaseController from '../BaseController'
 
 export default class KnowledgeBaseCategoriesController extends BaseController {
   constructor() {
-    super(KnowledgeBaseCategory, {}, {}, 'KnowledgebasePolicy')
+    super(
+      KnowledgeBaseCategory,
+      HelpcenterContentCategoryValidator,
+      HelpcenterContentCategoryValidator,
+      'KnowledgebasePolicy'
+    )
   }
 
   public async store({ request, response, bouncer }: HttpContextContract) {

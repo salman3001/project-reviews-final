@@ -29,6 +29,7 @@ export default class CreateTemplateValidator {
       size: '2mb',
     }),
     template: schema.object().members({
+      id: schema.number.optional(),
       name: schema.string({ trim: true }),
       desc: schema.string.optional(),
       content: schema.string.optional(),

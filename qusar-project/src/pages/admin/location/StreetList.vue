@@ -7,6 +7,8 @@ import { exportCSV } from 'src/utils/exportCSV';
 import { onMounted, reactive, ref } from 'vue';
 import modalStore from 'src/stores/modalStore';
 import useAddressStore from 'src/stores/addressStore';
+import ImportExcel from 'src/components/ImportExcel.vue';
+import ExportExcel from 'src/components/ExportExcel.vue';
 
 
 const modal = modalStore();
@@ -173,16 +175,8 @@ onMounted(() => {
             { label: 'Active', value: 1 },
             { label: 'Inactive', value: 0 },
           ]" label="Status" class="col-auto" style="min-width: 8rem" />
-          <q-btn-dropdown outline label="Export" style="border: 1px solid lightgray">
-            <q-list dense>
-              <q-item clickable v-close-popup @click="exportCSV(colomns, data)">
-                <q-item-section>
-                  <q-item-label>
-                    <q-icon name="receipt_long" /> Export CSV</q-item-label>
-                </q-item-section>
-              </q-item>
-            </q-list>
-          </q-btn-dropdown>
+          <ImportExcel type="street" />
+          <ExportExcel type="street" />
           <q-btn color="primary" @click="() => {
             modal.togel('addStreet', { tableRef });
           }

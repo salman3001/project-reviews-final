@@ -7,7 +7,12 @@ import BaseController from '../BaseController'
 
 export default class ServiceTagsController extends BaseController {
   constructor() {
-    super(ServiceTag, {}, {}, 'ServicePolicy')
+    super(
+      ServiceTag,
+      ServiceCategoryCreateValidator,
+      ServiceCategoryCreateValidator,
+      'ServicePolicy'
+    )
   }
 
   public async store({ request, response, bouncer }: HttpContextContract) {

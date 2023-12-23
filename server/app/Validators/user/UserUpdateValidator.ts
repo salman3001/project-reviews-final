@@ -29,6 +29,7 @@ export default class UserUpdateeValidator {
       size: '2mb',
     }),
     user: schema.object.optional().members({
+      id: schema.number.optional(),
       firstName: schema.string.optional({ trim: true }),
       lastName: schema.string({ trim: true }),
       email: schema.string({ trim: true }, [

@@ -24,6 +24,7 @@ export default class BlogCategoryValidator {
    *    ```
    */
   public schema = schema.create({
+    id: schema.number.optional(),
     name: schema.string({ trim: true }),
     slug: schema.string.optional({ trim: true }),
     order: schema.number.optional(),

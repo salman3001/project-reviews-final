@@ -10,7 +10,7 @@ import Video from 'App/Models/Video'
 
 export default class ServicesController extends BaseController {
   constructor() {
-    super(Service, {}, {}, 'ServicePolicy')
+    super(Service, ServiceCreateValidator, ServiceUpdateValidator, 'ServicePolicy')
   }
 
   public async store({ request, response, bouncer }: HttpContextContract) {

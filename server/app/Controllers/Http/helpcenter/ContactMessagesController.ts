@@ -24,4 +24,9 @@ export default class ContactMessagesController extends BaseController {
     await message.save()
     return response.json({ message: 'record updated', data: message })
   }
+
+  public excludeIncludeExportProperties(record: any) {
+    const { createdAt, updatedAt, ...rest } = record
+    return rest
+  }
 }

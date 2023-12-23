@@ -6,7 +6,7 @@ import BaseController from '../BaseController'
 
 export default class CampaignsController extends BaseController {
   constructor() {
-    super(Campaign, {}, {}, 'CampaignPolicy')
+    super(Campaign, CreateCampaignValidator, CreateCampaignValidator, 'CampaignPolicy')
   }
 
   public async store({ request, response, bouncer }: HttpContextContract) {

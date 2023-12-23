@@ -5,7 +5,7 @@ import BaseController from '../BaseController'
 
 export default class SubscribersController extends BaseController {
   constructor() {
-    super(Subscriber, {}, {}, 'SubscriberPolicy')
+    super(Subscriber, CreateSubscriberValidator, CreateSubscriberValidator, 'SubscriberPolicy')
   }
 
   public async store({ request, response, bouncer }: HttpContextContract) {

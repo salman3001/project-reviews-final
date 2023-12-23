@@ -47,6 +47,7 @@ export default class ServiceUpdateValidator {
       })
     ),
     service: schema.object.optional().members({
+      id: schema.number.optional(),
       name: schema.string({ trim: true }),
       email: schema.string.optional({ trim: true }, [
         rules.email(),

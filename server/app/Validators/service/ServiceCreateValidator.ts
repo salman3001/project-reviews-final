@@ -47,6 +47,7 @@ export default class ServiceCreateValidator {
       })
     ),
     service: schema.object().members({
+      id: schema.number.optional(),
       name: schema.string({ trim: true }),
       email: schema.string.optional({ trim: true }, [
         rules.email(),

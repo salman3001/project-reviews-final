@@ -29,6 +29,7 @@ export default class CategoryCreateValidator {
       size: '2mb',
     }),
     category: schema.object().members({
+      id: schema.number.optional(),
       name: schema.string({ trim: true }),
       shortDesc: schema.string.optional(),
       longDesc: schema.string.optional(),

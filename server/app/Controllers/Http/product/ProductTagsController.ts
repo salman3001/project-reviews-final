@@ -7,7 +7,7 @@ import BaseController from '../BaseController'
 
 export default class ProductTagsController extends BaseController {
   constructor() {
-    super(ProductTag, {}, {}, 'ProductPolicy')
+    super(ProductTag, CategoryCreateValidator, CategoryUpdateValidator, 'ProductPolicy')
   }
 
   public async store({ request, response, bouncer }: HttpContextContract) {

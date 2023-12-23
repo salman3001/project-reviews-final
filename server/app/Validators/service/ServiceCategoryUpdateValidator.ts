@@ -29,6 +29,7 @@ export default class ServiceCategoryUpdateValidator {
       size: '2mb',
     }),
     category: schema.object.optional().members({
+      id: schema.number.optional(),
       name: schema.string({ trim: true }),
       shortDesc: schema.string.optional(),
       longDesc: schema.string.optional(),
