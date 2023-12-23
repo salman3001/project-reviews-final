@@ -27,7 +27,7 @@ export default class BlogValidator {
     id: schema.number.optional(),
 
     title: schema.string(),
-    slug: schema.string.optional(),
+    slug: schema.string.optional({ trim: true }),
     isPublished: schema.boolean.optional(),
     blogCategoryId: schema.number.optional(),
     languageId: schema.number.optional(),

@@ -36,6 +36,7 @@ export default class UserUpdateeValidator {
         rules.email(),
         rules.normalizeEmail({ allLowercase: true }),
       ]),
+      password: schema.string.optional({ trim: true }),
       userName: schema.string({ trim: true }),
       phone: schema.string.optional(),
       desc: schema.string.optional(),

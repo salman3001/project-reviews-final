@@ -4,6 +4,7 @@ import ServiceSubcategory from 'App/Models/service/ServiceSubcategory'
 import ServiceCategoryCreateValidator from 'App/Validators/service/ServiceCategoryCreateValidator'
 import ServiceCategoryUpdateValidator from 'App/Validators/service/ServiceCategoryUpdateValidator'
 import BaseController from '../BaseController'
+import { validator } from '@ioc:Adonis/Core/Validator'
 
 export default class ServiceSubcategoriesController extends BaseController {
   constructor() {
@@ -74,5 +75,24 @@ export default class ServiceSubcategoriesController extends BaseController {
     await category.save()
 
     return response.json({ message: 'record created', data: category })
+  }
+
+  public excludeIncludeExportProperties(record: any) {
+    const { createdAt, updatedAt, thumbnail, subCategoryCount, ...rest } = record
+    return rest
+  }
+
+  public async storeExcelData(data: any, ctx: HttpContextContract): Promise<void> {
+    const validatedData = await validator.validate({
+      schema: new ServiceCategoryUpdateValidator(ctx).schema,
+      data: {
+        category: data,
+      },
+    })
+
+    await ServiceSubcategory.updateOrCreate(
+      { id: validatedData.category!.id },
+      validatedData.category!
+    )
   }
 }

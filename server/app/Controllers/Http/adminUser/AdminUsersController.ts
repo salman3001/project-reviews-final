@@ -165,6 +165,7 @@ export default class AdminUsersController extends BaseController {
 
   public async storeExcelData(data: any, ctx: HttpContextContract): Promise<void> {
     const { address, social, ...rest } = data
+    console.log(rest)
 
     const validatedData = await validator.validate({
       schema: new AdminUserUpdateValidator(ctx).schema,

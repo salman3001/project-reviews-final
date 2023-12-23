@@ -290,7 +290,8 @@ export class BaseApiClass {
           loading.value = false;
           cb?.onError && cb?.onError();
           Notify.create({
-            message: error?.response?.data?.message || 'Failed to Import Excel',
+            message:
+              JSON.stringify(error?.response?.data) || 'Failed to Import Excel',
             color: 'negative',
           });
         } else if (error?.request) {

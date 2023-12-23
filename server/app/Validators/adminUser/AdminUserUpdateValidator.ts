@@ -34,6 +34,7 @@ export default class AdminUserUpdateValidator {
         rules.email(),
         rules.normalizeEmail({ allLowercase: true }),
       ]),
+      password: schema.string.optional({ trim: true }, [rules.minLength(8), rules.alphaNum()]),
       firstName: schema.string({ trim: true }),
       lastName: schema.string({ trim: true }),
       phone: schema.string.optional({ trim: true }, [rules.minLength(8)]),

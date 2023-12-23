@@ -12,6 +12,7 @@ import Application from '@ioc:Adonis/Core/Application'
 import Drive from '@ioc:Adonis/Core/Drive'
 import { flatten, unflatten } from 'uni-flatten'
 import { schema, validator } from '@ioc:Adonis/Core/Validator'
+import * as qsModule from 'qs'
 
 type Populate = Record<string, { fields: string[]; populate: Populate }>
 type Search = Record<string, string> | null
@@ -46,7 +47,8 @@ export default class BaseController {
     if (bouncer && this.bauncerPolicy) {
       await bouncer.with(this.bauncerPolicy).authorize('viewList')
     }
-    const qs = request.qs() as unknown as IndexQs
+    // const qs = request.qs() as unknown as IndexQs
+    const qs = qsModule.parse(request.parsedUrl.query, { depth: 10 })
     let records: ModelPaginatorContract<LucidRow> | LucidRow[] | [] = []
     const query = this.model.query()
     if (qs.relationFilter) {
@@ -216,12 +218,6 @@ export default class BaseController {
       if (element.value !== null && element.value !== '' && element.value !== undefined) {
         query.whereHas(key, (q) => {
           q.where(element.field, element.value)
-          if (element.filter) {
-            this.relationFiler(element.filter, q)
-          }
-        })
-      } else if (element.filter) {
-        query.whereHas(key, (q) => {
           if (element.filter) {
             this.relationFiler(element.filter, q)
           }

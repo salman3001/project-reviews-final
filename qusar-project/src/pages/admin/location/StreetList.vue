@@ -148,7 +148,7 @@ onMounted(() => {
             :options="[{ label: 'All', value: null }, ...address.selectContinents]" @update:model-value="(value) => {
               filter.relationFilter.city.filter.state.filter.country.value = null;
               filter.relationFilter.city.filter.state.value = null;
-              filter.relationFilter.city.value
+              filter.relationFilter.city.value = null;
               address.getCountries(value);
             }
               " label="Continent" class="col-auto" style="min-width: 8rem" />
@@ -157,7 +157,7 @@ onMounted(() => {
             :options="[{ label: 'All', value: null }, ...address.selectContries]" label="Country" class="col-auto"
             style="min-width: 8rem" @update:model-value="(value) => {
               filter.relationFilter.city.filter.state.value = null;
-              filter.relationFilter.city.value
+              filter.relationFilter.city.value = null;
               address.getstates(value);
             }" />
           <q-select outlined dense options-dense emit-value map-options

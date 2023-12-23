@@ -4,6 +4,7 @@ import ProductCategory from 'App/Models/product/ProductCategory'
 import CategoryCreateValidator from 'App/Validators/product/CategoryCreateValidator'
 import CategoryUpdateValidator from 'App/Validators/product/CategoryUpdateValidator'
 import BaseController from '../BaseController'
+import { validator } from '@ioc:Adonis/Core/Validator'
 
 export default class ProductCategoriesController extends BaseController {
   constructor() {
@@ -68,5 +69,24 @@ export default class ProductCategoriesController extends BaseController {
     await category.save()
 
     return response.json({ message: 'record created', data: category })
+  }
+
+  public excludeIncludeExportProperties(record: any) {
+    const { createdAt, updatedAt, thumbnail, subCategoryCount, ...rest } = record
+    return rest
+  }
+
+  public async storeExcelData(data: any, ctx: HttpContextContract): Promise<void> {
+    const validatedData = await validator.validate({
+      schema: new CategoryUpdateValidator(ctx).schema,
+      data: {
+        category: data,
+      },
+    })
+
+    await ProductCategory.updateOrCreate(
+      { id: validatedData.category!.id },
+      validatedData.category!
+    )
   }
 }

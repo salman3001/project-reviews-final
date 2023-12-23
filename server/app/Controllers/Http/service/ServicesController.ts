@@ -7,6 +7,7 @@ import ServiceCreateValidator from 'App/Validators/service/ServiceCreateValidato
 import ServiceUpdateValidator from 'App/Validators/service/ServiceUpdateValidator'
 import BaseController from '../BaseController'
 import Video from 'App/Models/Video'
+import { validator } from '@ioc:Adonis/Core/Validator'
 
 export default class ServicesController extends BaseController {
   constructor() {
@@ -204,5 +205,21 @@ export default class ServicesController extends BaseController {
     await bouncer.with('ServicePolicy').authorize('delete')
     const image = await Image.findOrFail(+params.id)
     return response.json({ message: 'Screeshot deleted', image })
+  }
+
+  public excludeIncludeExportProperties(record: any) {
+    const { createdAt, updatedAt, logo, cover, brocher, ...rest } = record
+    return rest
+  }
+
+  public async storeExcelData(data: any, ctx: HttpContextContract): Promise<void> {
+    const validatedData = await validator.validate({
+      schema: new ServiceUpdateValidator(ctx).schema,
+      data: {
+        service: data,
+      },
+    })
+
+    await Service.updateOrCreate({ id: validatedData.service!.id }, validatedData.service!)
   }
 }

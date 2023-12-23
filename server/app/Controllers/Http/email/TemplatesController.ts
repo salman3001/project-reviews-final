@@ -3,6 +3,7 @@ import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import Template from 'App/Models/email/Template'
 import CreateTemplateValidator from 'App/Validators/news-letter/CreateTemplateValidator'
 import BaseController from '../BaseController'
+import { validator } from '@ioc:Adonis/Core/Validator'
 
 export default class TemplatesController extends BaseController {
   constructor() {
@@ -37,5 +38,21 @@ export default class TemplatesController extends BaseController {
     }
     await template.save()
     return response.json({ message: 'record created', data: template })
+  }
+
+  public excludeIncludeExportProperties(record: any) {
+    const { thumbnail, ...rest } = record
+    return rest
+  }
+
+  public async storeExcelData(data: any, ctx: HttpContextContract): Promise<void> {
+    const validatedData = await validator.validate({
+      schema: new CreateTemplateValidator(ctx).schema,
+      data: {
+        template: data,
+      },
+    })
+
+    await Template.updateOrCreate({ id: validatedData.template!.id }, validatedData.template!)
   }
 }

@@ -3,6 +3,7 @@ import BlogCategoryValidator from 'App/Validators/blogs/BlogCategoryValidator'
 import slugify from 'slugify'
 import BlogCategory from 'App/Models/blogs/BlogCategory'
 import BaseController from '../BaseController'
+import { validator } from '@ioc:Adonis/Core/Validator'
 
 export default class BlogCategoriesController extends BaseController {
   constructor() {
@@ -35,5 +36,19 @@ export default class BlogCategoriesController extends BaseController {
     await category.save()
 
     return response.json({ message: 'Blog Updated' })
+  }
+
+  public async storeExcelData(data: any, ctx: HttpContextContract): Promise<void> {
+    const validatedData = await validator.validate({
+      schema: new BlogCategoryValidator(ctx).schema,
+      data,
+    })
+    await BlogCategory.updateOrCreate(
+      { id: validatedData.id },
+      {
+        ...validatedData,
+        slug: validatedData.slug ? slugify(validatedData.slug) : slugify(validatedData.name),
+      }
+    )
   }
 }
