@@ -1,10 +1,12 @@
 import { BaseModel, column } from '@ioc:Adonis/Lucid/Orm'
-import { VideoType } from 'App/Helpers/enums'
 import { AttachmentContract, attachment } from '@ioc:Adonis/Addons/AttachmentLite'
 
 export default class Video extends BaseModel {
   @column({ isPrimary: true })
   public id: number
+
+  @column()
+  public mediaId: number
 
   @attachment({
     folder: 'videos',

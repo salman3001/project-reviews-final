@@ -2,15 +2,17 @@
 import { ref } from 'vue';
 import SearchInput from 'components/forms/SearchInput.vue';
 import BrandLogo from 'components/BrandLogo.vue';
+import AdminSideMenu from 'components/admin/AdminSideMenu.vue';
 import NotificationMenu from 'components/NotificationMenu.vue';
 import ProfileMenu from 'components/ProfileMenu.vue';
 import NavMenu from 'components/NavMenu.vue';
 import BaseModal from 'components/modal/BaseModal.vue';
 import authStore from 'src/stores/authStroe';
 import { permissions } from 'src/utils/enums';
+import { useQuasar } from 'quasar';
 
 const leftDrawerOpen = ref(false);
-
+const $q = useQuasar()
 function toggleLeftDrawer() {
   leftDrawerOpen.value = !leftDrawerOpen.value;
 }
@@ -21,7 +23,7 @@ const auth = authStore()
 <template>
   <q-layout view="lHh Lpr lFf">
     <q-header>
-      <q-toolbar class="bg-white text-black">
+      <q-toolbar class="bg-white text-black" style="border: 1px solid rgba(0, 0, 0, 0.106)">
         <q-btn flat dense round icon="menu" aria-label="Menu" @click="toggleLeftDrawer" />
 
         <q-toolbar-title>
@@ -35,7 +37,7 @@ const auth = authStore()
           <ProfileMenu />
         </div>
       </q-toolbar>
-      <q-toolbar class="bg-white text-black" style="border: 1px solid rgba(0, 0, 0, 0.106)">
+      <q-toolbar v-if="$q.screen.gt.xs" class="bg-white text-black" style="border: 1px solid rgba(0, 0, 0, 0.106)">
         <div>
           <NavMenu title="Admin Users"
             v-if="auth.hasPermission(permissions.MANAGE_ADMIN_USERS) || auth.hasPermission(permissions.MANAGE_ROLES)">
@@ -241,11 +243,28 @@ const auth = authStore()
               </q-item-section>
             </q-item>
           </NavMenu>
+          <NavMenu title="Media" v-if="auth.hasPermission(permissions.MANAGE_MEDIA)">
+            <q-item clickable v-close-popup>
+              <q-item-section>
+                <router-link :to="{
+                  name: 'admin.media.images',
+                }" class="text-black" style="text-decoration: none">Images</router-link>
+              </q-item-section>
+            </q-item>
+            <q-item clickable v-close-popup>
+              <q-item-section>
+                <router-link :to="{
+                  name: 'admin.media.videos',
+                }" class="text-black" style="text-decoration: none">Videos</router-link>
+              </q-item-section>
+            </q-item>
+          </NavMenu>
         </div>
       </q-toolbar>
     </q-header>
 
     <q-drawer :behavior="'mobile'" v-model="leftDrawerOpen" show-if-above bordered>
+      <AdminSideMenu />
     </q-drawer>
 
     <q-page-container>

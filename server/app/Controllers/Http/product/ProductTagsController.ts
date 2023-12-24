@@ -4,10 +4,11 @@ import ProductTag from 'App/Models/product/ProductTag'
 import CategoryCreateValidator from 'App/Validators/product/CategoryCreateValidator'
 import CategoryUpdateValidator from 'App/Validators/product/CategoryUpdateValidator'
 import BaseController from '../BaseController'
+import { validator } from '@ioc:Adonis/Core/Validator'
 
 export default class ProductTagsController extends BaseController {
   constructor() {
-    super(ProductTag, {}, {}, 'ProductPolicy')
+    super(ProductTag, CategoryCreateValidator, CategoryUpdateValidator, 'ProductPolicy')
   }
 
   public async store({ request, response, bouncer }: HttpContextContract) {
@@ -69,5 +70,21 @@ export default class ProductTagsController extends BaseController {
     await tag.save()
 
     return response.json({ message: 'record created', data: tag })
+  }
+
+  public excludeIncludeExportProperties(record: any) {
+    const { createdAt, updatedAt, thumbnail, ...rest } = record
+    return rest
+  }
+
+  public async storeExcelData(data: any, ctx: HttpContextContract): Promise<void> {
+    const validatedData = await validator.validate({
+      schema: new CategoryUpdateValidator(ctx).schema,
+      data: {
+        category: data,
+      },
+    })
+
+    await ProductTag.updateOrCreate({ id: validatedData.category!.id }, validatedData.category!)
   }
 }

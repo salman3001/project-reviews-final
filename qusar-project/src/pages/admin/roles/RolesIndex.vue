@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import { QTableProps } from 'quasar';
-import { useGetTableData } from 'src/composables/useGetTableData';
 import modalStore from 'src/stores/modalStore';
 import { AdditionalParams } from 'src/type';
-import { reactive } from 'vue';
+import { RoleApi } from 'src/utils/BaseApiService';
+import { onTableRequest } from 'src/utils/onTableRequest';
+import { onMounted, reactive, ref } from 'vue';
 import { useRouter } from 'vue-router';
 
 const modal = modalStore();
@@ -46,16 +47,30 @@ const colomns: QTableProps['columns'] = [
   },
 ];
 
-const { data, loading, tableRef, onRequest, pagination } = useGetTableData(
-  'roles',
-  {
-    populate: {
-      permissions: {
-        fields: ['*'],
-      },
+const tableRef = ref();
+
+const pagination = ref({
+  sortBy: 'id',
+  descending: false,
+  page: 1,
+  rowsPerPage: 10,
+  rowsNumber: 10,
+});
+
+
+const { onRequest, loading, rows } = onTableRequest(RoleApi, pagination, {
+  populate: {
+    permissions: {
+      fields: ['*'],
     },
-  }
-);
+  },
+})
+
+onMounted(() => {
+  tableRef.value && tableRef.value.requestServerInteraction();
+});
+
+
 </script>
 
 <template>
@@ -64,7 +79,7 @@ const { data, loading, tableRef, onRequest, pagination } = useGetTableData(
       <div class="row justify-between q-gutter-y-sm">
         <div></div>
         <div class="row q-gutter-sm">
-          <q-select outlined dense options-dense emit-value map-options v-model="filter.filter.is_active" :options="[
+          <q-select outlined dense options-dense emit-value map-options v-model="filter.filter!.is_active" :options="[
             { label: 'All', value: null },
             { label: 'Active', value: 1 },
             { label: 'Inactive', value: 0 },
@@ -77,7 +92,7 @@ const { data, loading, tableRef, onRequest, pagination } = useGetTableData(
             ">+ Add Role</q-btn>
         </div>
       </div>
-      <q-table flat bordered ref="tableRef" title="Roles" :rows="data" :columns="colomns" :loading="loading"
+      <q-table flat bordered ref="tableRef" title="Roles" :rows="rows" :columns="colomns" :loading="loading"
         class="zebra-table" row-key="id" :pagination="pagination" @request="onRequest" :filter="filter">
         <template v-slot:body-cell-is_active="props">
           <q-td :props="props">

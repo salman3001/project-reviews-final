@@ -4,6 +4,7 @@ import BlogValidator from 'App/Validators/blogs/BlogValidator'
 import slugify from 'slugify'
 import { ResponsiveAttachment } from '@ioc:Adonis/Addons/ResponsiveAttachment'
 import BaseController from '../BaseController'
+import { validator } from '@ioc:Adonis/Core/Validator'
 
 export default class BlogsController extends BaseController {
   constructor() {
@@ -60,5 +61,24 @@ export default class BlogsController extends BaseController {
 
     await blog.save()
     return response.json({ message: 'Blog Updated' })
+  }
+
+  public excludeIncludeExportProperties(record: any) {
+    const { createdAt, updatedAt, ...rest } = record
+    return rest
+  }
+
+  public async storeExcelData(data: any, ctx: HttpContextContract): Promise<void> {
+    const validatedData = await validator.validate({
+      schema: new BlogValidator(ctx).schema,
+      data,
+    })
+    await Blog.updateOrCreate(
+      { id: validatedData.id },
+      {
+        ...validatedData,
+        slug: validatedData.slug ? slugify(validatedData.slug) : slugify(validatedData.title),
+      }
+    )
   }
 }

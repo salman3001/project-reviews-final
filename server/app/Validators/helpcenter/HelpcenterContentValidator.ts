@@ -24,6 +24,7 @@ export default class HelpcenterContentValidator {
    *    ```
    */
   public schema = schema.create({
+    id: schema.number.optional(),
     title: schema.string({ trim: true }),
     slug: schema.string.optional({ trim: true }),
     knowledgeBaseCategoryId: schema.number.optional(),

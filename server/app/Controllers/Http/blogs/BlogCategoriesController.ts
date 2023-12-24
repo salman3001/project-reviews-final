@@ -1,9 +1,9 @@
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import BlogCategoryValidator from 'App/Validators/blogs/BlogCategoryValidator'
-import BlogCategoryService from 'App/services/blogs/BlogCategoryService'
 import slugify from 'slugify'
 import BlogCategory from 'App/Models/blogs/BlogCategory'
 import BaseController from '../BaseController'
+import { validator } from '@ioc:Adonis/Core/Validator'
 
 export default class BlogCategoriesController extends BaseController {
   constructor() {
@@ -15,9 +15,9 @@ export default class BlogCategoriesController extends BaseController {
     const { slug, ...payload } = await request.validate(BlogCategoryValidator)
 
     if (slug) {
-      await BlogCategoryService.store({ ...payload, slug })
+      await BlogCategory.create({ ...payload, slug })
     } else {
-      await BlogCategoryService.store({ slug: slugify(payload.name), ...payload })
+      await BlogCategory.create({ slug: slugify(payload.name), ...payload })
     }
 
     return response.json({ message: 'Blog Created' })
@@ -26,13 +26,29 @@ export default class BlogCategoriesController extends BaseController {
   public async update({ request, response, params, bouncer }: HttpContextContract) {
     await bouncer.with('BlogPolicy').authorize('update')
     const { slug, ...payload } = await request.validate(this.updateValidator)
+    const category = await BlogCategory.findOrFail(+params.id)
 
     if (slug) {
-      await BlogCategoryService.update(+params.id, { ...payload, slug })
+      category.merge({ ...payload, slug })
     } else {
-      await BlogCategoryService.update(+params.id, { slug: slugify(payload.name), ...payload })
+      category.merge({ slug: slugify(payload.name), ...payload })
     }
+    await category.save()
 
     return response.json({ message: 'Blog Updated' })
+  }
+
+  public async storeExcelData(data: any, ctx: HttpContextContract): Promise<void> {
+    const validatedData = await validator.validate({
+      schema: new BlogCategoryValidator(ctx).schema,
+      data,
+    })
+    await BlogCategory.updateOrCreate(
+      { id: validatedData.id },
+      {
+        ...validatedData,
+        slug: validatedData.slug ? slugify(validatedData.slug) : slugify(validatedData.name),
+      }
+    )
   }
 }

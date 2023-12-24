@@ -1,12 +1,14 @@
 <script setup lang="ts">
 import { QTableProps } from 'quasar';
 import SearchInput from 'src/components/forms/SearchInput.vue';
-import { useGetTableData } from 'src/composables/useGetTableData';
 import { AdditionalParams } from 'src/type';
-import { exportCSV } from 'src/utils/exportCSV';
 import { onMounted, reactive, ref } from 'vue';
 import modalStore from 'src/stores/modalStore';
 import useAddressStore from 'src/stores/addressStore';
+import ImportExcel from 'src/components/ImportExcel.vue';
+import ExportExcel from 'src/components/ExportExcel.vue';
+import { StateApi } from 'src/utils/BaseApiService';
+import { onTableRequest } from 'src/utils/onTableRequest';
 
 const modal = modalStore();
 const address = useAddressStore();
@@ -32,22 +34,30 @@ const filter = reactive<AdditionalParams>({
   },
 });
 
+const tableRef = ref();
 
-const { data, loading, onRequest, pagination, tableRef } = useGetTableData(
-  'address/states',
-  {
-    populate: {
-      country: {
-        fields: ['name', 'id', 'continent_id'],
-        populate: {
-          continent: {
-            fields: ['name', 'id'],
-          },
+const pagination = ref({
+  sortBy: 'id',
+  descending: false,
+  page: 1,
+  rowsPerPage: 10,
+  rowsNumber: 10,
+});
+
+
+const { onRequest, loading, rows } = onTableRequest(StateApi, pagination, {
+  populate: {
+    country: {
+      fields: ['name', 'id', 'continent_id'],
+      populate: {
+        continent: {
+          fields: ['name', 'id'],
         },
       },
     },
-  }
-);
+  },
+})
+
 
 const colomns: QTableProps['columns'] = [
   { name: 'id', field: 'id', label: 'ID', align: 'left' },
@@ -88,6 +98,7 @@ const colomns: QTableProps['columns'] = [
 
 onMounted(() => {
   address.getCountinents();
+  tableRef.value && tableRef.value.requestServerInteraction();
 });
 </script>
 
@@ -103,30 +114,22 @@ onMounted(() => {
           " />
         <div class="row q-gutter-sm">
           <q-select outlined dense options-dense emit-value map-options
-            v-model="filter.relationFilter.country.filter.continent.value"
+            v-model="filter.relationFilter!.country.filter!.continent.value"
             :options="[{ label: 'All', value: null }, ...address.selectContinents]" @update:model-value="(value) => {
-              filter.relationFilter.country.value = null;
+              filter.relationFilter!.country.value = null;
               address.getCountries(value);
             }
               " label="Continent" class="col-auto" style="min-width: 8rem" />
-          <q-select outlined dense options-dense emit-value map-options v-model="filter.relationFilter.country.value"
+          <q-select outlined dense options-dense emit-value map-options v-model="filter.relationFilter!.country.value"
             :options="[{ label: 'All', value: '' }, ...address.selectContries]" label="Country" class="col-auto"
             style="min-width: 8rem" />
-          <q-select outlined dense options-dense emit-value map-options v-model="filter.filter.is_active" :options="[
+          <q-select outlined dense options-dense emit-value map-options v-model="filter.filter!.is_active" :options="[
             { label: 'All', value: null },
             { label: 'Active', value: 1 },
             { label: 'Inactive', value: 0 },
           ]" label="Status" class="col-auto" style="min-width: 8rem" />
-          <q-btn-dropdown outline label="Export" style="border: 1px solid lightgray">
-            <q-list dense>
-              <q-item clickable v-close-popup @click="exportCSV(colomns, data)">
-                <q-item-section>
-                  <q-item-label>
-                    <q-icon name="receipt_long" /> Export CSV</q-item-label>
-                </q-item-section>
-              </q-item>
-            </q-list>
-          </q-btn-dropdown>
+          <ImportExcel type="state" />
+          <ExportExcel type="state" />
           <q-btn color="primary" @click="() => {
             modal.togel('addState', { tableRef });
           }
@@ -134,7 +137,7 @@ onMounted(() => {
         </div>
       </div>
 
-      <q-table ref="tableRef" flat bordered title="States" :loading="loading" :rows="data" :columns="colomns"
+      <q-table ref="tableRef" flat bordered title="States" :loading="loading" :rows="rows" :columns="colomns"
         class="zebra-table" v-model:pagination="pagination" :filter="filter" @request="onRequest" row-key="id">
         <template v-slot:body-cell-is_active="props">
           <q-td :props="props">

@@ -11,8 +11,8 @@ const router = useRouter();
 
 const form = ref({
   subscriber: {
-    first_name: '',
-    last_name: '',
+    firstName: '',
+    lastName: '',
     phone: null,
     email: null,
     dob: '',
@@ -30,7 +30,7 @@ interestApi.index({
 
 
 const { execute: createSubscriber, loading: posting } =
-  subscriberApi.post(form.value, {
+  subscriberApi.post({
     headers: {
       'Content-Type': 'multipart/form-data'
     }
@@ -41,7 +41,7 @@ const { execute: createSubscriber, loading: posting } =
   });
 
 const submit = async () => {
-  createSubscriber()
+  createSubscriber(form.value)
 };
 </script>
 
@@ -57,11 +57,11 @@ const submit = async () => {
     <q-form class="column q-gutter-y-xl" @submit="submit">
       <div class="q-gutter-y-md">
         <div class="row q-col-gutter-md">
-          <q-input outlined v-model="form.subscriber.first_name" label="First Name" class="col-12 col-sm-6 col-md-3"
+          <q-input outlined v-model="form.subscriber.firstName" label="First Name" class="col-12 col-sm-6 col-md-3"
             :rules="[
               $rules.required('required'),
             ]" />
-          <q-input outlined v-model="form.subscriber.last_name" label="Last Name" class="col-12 col-sm-6 col-md-3" :rules="[
+          <q-input outlined v-model="form.subscriber.lastName" label="Last Name" class="col-12 col-sm-6 col-md-3" :rules="[
             $rules.required('required')
           ]" />
           <q-input outlined type="number" v-model="form.subscriber.phone" label="Phone" class="col-12 col-sm-6 col-md-3"

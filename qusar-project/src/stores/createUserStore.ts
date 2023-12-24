@@ -71,7 +71,7 @@ const createUserStore = defineStore('createUser', () => {
         desc: '',
       },
     ],
-    lanuages: [],
+    languages: [],
     skills: [
       {
         name: '',
@@ -169,10 +169,7 @@ const createUserStore = defineStore('createUser', () => {
 
   const getLangauges = async () => {
     await LanguageApi.index().then(({ data }) => {
-      languages.value = (data.value as any).map((d: any) => ({
-        label: d.name,
-        value: d.id,
-      }));
+      languages.value = data.value as any;
     });
   };
 

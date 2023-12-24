@@ -11,7 +11,7 @@ const text = ref('')
       $emit('search', val)
     }">
     <template v-slot:append>
-      <q-icon v-if="text !== ''" name="close" @click="text = ''" class="cursor-pointer" />
+      <q-icon v-if="text !== ''" name="close" @click="() => { text = ''; $emit('search', '') }" class="cursor-pointer" />
       <q-icon name="search" />
     </template>
   </q-input>

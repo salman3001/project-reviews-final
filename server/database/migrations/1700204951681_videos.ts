@@ -22,6 +22,8 @@ export default class extends BaseSchema {
         .inTable('services')
         .onDelete('SET NULL')
 
+      table.integer('media_id').unsigned().references('id').inTable('media').onDelete('SET NULL')
+
       /**
        * Uses timestamptz for PostgreSQL and DATETIME2 for MSSQL
        */

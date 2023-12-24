@@ -33,14 +33,16 @@ export const useGetTableData = (
   });
 
   const onRequest = async (props: RequestProps) => {
-    const { descending, page, rowsPerPage, sortBy } = props.pagination;
+    const { page, rowsPerPage, sortBy } = props.pagination;
+    console.log(props.pagination);
+
     const filter = props.filter;
+
     try {
       loading.value = true;
       const res = await api.get(url, {
         params: {
           sortBy: sortBy,
-          descending: descending,
           page: page,
           rowsPerPage: rowsPerPage,
           ...filter,
@@ -50,10 +52,10 @@ export const useGetTableData = (
       });
 
       data.value = res?.data?.data;
+      pagination.value.sortBy = sortBy;
       pagination.value.page = res?.data?.meta?.current_page;
       pagination.value.rowsPerPage = res?.data?.meta?.per_page;
       pagination.value.rowsNumber = res?.data?.meta?.total;
-      pagination.value.descending = descending;
       loading.value = false;
     } catch (error: any) {
       loading.value = false;

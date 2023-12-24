@@ -7,10 +7,11 @@ import ProductUpdateValidator from 'App/Validators/product/ProductUpdateValidato
 import BaseController from '../BaseController'
 import Video from 'App/Models/Video'
 import { Attachment } from '@ioc:Adonis/Addons/AttachmentLite'
+import { validator } from '@ioc:Adonis/Core/Validator'
 
 export default class ProductsController extends BaseController {
   constructor() {
-    super(Product, {}, {}, 'ProductPolicy')
+    super(Product, ProductCreateValidator, ProductUpdateValidator, 'ProductPolicy')
   }
 
   public async store({ request, response, bouncer }: HttpContextContract) {
@@ -205,5 +206,21 @@ export default class ProductsController extends BaseController {
     const image = await Image.findOrFail(+params.id)
     await image.delete()
     return response.json({ message: 'Screeshot deleted', image })
+  }
+
+  public excludeIncludeExportProperties(record: any) {
+    const { createdAt, updatedAt, logo, cover, brocher, ...rest } = record
+    return rest
+  }
+
+  public async storeExcelData(data: any, ctx: HttpContextContract): Promise<void> {
+    const validatedData = await validator.validate({
+      schema: new ProductUpdateValidator(ctx).schema,
+      data: {
+        product: data,
+      },
+    })
+
+    await Product.updateOrCreate({ id: validatedData.product!.id }, validatedData.product!)
   }
 }

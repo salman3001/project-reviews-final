@@ -26,9 +26,10 @@ export default class UserCreateValidator {
   public schema = schema.create({
     image: schema.file.optional({
       extnames: ['jpg', 'JPG', 'jpeg', 'JPEG', 'png', 'PNG', 'webp', 'WEBP'],
-      size: '2mb',
+      size: '5mb',
     }),
     user: schema.object().members({
+      id: schema.number.optional(),
       firstName: schema.string({ trim: true }),
       lastName: schema.string({ trim: true }),
       email: schema.string({ trim: true }, [

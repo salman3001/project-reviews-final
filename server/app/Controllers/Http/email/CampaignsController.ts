@@ -3,10 +3,12 @@ import Campaign from 'App/Models/email/Campaign'
 import Template from 'App/Models/email/Template'
 import CreateCampaignValidator from 'App/Validators/news-letter/CreateCampaignValidator'
 import BaseController from '../BaseController'
+import { validator } from '@ioc:Adonis/Core/Validator'
+import { DateTime } from 'luxon'
 
 export default class CampaignsController extends BaseController {
   constructor() {
-    super(Campaign, {}, {}, 'CampaignPolicy')
+    super(Campaign, CreateCampaignValidator, CreateCampaignValidator, 'CampaignPolicy')
   }
 
   public async store({ request, response, bouncer }: HttpContextContract) {
@@ -65,5 +67,22 @@ export default class CampaignsController extends BaseController {
     }
 
     return response.json({ message: 'record created', data: campaign })
+  }
+
+  public excludeIncludeExportProperties(record: any) {
+    const { createdAt, updatedAt, ...rest } = record
+    const deliveryDate = DateTime.fromISO(rest.deliveryDateTime).toFormat('dd/MM/yyyy HH:mm') //=> '2014 Aug 06'
+    return { ...rest, deliveryDateTime: deliveryDate }
+  }
+
+  public async storeExcelData(data: any, ctx: HttpContextContract): Promise<void> {
+    const validatedData = await validator.validate({
+      schema: new CreateCampaignValidator(ctx).schema,
+      data: {
+        campaign: data,
+      },
+    })
+
+    await Campaign.updateOrCreate({ id: validatedData.campaign!.id }, validatedData.campaign!)
   }
 }

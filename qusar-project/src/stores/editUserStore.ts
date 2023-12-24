@@ -201,10 +201,7 @@ const editUserStore = defineStore('editUser', () => {
 
   const getLangauges = async () => {
     await LanguageApi.index().then(({ data }) => {
-      languages.value = (data.value as any).map((d: any) => ({
-        label: d.name,
-        value: d.id,
-      }));
+      languages.value = data.value as any;
     });
   };
 
@@ -333,7 +330,7 @@ const editUserStore = defineStore('editUser', () => {
 
     if ((data.value as any)?.languages) {
       languagesForm.value.languages = (data.value as any)?.languages.map(
-        (l: any) => l.id
+        (l) => l.id
       );
     }
 

@@ -24,14 +24,16 @@ export default class BlogValidator {
    *    ```
    */
   public schema = schema.create({
+    id: schema.number.optional(),
+
     title: schema.string(),
-    slug: schema.string.optional(),
+    slug: schema.string.optional({ trim: true }),
     isPublished: schema.boolean.optional(),
     blogCategoryId: schema.number.optional(),
     languageId: schema.number.optional(),
     image: schema.file.optional({
       extnames: ['jpg', 'JPG', 'jpeg', 'JPEG', 'png', 'PNG', 'webp', 'WEBP'],
-      size: '3mb',
+      size: '5mb',
     }),
     shortDesc: schema.string.optional(),
     longDesc: schema.string.optional(),

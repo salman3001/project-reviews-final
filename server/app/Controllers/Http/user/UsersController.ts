@@ -1,14 +1,14 @@
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import UserCreateValidator from 'App/Validators/user/UserCreateValidator'
 import UserUpdateeValidator from 'App/Validators/user/UserUpdateValidator'
-import { schema, rules } from '@ioc:Adonis/Core/Validator'
 import User from 'App/Models/user/User'
 import { ResponsiveAttachment } from '@ioc:Adonis/Addons/ResponsiveAttachment'
 import BaseController from '../BaseController'
+import { schema, rules, validator } from '@ioc:Adonis/Core/Validator'
 
 export default class UsersController extends BaseController {
   constructor() {
-    super(User, {}, {}, 'userPolicy')
+    super(User, UserCreateValidator, UserUpdateeValidator, 'userPolicy')
   }
 
   public async store({ request, response, bouncer }: HttpContextContract) {
@@ -178,5 +178,21 @@ export default class UsersController extends BaseController {
     user.password = payload.password
     await user.save()
     return response.json({ message: 'Password Changed' })
+  }
+
+  public async storeExcelData(data: any, ctx: HttpContextContract): Promise<void> {
+    const validatedData = await validator.validate({
+      schema: new UserUpdateeValidator(ctx).schema,
+      data: {
+        user: data,
+      },
+    })
+
+    await User.updateOrCreate({ id: validatedData.user!.id }, validatedData.user!)
+  }
+
+  public excludeIncludeExportProperties(record: any) {
+    const { createdAt, updatedAt, avatar, ...rest } = record
+    return { ...rest, password: '' }
   }
 }

@@ -25,6 +25,7 @@ export default class CreateCampaignValidator {
    */
   public schema = schema.create({
     campaign: schema.object().members({
+      id: schema.number.optional(),
       name: schema.string(),
       subject: schema.string(),
       fromName: schema.string(),

@@ -9,6 +9,9 @@ export default class Image extends BaseModel {
   @column({ isPrimary: true })
   public id: number
 
+  @column()
+  public mediaId: number
+
   @responsiveAttachment({
     folder: 'other',
     preComputeUrls: true,

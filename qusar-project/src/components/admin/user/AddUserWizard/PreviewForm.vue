@@ -121,13 +121,12 @@ onMounted(() => {
   })
 
 
-  createUser.form?.lanuages?.map(l => {
-    if (l.language_id)
-      LanguageApi.show(l.language_id, {
-        fields: ['name']
-      }).then(({ data }) => {
-        Languages.value.push((data?.value as any)?.name)
-      })
+  createUser.form?.languages?.map(l => {
+    LanguageApi.show(l, {
+      fields: ['name']
+    }).then(({ data }) => {
+      Languages.value.push((data?.value as any)?.name)
+    })
   })
 
   getImageUrl()
@@ -333,6 +332,34 @@ onMounted(() => {
             <div>
               <p style="color:#686552">Description</p>
               <p>{{ e.desc }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="q-py-md">
+        <p class="text-h6" style="color:#686552">Education
+          <q-btn color="#686552" outline size="sm" icon="edit" label="edit" @click="$emit('edit', 'profession')" />
+        </p>
+        <div class="row q-col-gutter-lg">
+          <div v-for="(e, i) in createUser.form.education" :key="i">
+            <p style="color:#686552">Education {{ i + 1 }}</p>
+            <div class="row q-col-gutter-lg wrap">
+              <div>
+                <p style="color:#686552">Degree</p>
+                <p>{{ e.degree }}</p>
+              </div>
+              <div>
+                <p style="color:#686552">Field</p>
+                <p>{{ e.field }}</p>
+              </div>
+              <div>
+                <p style="color:#686552">Start Date</p>
+                <p>{{ e.startDate }}</p>
+              </div>
+              <div>
+                <p style="color:#686552">End Date</p>
+                <p>{{ e.endDate }}</p>
+              </div>
             </div>
           </div>
         </div>

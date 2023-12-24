@@ -2,10 +2,12 @@ import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import Subscriber from 'App/Models/email/Subscriber'
 import CreateSubscriberValidator from 'App/Validators/news-letter/CreateSubscriberValidator'
 import BaseController from '../BaseController'
+import { validator } from '@ioc:Adonis/Core/Validator'
+import { DateTime } from 'luxon'
 
 export default class SubscribersController extends BaseController {
   constructor() {
-    super(Subscriber, {}, {}, 'SubscriberPolicy')
+    super(Subscriber, CreateSubscriberValidator, CreateSubscriberValidator, 'SubscriberPolicy')
   }
 
   public async store({ request, response, bouncer }: HttpContextContract) {
@@ -36,5 +38,22 @@ export default class SubscribersController extends BaseController {
     }
 
     return response.json({ message: 'record created', data: subscriber })
+  }
+
+  public excludeIncludeExportProperties(record: any) {
+    const { createdAt, updatedAt, ...rest } = record
+    const dob = DateTime.fromISO(rest.dob).toFormat('dd/MM/yyyy') //=> '2014 Aug 06'
+    return { ...rest, dob }
+  }
+
+  public async storeExcelData(data: any, ctx: HttpContextContract): Promise<void> {
+    const validatedData = await validator.validate({
+      schema: new CreateSubscriberValidator(ctx).schema,
+      data: {
+        subscriber: data,
+      },
+    })
+
+    await Subscriber.updateOrCreate({ id: validatedData.subscriber!.id }, validatedData.subscriber!)
   }
 }

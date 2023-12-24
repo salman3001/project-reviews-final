@@ -37,7 +37,7 @@ function previewSelectedImage() {
         ?? '/images/upload-preview.png'">
     </label>
     <div>
-      <q-file dense filled v-model="file" :name="name" accept="jpg,jpeg,png,webp" max-file-size="2000000"
+      <q-file dense filled v-model="file" :name="name" accept="jpg,jpeg,png,webp" max-file-size="5000000"
         label="Upload File" @update:model-value="previewSelectedImage" style="width: 100%;">
         <template v-slot:prepend>
           <q-icon name="attach_file" />

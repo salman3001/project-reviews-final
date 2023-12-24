@@ -1,12 +1,14 @@
 <script setup lang="ts">
 import { QTableProps } from 'quasar';
 import SearchInput from 'src/components/forms/SearchInput.vue';
-import { useGetTableData } from 'src/composables/useGetTableData';
 import { AdditionalParams } from 'src/type';
-import { exportCSV } from 'src/utils/exportCSV';
 import { onMounted, reactive, ref } from 'vue';
 import modalStore from 'src/stores/modalStore';
 import { useRouter } from 'vue-router';
+import ImportExcel from 'src/components/ImportExcel.vue';
+import ExportExcel from 'src/components/ExportExcel.vue';
+import { onTableRequest } from 'src/utils/onTableRequest';
+import { productTagApi } from 'src/utils/BaseApiService';
 
 const modal = modalStore();
 const router = useRouter()
@@ -20,9 +22,23 @@ const filter = reactive<AdditionalParams>({
 });
 
 
-const { data, loading, onRequest, pagination, tableRef } = useGetTableData(
-  'product-tags'
-);
+const tableRef = ref();
+
+const pagination = ref({
+  sortBy: 'id',
+  descending: false,
+  page: 1,
+  rowsPerPage: 10,
+  rowsNumber: 10,
+});
+
+
+const { onRequest, loading, rows } = onTableRequest(productTagApi, pagination)
+
+onMounted(() => {
+  uploads.value = process.env.UPLOAD as string;
+  tableRef.value && tableRef.value.requestServerInteraction();
+});
 
 
 const colomns: QTableProps['columns'] = [
@@ -63,16 +79,8 @@ onMounted(() => {
             { label: 'Active', value: 1 },
             { label: 'Inactive', value: 0 },
           ]" label="Status" class="col-auto" style="min-width: 8rem" /> -->
-          <q-btn-dropdown outline label="Export" style="border: 1px solid lightgray">
-            <q-list dense>
-              <q-item clickable v-close-popup @click="exportCSV(colomns, data)">
-                <q-item-section>
-                  <q-item-label>
-                    <q-icon name="receipt_long" /> Export CSV</q-item-label>
-                </q-item-section>
-              </q-item>
-            </q-list>
-          </q-btn-dropdown>
+          <ImportExcel type="product-tags" />
+          <ExportExcel type="product-tags" />
           <q-btn color="primary" @click="() => {
             router.push({
               name: 'admin.productTag.create',
@@ -82,7 +90,7 @@ onMounted(() => {
         </div>
       </div>
 
-      <q-table ref="tableRef" flat bordered title="Products Tags" :loading="loading" :rows="data" :columns="colomns"
+      <q-table ref="tableRef" flat bordered title="Products Tags" :loading="loading" :rows="rows" :columns="colomns"
         class="zebra-table" v-model:pagination="pagination" :filter="filter" @request="onRequest" row-key="id">
         <template v-slot:body-cell-name="props">
           <q-td :props="props" class="row q-gutter-x-xs items-center">

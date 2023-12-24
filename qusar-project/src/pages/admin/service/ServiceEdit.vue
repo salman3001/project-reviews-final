@@ -115,7 +115,8 @@ serviceApi.show(route.params.id as string, {
   form.value.social.website = (data.value as any)?.social?.website || ''
   form.value.social.whatsapp = (data.value as any)?.social?.whatsapp || ''
   //faq
-  form.value.faq = (data.value as any)?.faq ? (data.value as any)?.faq?.map((f: any) => ({ quest: f.quest, ans: f.ans })) : []
+
+  form.value.faq = (data.value as any)?.faqs ? (data.value as any)?.faqs?.map((f: any) => ({ quest: f.quest, ans: f.ans })) : []
 
 
 })
@@ -171,7 +172,7 @@ const deleteSavedScreenshot = (id: string, index: number) => {
   if (confirm('Are you sure you want to delete the saved screenshot')) {
     serviceApi.deleteScreenShot(id, {}, {
       onSuccess: () => {
-        service.value?.screenShots?.splice(index, 1)
+        service.value?.screenshots?.splice(index, 1)
       }
     })
   }

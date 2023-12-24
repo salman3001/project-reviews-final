@@ -10,6 +10,8 @@ const { execute, loading } = userApi.put();
 
 onMounted(() => {
   editUser.getLangauges()
+  console.log(editUser.languagesForm.languages);
+
 })
 </script>
 
@@ -20,7 +22,7 @@ onMounted(() => {
     <div class="q-py-lg">
       <div class="row q-col-gutter-md">
         <q-select outlined emit-value map-options v-model="editUser.languagesForm.languages" :options="editUser.languages"
-          label="Language" class="col-12 col-sm-6 col-md-3" multiple use-chips />
+          label="Language" class="col-12 col-sm-6 col-md-3" multiple use-chips option-label="name" option-value="id" />
       </div>
 
       <div class="row  q-gutter-md q-pt-xl">

@@ -2,6 +2,7 @@ import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import { schema } from '@ioc:Adonis/Core/Validator'
 import Country from 'App/Models/address/Country'
 import BaseController from '../BaseController'
+import { validator } from '@ioc:Adonis/Core/Validator'
 
 export default class CountriesController extends BaseController {
   constructor() {
@@ -32,5 +33,18 @@ export default class CountriesController extends BaseController {
     country.merge(payload)
     await country.save()
     return response.json({ message: 'record updated', data: country })
+  }
+
+  public async storeExcelData(data: any): Promise<void> {
+    const validatedData = await validator.validate({
+      schema: schema.create({
+        id: schema.number(),
+        name: schema.string({ trim: true }),
+        isActive: schema.boolean.optional(),
+        continentId: schema.number.optional(),
+      }),
+      data,
+    })
+    await Country.updateOrCreate({ id: validatedData.id }, validatedData)
   }
 }

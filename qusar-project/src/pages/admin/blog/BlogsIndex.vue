@@ -7,7 +7,10 @@ import { exportCSV } from 'src/utils/exportCSV';
 import { computed, onMounted, reactive, ref } from 'vue';
 import modalStore from 'src/stores/modalStore';
 import { useRouter } from 'vue-router';
-import { LanguageApi, blogCategoryApi } from 'src/utils/BaseApiService';
+import { BlogApi, LanguageApi, blogCategoryApi } from 'src/utils/BaseApiService';
+import ImportExcel from 'src/components/ImportExcel.vue';
+import ExportExcel from 'src/components/ExportExcel.vue';
+import { onTableRequest } from 'src/utils/onTableRequest';
 
 const modal = modalStore();
 const router = useRouter();
@@ -33,32 +36,7 @@ const filter = reactive<AdditionalParams>({
   },
 });
 
-const isPublished = computed({
-  get() {
-    return filter.filter.isPublished;
-  },
-  set(newValue) {
-    filter.filter.isPublished = newValue;
-  },
-});
 
-const categoryId = computed({
-  get() {
-    return filter.relationFilter.category.value;
-  },
-  set(newValue) {
-    filter.relationFilter.category.value = newValue;
-  },
-});
-
-const languageId = computed({
-  get() {
-    return filter.filter.languageId;
-  },
-  set(newValue) {
-    filter.filter.languageId = newValue;
-  },
-});
 
 const categories = ref<null | Record<string, any>>(null);
 blogCategoryApi.index().then(({ data }) => {
@@ -70,19 +48,26 @@ LanguageApi.index().then(({ data }) => {
   languages.value = data.value;
 });
 
-const { data, loading, onRequest, pagination, tableRef } = useGetTableData(
-  'blogs',
-  {
-    populate: {
-      category: {
-        fields: ['name', 'id'],
-      },
-      language: {
-        fields: ['name', 'id'],
-      },
+const tableRef = ref();
+
+const pagination = ref({
+  sortBy: 'id',
+  descending: false,
+  page: 1,
+  rowsPerPage: 10,
+  rowsNumber: 10,
+});
+
+const { onRequest, loading, rows } = onTableRequest(BlogApi, pagination, {
+  populate: {
+    category: {
+      fields: ['name', 'id'],
     },
-  }
-);
+    language: {
+      fields: ['name', 'id'],
+    },
+  },
+})
 
 const colomns: QTableProps['columns'] = [
   { name: 'id', field: 'id', label: 'ID', align: 'left' },
@@ -122,6 +107,8 @@ const colomns: QTableProps['columns'] = [
 
 onMounted(() => {
   uploads.value = process.env.UPLOAD as string;
+  tableRef.value && tableRef.value.requestServerInteraction();
+
 });
 </script>
 
@@ -137,36 +124,30 @@ onMounted(() => {
           " />
 
         <div class="row q-gutter-sm">
-          <q-select v-model="categoryId" v-if="categories" dense options-dense emit-value map-options outlined :options="[{ label: 'All', value: null }, ...categories.map((r: any) => ({
-            label: r.name,
-            value: r.id,
-          }))]" label="Category" class="col-auto" style="min-width: 8rem" />
-          <q-select dense v-model="languageId" v-if="languages" options-dense emit-value map-options outlined :options="[{ label: 'All', value: null }, ...languages.map((r: any) => ({
-            label: r.name,
-            value: r.id,
-          }))]" label="Language" class="col-auto" style="min-width: 8rem" />
-          <q-select outlined dense options-dense emit-value map-options v-model="isPublished" :options="[
+          <q-select v-model="filter.relationFilter!.category.value" v-if="categories" dense options-dense emit-value
+            map-options outlined :options="[{ label: 'All', value: null }, ...categories.map((r: any) => ({
+              label: r.name,
+              value: r.id,
+            }))]" label="Category" class="col-auto" style="min-width: 8rem" />
+          <q-select dense v-model="filter.filter!.languageId" v-if="languages" options-dense emit-value map-options
+            outlined :options="[{ label: 'All', value: null }, ...languages.map((r: any) => ({
+              label: r.name,
+              value: r.id,
+            }))]" label="Language" class="col-auto" style="min-width: 8rem" />
+          <q-select outlined dense options-dense emit-value map-options v-model="filter.filter!.isPublished" :options="[
             { label: 'All', value: null },
             { label: 'Published', value: 1 },
             { label: 'Draft', value: 0 },
           ]" label="Status" class="col-auto" style="min-width: 8rem" />
-          <q-btn-dropdown outline label="Export" style="border: 1px solid lightgray">
-            <q-list dense>
-              <q-item clickable v-close-popup @click="exportCSV(colomns, data)">
-                <q-item-section>
-                  <q-item-label>
-                    <q-icon name="receipt_long" /> Export CSV</q-item-label>
-                </q-item-section>
-              </q-item>
-            </q-list>
-          </q-btn-dropdown>
+          <ImportExcel type="blogs" />
+          <ExportExcel type="blogs" />
           <q-btn color="primary" @click="() => {
             router.push({ name: 'admin.blogs.create' });
           }
             ">+ Add blog</q-btn>
         </div>
       </div>
-      <q-table ref="tableRef" flat bordered title="Blog Posts" :loading="loading" :rows="data" :columns="colomns"
+      <q-table ref="tableRef" flat bordered title="Blog Posts" :loading="loading" :rows="rows" :columns="colomns"
         class="zebra-table" v-model:pagination="pagination" :filter="filter" @request="onRequest" row-key="id">
         <template v-slot:body-cell-title="props">
           <q-td :props="props" class="row q-gutter-x-xs items-center">

@@ -4,10 +4,16 @@ import ServiceTag from 'App/Models/service/ServiceTag'
 import ServiceCategoryCreateValidator from 'App/Validators/service/ServiceCategoryCreateValidator'
 import ServiceCategoryUpdateValidator from 'App/Validators/service/ServiceCategoryUpdateValidator'
 import BaseController from '../BaseController'
+import { validator } from '@ioc:Adonis/Core/Validator'
 
 export default class ServiceTagsController extends BaseController {
   constructor() {
-    super(ServiceTag, {}, {}, 'ServicePolicy')
+    super(
+      ServiceTag,
+      ServiceCategoryCreateValidator,
+      ServiceCategoryCreateValidator,
+      'ServicePolicy'
+    )
   }
 
   public async store({ request, response, bouncer }: HttpContextContract) {
@@ -69,5 +75,21 @@ export default class ServiceTagsController extends BaseController {
     await tag.save()
 
     return response.json({ message: 'record created', data: tag })
+  }
+
+  public excludeIncludeExportProperties(record: any) {
+    const { createdAt, updatedAt, thumbnail, subCategoryCount, ...rest } = record
+    return rest
+  }
+
+  public async storeExcelData(data: any, ctx: HttpContextContract): Promise<void> {
+    const validatedData = await validator.validate({
+      schema: new ServiceCategoryUpdateValidator(ctx).schema,
+      data: {
+        category: data,
+      },
+    })
+
+    await ServiceTag.updateOrCreate({ id: validatedData.category!.id }, validatedData.category!)
   }
 }
