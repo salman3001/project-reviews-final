@@ -155,7 +155,7 @@ onMounted(() => {
                   </q-item>
                   <q-item clickable v-close-popup @click="
                     modal.togel('deleteRecord', {
-                      url: '/help-center/category/' + props.row.id,
+                      url: '/help-center/categories/' + props.row.id,
                       tableRef,
                       title: 'Delete Category?',
                     })

@@ -204,6 +204,7 @@ export default class ServicesController extends BaseController {
   public async deleteScreenShot({ params, response, bouncer }: HttpContextContract) {
     await bouncer.with('ServicePolicy').authorize('delete')
     const image = await Image.findOrFail(+params.id)
+    await image.delete()
     return response.json({ message: 'Screeshot deleted', image })
   }
 

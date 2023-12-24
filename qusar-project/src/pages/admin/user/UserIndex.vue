@@ -28,12 +28,12 @@ const filter = reactive<AdditionalParams>({
     address: {
       field: 'country_id',
       value: '',
-      filter: {
-        country: {
-          field: 'id',
-          value: ''
-        }
-      }
+      // filter: {
+      //   country: {
+      //     field: 'id',
+      //     value: ''
+      //   }
+      // }
     }
   }
 });
@@ -134,11 +134,9 @@ const colomns: QTableProps['columns'] = [
           " />
 
         <div class="row q-gutter-sm">
-          <q-select v-model="filter.relationFilter!.address.filter!.country.value" v-if="countries" dense options-dense
-            emit-value map-options outlined :options="[{ label: 'All', value: null }, ...countries.map((r: any) => ({
-              label: r.name,
-              value: r.id,
-            }))]" label="Country" class="col-auto" style="min-width: 8rem" />
+          <q-select v-model="filter.relationFilter!.address.value" v-if="countries" dense options-dense emit-value
+            map-options outlined :options="[{ name: 'All', id: '' }, ...countries]" label="Country" class="col-auto"
+            style="min-width: 8rem" option-label="name" option-value="id" />
           <q-select outlined dense options-dense emit-value map-options v-model="filter.filter!.is_active" :options="[
             { label: 'All', value: null },
             { label: 'Active', value: 1 },

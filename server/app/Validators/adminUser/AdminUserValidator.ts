@@ -27,7 +27,7 @@ export default class AdminUserValidator {
     image: schema.file.optional({
       extnames: ['jpg', 'JPG', 'jpeg', 'JPEG', 'png', 'PNG', 'webp', 'WEBP'],
 
-      size: '2mb',
+      size: '5mb',
     }),
     user: schema.object().members({
       email: schema.string({ trim: true }, [

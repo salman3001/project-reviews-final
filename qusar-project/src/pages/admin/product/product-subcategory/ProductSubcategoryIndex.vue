@@ -36,13 +36,7 @@ const pagination = ref({
 });
 
 
-const { onRequest, loading, rows } = onTableRequest(productSubCategoryApi, pagination, {
-  populate: {
-    subCategory: {
-      fields: ['name', 'id'],
-    },
-  },
-})
+const { onRequest, loading, rows } = onTableRequest(productSubCategoryApi, pagination)
 
 onMounted(() => {
   uploads.value = process.env.UPLOAD as string;

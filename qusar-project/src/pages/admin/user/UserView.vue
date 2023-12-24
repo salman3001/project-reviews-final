@@ -294,6 +294,34 @@ onMounted(() => {
           </div>
         </div>
         <div class="q-py-md">
+          <p class="text-h6" style="color:#686552">Education
+
+          </p>
+          <div class="row q-col-gutter-lg">
+            <div v-for="(e, i) in user?.educations" :key="i">
+              <p style="color:#686552">Education {{ i + 1 }}</p>
+              <div class="row q-col-gutter-lg wrap">
+                <div>
+                  <p style="color:#686552">Degree</p>
+                  <p>{{ e.degree }}</p>
+                </div>
+                <div>
+                  <p style="color:#686552">Field</p>
+                  <p>{{ e.field }}</p>
+                </div>
+                <div>
+                  <p style="color:#686552">Start Date</p>
+                  <p>{{ e.start_date }}</p>
+                </div>
+                <div>
+                  <p style="color:#686552">End Date</p>
+                  <p>{{ e.end_date }}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="q-py-md">
           <p class="text-h6" style="color:#686552">Languages
           </p>
           <div class="row q-col-gutter-lg">
@@ -350,7 +378,8 @@ onMounted(() => {
               <p>{{ user?.NotificationSetting && user?.NotificationSetting.onProductUpdate ? 'Yes' : 'No' }}</p>
             </div>
             <div class="col-12 col-sm-6 col-md-3">
-              <p style="color:#686552">Personalized updates containing the best the CurrentRelease community has to offer.
+              <p style="color:#686552">Personalized updates containing the best the CurrentRelease community has to
+                offer.
               </p>
               <p>{{ user?.NotificationSetting && user?.NotificationSetting.onOffers ? 'Yes' : 'No' }}</p>
             </div>

@@ -26,7 +26,7 @@ export default class UserUpdateeValidator {
   public schema = schema.create({
     image: schema.file.optional({
       extnames: ['jpg', 'JPG', 'jpeg', 'JPEG', 'png', 'PNG', 'webp', 'WEBP'],
-      size: '2mb',
+      size: '5mb',
     }),
     user: schema.object.optional().members({
       id: schema.number.optional(),

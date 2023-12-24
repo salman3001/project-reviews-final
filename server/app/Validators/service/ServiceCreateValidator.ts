@@ -26,11 +26,11 @@ export default class ServiceCreateValidator {
   public schema = schema.create({
     logo: schema.file.optional({
       extnames: ['jpg', 'JPG', 'jpeg', 'JPEG', 'png', 'PNG', 'webp', 'WEBP'],
-      size: '2mb',
+      size: '5mb',
     }),
     cover: schema.file.optional({
       extnames: ['jpg', 'JPG', 'jpeg', 'JPEG', 'png', 'PNG', 'webp', 'WEBP'],
-      size: '2mb',
+      size: '5mb',
     }),
     video: schema.file.optional({
       extnames: ['mp4'],
@@ -38,12 +38,12 @@ export default class ServiceCreateValidator {
     }),
     brocher: schema.file.optional({
       extnames: ['jpg', 'JPG', 'jpeg', 'JPEG', 'png', 'PNG', 'webp', 'WEBP'],
-      size: '2mb',
+      size: '5mb',
     }),
     images: schema.array.optional().members(
       schema.file({
         extnames: ['jpg', 'JPG', 'jpeg', 'JPEG', 'png', 'PNG', 'webp', 'WEBP'],
-        size: '2mb',
+        size: '5mb',
       })
     ),
     service: schema.object().members({

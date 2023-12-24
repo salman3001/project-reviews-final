@@ -15,8 +15,8 @@ const { formatDate } = date
 
 const form = ref({
   subscriber: {
-    first_name: '',
-    last_name: '',
+    firstName: '',
+    lastName: '',
     phone: null,
     email: null,
     status: false,
@@ -42,11 +42,12 @@ subscriberApi.show(route.params.id as string, {
 }).then(({ data }) => {
   subscriber.value = data.value
 
-  form.value.subscriber.first_name = (data.value as any).first_name || ''
-  form.value.subscriber.last_name = (data.value as any).last_name || ''
+  form.value.subscriber.firstName = (data.value as any).first_name || ''
+  form.value.subscriber.lastName = (data.value as any).last_name || ''
   form.value.subscriber.email = (data.value as any).email || ''
   form.value.subscriber.phone = (data.value as any).phone || ''
   form.value.subscriber.dob = (data.value as any).dob ? formatDate((data.value as any).dob, 'DD/MM/YYYY') : ''
+  form.value.subscriber.status = (data.value as any).status == 1 ? true : false
 
   form.value.interests = (data.value as any).interests ? (data.value as any).interests.map((i: any) => i?.id) : []
 
@@ -54,7 +55,7 @@ subscriberApi.show(route.params.id as string, {
 
 
 const { execute: createSubscriber, loading: posting } =
-  subscriberApi.put(route.params.id as string, form.value, {
+  subscriberApi.put({
     headers: {
       'Content-Type': 'multipart/form-data'
     }
@@ -65,7 +66,7 @@ const { execute: createSubscriber, loading: posting } =
   });
 
 const submit = async () => {
-  createSubscriber()
+  createSubscriber(route.params.id as string, form.value,)
 };
 </script>
 
@@ -81,11 +82,11 @@ const submit = async () => {
     <q-form class="column q-gutter-y-xl" @submit="submit">
       <div class="q-gutter-y-md">
         <div class="row q-col-gutter-md">
-          <q-input outlined v-model="form.subscriber.first_name" label="First Name" class="col-12 col-sm-6 col-md-3"
+          <q-input outlined v-model="form.subscriber.firstName" label="First Name" class="col-12 col-sm-6 col-md-3"
             :rules="[
               $rules.required('required'),
             ]" />
-          <q-input outlined :debounce="500" v-model="form.subscriber.last_name" label="Last Name"
+          <q-input outlined :debounce="500" v-model="form.subscriber.lastName" label="Last Name"
             class="col-12 col-sm-6 col-md-3" :rules="[
               $rules.required('required'),
             ]" />

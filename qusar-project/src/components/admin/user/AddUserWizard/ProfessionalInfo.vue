@@ -81,8 +81,8 @@ onMounted(() => {
     <div class="column q-gutter-y-md">
       <p class="text-subtitle1">Language</p>
       <div class="row q-col-gutter-md q-pb-lg">
-        <q-select outlined emit-value map-options v-model="createUser.form.lanuages" :options="createUser.languages"
-          label="Language" class="col-12 col-sm-6 col-md-3" multiple use-chips />
+        <q-select outlined emit-value map-options v-model="createUser.form.languages" :options="createUser.languages"
+          label="Language" class="col-12 col-sm-6 col-md-3" multiple use-chips option-label="name" option-value="id" />
       </div>
     </div>
     <div class="column q-gutter-y-md">

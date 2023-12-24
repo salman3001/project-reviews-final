@@ -13,7 +13,7 @@ const { execute, loading } = userApi.put();
 <template>
   <div class="q-py-lg">
     <q-form class="column q-gutter-y-md" @submit="() => {
-      execute(editUser?.user?.id as string, editUser.userForm)
+      execute(editUser?.user?.id as string, { user: { ...editUser.userForm.user } })
     }" @validation-error="srollToView">
       <div class="column q-gutter-y-md">
         <div class="column q-gutter-y-md">
